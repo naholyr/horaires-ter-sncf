@@ -1,0 +1,1 @@
+php -r "echo md5(file_get_contents('gares.utf8.txt'));" > gares.utf8.txt.md5
