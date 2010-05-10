@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources>
+    <string name="app_name">Horaires TER SNCF</string>
+    <string name="pref_nbgares">nb_gares</string>
+    <string name="pref_nbtrains">nb_trains</string>
+    <string name="pref_radiuskm">radius_km</string>
+    <string name="pref_favsfirst">favs_first</string>
+    <string name="text_objectifs">\"Horaires TER SNCF\" se base sur les services mobiles offerts par la SNCF pour vous fournir de la manière la plus directe et conviviale possible les informations sur les prochains départs dans vos gares habituelles.\n * Gérez vos gares favories\n * Listez les gares autour de vous\n * Accédez aux horaires de prochains départs et soyez prévenus des retards !</string>
+    <string name="text_rappel">Utilisez les bouton \"menu\" ou \"recherche\" dans l\'écran principal ! Vous pourrez gérer vos préférences, voir les gares favories ou proches, rechercher une gare, etc...\n\nDepuis votre écran d\'accueil, un appui long et un clic sur \"Dossiers\" pour ajouter un dossier avec vos gares favories.</string>
+    <string name="text_avertissements">Note : L\'application étant basé sur le service \"termobile.fr\", l\'information du quai n\'est pas disponible.\nAfin de vous offrir des résultats personnalisés, l\'ensemble des 3081 gares de France (informations extraites du fichier public du Réseau Ferré de France) a été géolocalisée.\nDes erreurs ont pu s\'introduire dans le fichier de données fourni avec l\'application, et c\'est avec votre aide que je pourrai l\'améliorer, donc n\'hésitez pas à me faire part (par mail) des erreurs ou imprécisions rencontrées !</string>
+    <string name="text_changelog">Version 2.2.0 :\n * Optimisations.\n * Système de mise à jour des données.\n\nVersion 2.1.0 :\n * Live folders.\n * Mise en place d'un service proxy.\n * Corrections gares.\n * Abandon de la localisation GPS.\n * Possibilité de voir les favoris uniquement, et choix de l'écran d'accueil.\n * Mémorisation de la dernière recherche.\n\nVersion 1.0.10 :\n * Corrections géolocalisation.\n\nVersion 1.0.9 :\n * Support des faibles résolutions.\n\nVersion 1.0.8 :\n * Encore changement de format HTML.\n\nVersion 1.0.7-beta :\n * Adaptation nouveau format termobile.\n * Corrections graphiques.\n * Accélération interrogation.\n\nVersion 1.0.6-beta :\n * Correction quelques gares.\n * Refonte interrogation serveur &amp; base.\n * Modification du mode de recherche.\n * FIX dialogues.\n\nVersion 1.0.3-beta :\n * Ajout de la recherche.\n * Corrections de quelques FC\n\nVersion 1.0.2-beta :\n * Amélioration détection erreurs.\n * Encodages.\n\nVersion 1.0.1-beta :\n * Bugfixes (preferences)\n\nVersion 1.0-beta :\n * Première version diffusée.\n * Base de données complète.\n * Ecran \"les gares près de chez moi\".\n * Mise en favori de gare (apparaissent toujours en priorité si elles sont dans le rayon de recherche).\n * Affichage des prochains départs + retard &amp; motifs.</string>
+    <string name="text_evolutions">Evolutions prévues (roadmap) par ordre décroissant de priorité :\n1. Détails d\'un train (arrêts).\n2. Système de notifications pour les retards.</string>
+    <string name="pref_home">home</string>
+    <string name="folder_favorites">Gares favories</string>
+    <string name="folder_geolocation">Gares proches</string>
+    <string name="initdb_download">Téléchargement des données...</string>
+    <string name="initdb_load">Chargement des données...</string>
+    <string name="update_notification">Mise à jour des gares disponible !</string>
+</resources>
