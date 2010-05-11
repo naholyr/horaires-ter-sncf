@@ -2,8 +2,9 @@
 <manifest android:versionCode="220" android:versionName="2.2.0"
 	package="com.naholyr.android.horairessncf" xmlns:android="http://schemas.android.com/apk/res/android">
 	<application android:allowBackup="true"
-		android:allowClearUserData="true" android:icon="@drawable/icon" android:label="@string/app_name"
-		android:name="MyApplication" android:theme="@android:style/Theme.Light">
+		android:allowClearUserData="true" android:icon="@drawable/icon"
+		android:label="@string/app_name" android:name="MyApplication"
+		android:theme="@android:style/Theme.Light">
 		<activity android:label="@string/app_name" android:name=".activity.MainActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -36,7 +37,8 @@
 		</activity>
 		<provider android:authorities="com.naholyr.android.horairessncf.garescontentprovider"
 			android:name=".GaresContentProvider" />
-		<activity android:name=".activity.InitializeDataActivity" android:theme="@android:style/Theme.Dialog"/>
+		<activity android:name=".activity.InitializeDataActivity"
+			android:theme="@android:style/Theme.Dialog" android:configChanges="orientation" />
 		<activity android:name=".activity.AboutActivity"
 			android:theme="@android:style/Theme.Dialog" />
 	</application>

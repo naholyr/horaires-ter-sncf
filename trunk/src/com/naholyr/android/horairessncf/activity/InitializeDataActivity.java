@@ -147,12 +147,14 @@ public class InitializeDataActivity extends Activity {
 
 		private final void error(final String msg) {
 			setResult(RESULT_ERROR);
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Util.showError(InitializeDataActivity.this, "Erreur : " + msg);
-				}
-			});
+			if (working) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						Util.showError(InitializeDataActivity.this, "Erreur : " + msg);
+					}
+				});
+			}
 		}
 
 		private void finishWithResult(int result) {
@@ -198,7 +200,7 @@ public class InitializeDataActivity extends Activity {
 						working = false;
 						return;
 					}
-					if (connection.getResponseCode() / 100 != 2) {
+					if (connection.getResponseCode() != 200 && connection.getResponseCode() != 302) {
 						error("Fichier introuvable !");
 					}
 					InputStream stream = connection.getInputStream();
@@ -241,8 +243,10 @@ public class InitializeDataActivity extends Activity {
 					sendMsg(MSG_SET_PB_PROGRESS, R.id.InitDialog_ProgressLoad, 0);
 					sendMsg(MSG_SET_PB_MAX, R.id.InitDialog_ProgressLoad, Util.NB_GARES_TOTAL);
 					sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextTotalGares, 0, String.valueOf(Util.NB_GARES_TOTAL));
+					viewState.putInt("load_total", Util.NB_GARES_TOTAL);
 					sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextNumGare, 0, "0");
 					sendMsg(MSG_SET_VISIBILITY, R.id.InitDialog_TextLoadLayout, View.VISIBLE);
+					viewState.putInt("load_progress", 0);
 					// Buffered reader pour du ligne à ligne
 					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 					String line;
@@ -417,12 +421,6 @@ public class InitializeDataActivity extends Activity {
 			}
 		}
 
-	}
-
-	@Override
-	public void onLowMemory() {
-		// TODO Auto-generated method stub
-		super.onLowMemory();
 	}
 
 }
