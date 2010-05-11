@@ -19,6 +19,8 @@ import android.content.DialogInterface;
 
 public class Util {
 
+	public static final int NB_GARES_TOTAL = 3081;
+	
 	public static final int BACKGROUND_1 = 0x33FFFFFF;
 	public static final int BACKGROUND_2 = 0x33999999;
 

@@ -3,37 +3,27 @@
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:orientation="vertical" android:padding="5dip"
 	android:paddingTop="0dip">
+
 	<LinearLayout android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:orientation="horizontal">
 		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Lecture de la signature du fichier : " />
+			android:layout_height="wrap_content" android:text="Lecture signature : " />
 		<TextView android:id="@+id/InitDialog_TextRemoteMD5"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="..." />
 	</LinearLayout>
-	<TextView android:layout_marginTop="5dip"
-		android:layout_height="wrap_content" android:layout_width="wrap_content"
-		android:text="Téléchargement de la liste des gares..." />
-	<ProgressBar android:id="@+id/InitDialog_ProgressDownload"
-		style="?android:attr/progressBarStyleHorizontal" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:indeterminate="true" />
+
 	<LinearLayout android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:orientation="horizontal"
-		android:id="@+id/InitDialog_TextDownloadLayout" android:visibility="gone">
-		<TextView android:id="@+id/InitDialog_TextDownload"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:text="..." />
+		android:layout_marginTop="5dip">
 		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="/" />
+			android:layout_height="wrap_content" android:text="Chargement gares (" />
 		<TextView android:id="@+id/InitDialog_TextTotalDownload"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="..." />
 		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text=" ko" />
+			android:layout_height="wrap_content" android:text=" ko)" />
 	</LinearLayout>
-	<TextView android:layout_marginTop="5dip"
-		android:layout_height="wrap_content" android:layout_width="wrap_content"
-		android:text="Chargement des données..." />
 	<ProgressBar android:id="@+id/InitDialog_ProgressLoad"
 		style="?android:attr/progressBarStyleHorizontal" android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:indeterminate="true" />
@@ -49,6 +39,7 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="..." />
 	</LinearLayout>
+
 	<Button android:id="@+id/InitDialog_ButtonAbout"
 		android:layout_marginTop="10dip" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:text="À propos"

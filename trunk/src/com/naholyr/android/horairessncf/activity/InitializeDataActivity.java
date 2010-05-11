@@ -1,8 +1,10 @@
 // WorkInProgress : activity de mise à jour des données depuis le site
 package com.naholyr.android.horairessncf.activity;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,9 +44,6 @@ public class InitializeDataActivity extends Activity {
 	private static final String HOST = "termobile-ws.sfhost.net";
 	private static final String PATH_DATA = "/data/gares.utf8.txt";
 	private static final String PATH_HASH = "/data/gares.utf8.txt.md5";
-
-	// Download buffer
-	private static final int BUFFER_SIZE = 8192;
 
 	// Messages
 	private static final int MSG_SET_TEXT = 1;
@@ -192,7 +191,6 @@ public class InitializeDataActivity extends Activity {
 		public void run() {
 			working = true;
 			try {
-				String[] lines;
 				String signature;
 				// 1. Récupération du MD5
 				if (working) {
@@ -218,7 +216,13 @@ public class InitializeDataActivity extends Activity {
 				} else {
 					return;
 				}
-				// 2. Téléchargement fichier
+				// Démarrage d'une transaction
+				if (working) {
+					mHelper.getDb().beginTransaction();
+				} else {
+					return;
+				}
+				// 2. Chargement des données
 				if (working) {
 					URL url = new URL(SPEC, HOST, 80, PATH_DATA);
 					HttpURLConnection connection;
@@ -234,101 +238,74 @@ public class InitializeDataActivity extends Activity {
 						error("Fichier introuvable !");
 					}
 					int contentLength = connection.getContentLength();
-					viewState.putInt("dl_total", contentLength);
 					if (contentLength > 0) {
-						sendMsg(MSG_SET_PB_DETERMINATE, R.id.InitDialog_ProgressDownload, 1);
-						sendMsg(MSG_SET_PB_MAX, R.id.InitDialog_ProgressDownload, contentLength);
 						sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextTotalDownload, 0, String.valueOf((int) (contentLength / 1024)));
-						sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextDownload, 0, "0");
 					} else {
-						sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextDownload, 0, "0");
-						sendMsg(MSG_SET_PB_DETERMINATE, R.id.InitDialog_ProgressDownload, 0);
+						sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextTotalDownload, 0, "?");
 					}
-					sendMsg(MSG_SET_VISIBILITY, R.id.InitDialog_TextDownloadLayout, View.VISIBLE);
-					InputStream stream = connection.getInputStream();
-					byte[] buffer;
-					int read;
-					int progress = 0;
-					String fullFile = "";
-					do {
-						if (!working) {
-							return;
-						}
-						buffer = new byte[BUFFER_SIZE];
-						read = stream.read(buffer);
-						fullFile += new String(buffer);
-						progress += read;
-						viewState.putInt("dl_progress", progress);
-						if (contentLength > 0) {
-							sendMsg(MSG_SET_PB_PROGRESS, R.id.InitDialog_ProgressDownload, progress);
-						}
-						sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextDownload, 0, String.valueOf((int) (progress / 1024)));
-					} while (read != -1);
-					// Listing des lignes pour étape suivante
-					lines = fullFile.trim().split("\n");
-				} else {
-					return;
-				}
-				// Démarrage d'une transaction
-				if (working) {
-					mHelper.getDb().beginTransaction();
-				} else {
-					return;
-				}
-				// 3. Chargement des données
-				if (working) {
-					viewState.putInt("load_total", lines.length);
 					sendMsg(MSG_SET_PB_DETERMINATE, R.id.InitDialog_ProgressLoad, 1);
 					sendMsg(MSG_SET_PB_PROGRESS, R.id.InitDialog_ProgressLoad, 0);
-					sendMsg(MSG_SET_PB_MAX, R.id.InitDialog_ProgressLoad, lines.length);
-					sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextTotalGares, 0, String.valueOf(lines.length));
+					sendMsg(MSG_SET_PB_MAX, R.id.InitDialog_ProgressLoad, Util.NB_GARES_TOTAL);
+					sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextTotalGares, 0, String.valueOf(Util.NB_GARES_TOTAL));
 					sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextNumGare, 0, "0");
 					sendMsg(MSG_SET_VISIBILITY, R.id.InitDialog_TextLoadLayout, View.VISIBLE);
-					// progression par tranches
-					int mult = Math.max(1, lines.length / 50);
-					int progress = 0;
-					viewState.putInt("load_progress", lines.length);
+					// Buffered reader pour du ligne à ligne
+					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+					String line;
+					int numGare = 0;
+					int numErrors = 0;
+					int numMaxErrors = 5 * Util.NB_GARES_TOTAL / 100;
 					mHelper.truncate();
-					for (int i = 0; i < lines.length; i++) {
-						if (!working) {
-							// rollback and leave
-							mHelper.getDb().endTransaction();
-							return;
-						}
-						String line = lines[i];
-						// Format :
-						// DAltkirch#Alsace#Alsace,France#48.3181795#7.4416241
-						String[] parts = line.split("#", 5);
-						if (parts.length == 5) {
-							try {
-								String nom = parts[0];
-								String region = parts[1];
-								String adresse = parts[2];
-								double latitude = Double.valueOf(parts[3]);
-								double longitude = Double.valueOf(parts[4]);
-								progress++;
-								if (progress % mult == 0) {
-									viewState.putInt("load_progress", progress);
-									sendMsg(MSG_SET_PB_PROGRESS, R.id.InitDialog_ProgressLoad, progress);
-									sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextNumGare, 0, String.valueOf(progress));
-								}
-								mHelper.insert(nom, region, adresse, latitude, longitude);
-							} catch (NumberFormatException e) {
-								Log.e(getClass().getName(), line, e);
-							} catch (SQLException e) {
-								Log.e(getClass().getName(), "SQL Error", e);
+					while (true) {
+						try {
+							line = reader.readLine();
+							if (line == null) {
+								break;
 							}
-						} else {
-							// TODO better handling
-							Log.e("horairessncf", "Skip invalid line " + line);
+						} catch (IOException e) {
+							line = null;
+							Log.e("horairessncf", "fail read line");
+							numErrors++;
 						}
+						if (line != null) {
+							// Format :
+							// DAltkirch#Alsace#Alsace,France#48.3181795#7.4416241
+							String[] parts = line.split("#", 5);
+							if (parts.length == 5) {
+								try {
+									String nom = parts[0];
+									String region = parts[1];
+									String adresse = parts[2];
+									double latitude = Double.valueOf(parts[3]);
+									double longitude = Double.valueOf(parts[4]);
+									mHelper.insert(nom, region, adresse, latitude, longitude);
+								} catch (NumberFormatException e) {
+									Log.e(getClass().getName(), line, e);
+									numErrors++;
+								} catch (SQLException e) {
+									Log.e(getClass().getName(), "SQL Error", e);
+									numErrors++;
+								}
+							} else {
+								// TODO better handling
+								Log.e("horairessncf", "Skip invalid line " + line);
+								numErrors++;
+							}
+						}
+						if (numErrors > numMaxErrors) {
+							error("Trop d'erreurs rencontrées dans le fichier (+ de 5%), merci d'essayer encore.");
+							working = false;
+						}
+						// Enregistrer la progression
+						numGare++;
+						sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextNumGare, 0, String.valueOf(numGare));
+						sendMsg(MSG_SET_PB_PROGRESS, R.id.InitDialog_ProgressLoad, numGare);
+						viewState.putInt("load_progress", numGare);
 					}
-					viewState.putInt("load_progress", lines.length);
-					sendMsg(MSG_SET_PB_PROGRESS, R.id.InitDialog_ProgressLoad, lines.length);
 				} else {
 					return;
 				}
-				// 4. Stocker la nouvelle version du fichier
+				// 3. Stocker la nouvelle version du fichier
 				if (working) {
 					mHelper.saveNewUpdateHash(signature);
 				}
@@ -358,22 +335,6 @@ public class InitializeDataActivity extends Activity {
 
 		if (viewState.containsKey("signature") && viewState.getBoolean("signature")) {
 			((TextView) findViewById(R.id.InitDialog_TextRemoteMD5)).setText("OK");
-		}
-
-		if (viewState.containsKey("dl_total")) {
-			int contentLength = viewState.getInt("dl_total");
-			ProgressBar b = (ProgressBar) findViewById(R.id.InitDialog_ProgressDownload);
-			if (contentLength > 0) {
-				b.setIndeterminate(false);
-				b.setMax(contentLength);
-				((TextView) findViewById(R.id.InitDialog_TextTotalDownload)).setText(String.valueOf((int) (contentLength / 1024)));
-				int progress = viewState.containsKey("dl_progress") ? viewState.getInt("dl_progress") : 0;
-				b.setProgress(progress);
-				((TextView) findViewById(R.id.InitDialog_TextDownload)).setText(String.valueOf((int) (progress / 1024)));
-				findViewById(R.id.InitDialog_TextDownloadLayout).setVisibility(View.VISIBLE);
-			} else {
-				b.setIndeterminate(true);
-			}
 		}
 
 		if (viewState.containsKey("load_total")) {
@@ -462,6 +423,12 @@ public class InitializeDataActivity extends Activity {
 			}
 		}
 
+	}
+
+	@Override
+	public void onLowMemory() {
+		// TODO Auto-generated method stub
+		super.onLowMemory();
 	}
 
 }
