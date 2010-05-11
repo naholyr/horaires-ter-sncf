@@ -230,7 +230,7 @@ public class InitializeDataActivity extends Activity {
 						working = false;
 						return;
 					}
-					if (connection.getResponseCode() / 100 != 2) {
+					if (connection.getResponseCode() != 200 && connection.getResponseCode() != 302) {
 						error("Fichier introuvable !");
 					}
 					int contentLength = connection.getContentLength();
@@ -298,8 +298,8 @@ public class InitializeDataActivity extends Activity {
 						String line = lines[i];
 						// Format :
 						// DAltkirch#Alsace#Alsace,France#48.3181795#7.4416241
-						String[] parts = line.split("#");
-						if (parts.length > 0) {
+						String[] parts = line.split("#", 5);
+						if (parts.length == 5) {
 							try {
 								String nom = parts[0];
 								String region = parts[1];
@@ -318,6 +318,9 @@ public class InitializeDataActivity extends Activity {
 							} catch (SQLException e) {
 								Log.e(getClass().getName(), "SQL Error", e);
 							}
+						} else {
+							// TODO better handling
+							Log.e("horairessncf", "Skip invalid line " + line);
 						}
 					}
 					viewState.putInt("load_progress", lines.length);
