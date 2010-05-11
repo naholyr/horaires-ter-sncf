@@ -2903,7 +2903,7 @@ Grésy-sur-Aix#Rhône-Alpes#Rue de la Gare, 73100 Grésy-sur-Aix, France#45.7246
 Grésy-sur-Isère#Rhône-Alpes#Rue de la Gare, 73460 Grésy-sur-Isère, France#45.5944127#6.25732
 Groisy-Thorens-la-Caille#Rhône-Alpes#Rhône-Alpes, France#45.1695797#5.4502821
 Jarrie-Vizille#Rhône-Alpes#Avenue de la Gare, 38560 Jarrie, France#45.0848751#5.7428027
-Jean-Macé#Rhône-Alpes#Jean Macé, 69007 Lyon, France#45.7453581#4.8419023
+Lyon-Jean-Macé#Rhône-Alpes#Jean Macé, 69007 Lyon, France#45.7453581#4.8419023
 La Bridoire#Rhône-Alpes#La Bridoire, France#45.525395#5.7416922
 La Ferrière#Rhône-Alpes#La Ferrière, France#45.3189364#6.0871899
 La Fouillouse#Rhône-Alpes#Place de la Gare, 42480 La Fouillouse, France#45.4979172#4.3169351
