@@ -37,7 +37,7 @@ public class InitializeDataActivity extends Activity {
 
 	// Notification ID when using UpdateThread
 	private static final int NOTIFICATION_ID = R.string.update_notification;
-	private static final long UPDATE_CHECK_INTERVAL = 1000 * 12 * 3600;
+	private static final long UPDATE_CHECK_INTERVAL = 1000 * 1 * 60;//12 * 3600;
 
 	// Download url
 	private static final String SPEC = "http";
@@ -296,8 +296,10 @@ public class InitializeDataActivity extends Activity {
 						}
 						// Enregistrer la progression
 						numGare++;
-						sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextNumGare, 0, String.valueOf(numGare));
-						sendMsg(MSG_SET_PB_PROGRESS, R.id.InitDialog_ProgressLoad, numGare);
+						if (numGare % (Util.NB_GARES_TOTAL / 50) == 0) {
+							sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextNumGare, 0, String.valueOf(numGare));
+							sendMsg(MSG_SET_PB_PROGRESS, R.id.InitDialog_ProgressLoad, numGare);
+						}
 						viewState.putInt("load_progress", numGare);
 					}
 				} else {

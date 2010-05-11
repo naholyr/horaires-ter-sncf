@@ -250,6 +250,12 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 						new RefreshThread(false).start();
 					}
 				});
+				builder.setCancelable(true);
+				builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+					public void onCancel(DialogInterface dialog) {
+						finish();
+					}
+				});
 				AlertDialog alert = builder.create();
 				alert.show();
 				break;
