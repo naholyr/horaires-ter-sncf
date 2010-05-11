@@ -113,22 +113,16 @@ public class InitializeDataActivity extends Activity {
 
 		setContentView(R.layout.initialize_data);
 
+		((Button) findViewById(R.id.InitDialog_ButtonAbout)).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(InitializeDataActivity.this, AboutActivity.class));
+			}
+		});
+
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				// Complete view
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						((Button) findViewById(R.id.InitDialog_ButtonAbout)).setOnClickListener(new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								startActivity(new Intent(InitializeDataActivity.this, AboutActivity.class));
-							}
-						});
-					}
-				});
-
 				// Cancel current notification
 				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 				notificationManager.cancel(NOTIFICATION_ID);
