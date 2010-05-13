@@ -50,7 +50,6 @@ public class GaresContentProvider extends ContentProvider {
 	/**
 	 * @see android.content.ContentProvider#getType(Uri)
 	 */
-	@Override
 	public String getType(Uri uri) {
 		switch (URI_MATCHER.match(uri)) {
 			case LIVE_FOLDER_FAVS:
@@ -67,7 +66,6 @@ public class GaresContentProvider extends ContentProvider {
 	/**
 	 * @see android.content.ContentProvider#onCreate()
 	 */
-	@Override
 	public boolean onCreate() {
 		DataHelper helper = getDataHelper();
 
@@ -90,7 +88,6 @@ public class GaresContentProvider extends ContentProvider {
 	/**
 	 * @see android.content.ContentProvider#query(Uri,String[],String,String[],String)
 	 */
-	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 		DataHelper helper = getDataHelper();
 
@@ -160,7 +157,6 @@ public class GaresContentProvider extends ContentProvider {
 	/**
 	 * @see android.content.ContentProvider#delete(Uri,String,String[])
 	 */
-	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		throw new UnsupportedOperationException("readonly content provider");
 	}
@@ -168,7 +164,6 @@ public class GaresContentProvider extends ContentProvider {
 	/**
 	 * @see android.content.ContentProvider#insert(Uri,ContentValues)
 	 */
-	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		throw new UnsupportedOperationException("readonly content provider");
 	}
@@ -176,7 +171,6 @@ public class GaresContentProvider extends ContentProvider {
 	/**
 	 * @see android.content.ContentProvider#update(Uri,ContentValues,String,String[])
 	 */
-	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 		throw new UnsupportedOperationException("readonly content provider");
 	}

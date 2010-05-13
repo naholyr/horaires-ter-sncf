@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,12 +32,17 @@ public class ListeGaresAdapter extends SimpleAdapter {
 
 	public ListeGaresAdapter(Context context, List<Gare> gares) {
 		super(context, getData(gares), LAYOUT, FROM, TO);
-		this.context = context;
+		init(context);
 	}
 
 	public ListeGaresAdapter(Context context, List<Gare> gares, double latitude, double longitude) {
 		super(context, getData(gares, latitude, longitude), LAYOUT, FROM, TO);
+		init(context);
+	}
+
+	private void init(Context context) {
 		this.context = context;
+
 	}
 
 	private static List<Map<String, Object>> getData(List<Gare> gares, Double latitude, Double longitude) {
@@ -58,9 +64,8 @@ public class ListeGaresAdapter extends SimpleAdapter {
 		return getData(gares, null, null);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		@SuppressWarnings("unchecked")
 		Map<String, Object> item = (Map<String, Object>) getItem(position);
 		Gare gare = (Gare) item.get("gare");
 
@@ -85,25 +90,26 @@ public class ListeGaresAdapter extends SimpleAdapter {
 
 	private static final class OnFavoriClickListener implements View.OnClickListener {
 
-		private Context context;
-		private Gare gare;
+		private Context mContext;
+		private Gare mGare;
+
+		public OnFavoriClickListener(Context context, Gare gare) {
+			mContext = context;
+			mGare = gare;
+		}
 
 		public static Drawable getIcon(Context context, Gare gare) {
-			int favoriIcon = gare.isFavori() ? android.R.drawable.star_big_on : android.R.drawable.star_big_off;
+			SharedPreferences prefs = Util.getFavsPreferences(context);
+			int favoriIcon = gare.isFavori(prefs) ? android.R.drawable.star_big_on : android.R.drawable.star_big_off;
 			Drawable icon = context.getResources().getDrawable(favoriIcon);
 
 			return icon;
 		}
 
-		public OnFavoriClickListener(Context context, Gare gare) {
-			this.context = context;
-			this.gare = gare;
-		}
-
-		@Override
 		public void onClick(View v) {
-			gare.setFavori(!gare.isFavori());
-			((ImageView) v).setImageDrawable(getIcon(context, gare));
+			SharedPreferences prefs = Util.getFavsPreferences(v.getContext());
+			mGare.setFavori(prefs, !mGare.isFavori(prefs));
+			((ImageView) v).setImageDrawable(getIcon(mContext, mGare));
 		}
 
 	}

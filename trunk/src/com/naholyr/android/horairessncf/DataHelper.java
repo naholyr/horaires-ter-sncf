@@ -64,7 +64,6 @@ public class DataHelper {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		}
 
-		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(SQL_DROP);
 			db.execSQL(SQL_CREATE);
@@ -72,7 +71,6 @@ public class DataHelper {
 			db.execSQL(SQL_CREATE2);
 		}
 
-		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			onCreate(db);
 		}

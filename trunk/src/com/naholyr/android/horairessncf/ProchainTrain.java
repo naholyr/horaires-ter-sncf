@@ -47,14 +47,12 @@ public interface ProchainTrain {
 	// Arrivée / Départ
 
 	public static abstract class Arrivee implements ProchainTrain {
-		@Override
 		public String getDestination() {
 			return null;
 		}
 	}
 
 	public static abstract class Depart implements ProchainTrain {
-		@Override
 		public String getOrigine() {
 			return null;
 		}

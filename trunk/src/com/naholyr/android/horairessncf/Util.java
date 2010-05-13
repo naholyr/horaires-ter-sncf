@@ -15,12 +15,14 @@ import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 
 public class Util {
 
 	public static final int NB_GARES_TOTAL = 3081;
-	
+
 	public static final int BACKGROUND_1 = 0x33FFFFFF;
 	public static final int BACKGROUND_2 = 0x33999999;
 
@@ -93,7 +95,6 @@ public class Util {
 
 	public static void showError(final Activity activity, String message, boolean addDisclaimer) {
 		showError(activity, message, addDisclaimer, new Runnable() {
-			@Override
 			public void run() {
 				activity.finish();
 			}
@@ -170,6 +171,10 @@ public class Util {
 		}
 
 		return sb.toString();
+	}
+
+	public static SharedPreferences getFavsPreferences(Context context) {
+		return context.getSharedPreferences(Util.PREFS_FAVORIS_GARE, Context.MODE_PRIVATE);
 	}
 
 }

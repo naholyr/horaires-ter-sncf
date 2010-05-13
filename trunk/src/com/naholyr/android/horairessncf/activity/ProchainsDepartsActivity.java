@@ -7,6 +7,7 @@ import org.acra.ErrorReporter;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -16,10 +17,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.naholyr.android.horairessncf.DataHelper;
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.GaresContentProvider;
 import com.naholyr.android.horairessncf.ProchainTrain;
@@ -32,6 +33,7 @@ import com.naholyr.android.horairessncf.view.ListeProchainsDepartsAdapter;
 public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 
 	public static final String EXTRA_NOM_GARE = "nom";
+	public static final String EXTRA_CALLED_FROM_MAIN_ACTIVITY = "called_from_main";
 
 	private Gare gare;
 	private String nomGare;
@@ -55,7 +57,6 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 	/**
 	 * @see android.app.Activity#onCreate(Bundle)
 	 */
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -64,22 +65,27 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 		int defaultNbItems = getResources().getInteger(R.string.default_nbtrains);
 		nbTrains = Integer.parseInt(preferences.getString(getString(R.string.pref_nbtrains), String.valueOf(defaultNbItems)));
 
-		// View
-		setContentView(R.layout.prochainsdeparts);
-
-		// Refresh button
-		findViewById(R.id.ButtonRefreshProchainsDeparts).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				new RefreshThread(true).start();
-			}
-		});
+		// Data access helper
+		final DataHelper dataHelper;
+		try {
+			dataHelper = DataHelper.getInstance(getApplication());
+		} catch (IOException e) {
+			Util.showError(this, "Erreur lors de l'accès à la base de données ! Essayez de redémarrer l'application SVP.");
+			return;
+		}
+		if (dataHelper.getLastUpdateTime() == 0) {
+			Util.showError(this, "Aucune donnée trouvée dans la base ! Relancez l'application principale pour initialiser les données", new Runnable() {
+				public void run() {
+					startActivity(new Intent(getApplication(), MainActivity.class));
+				}
+			});
+		}
 
 		// Dialogues de progression
 		createWaitDialog(DIALOG_WAIT, "Patienter...", "Interrogation du serveur...", true);
 
-		// Start the update thread
-		new InitializeDataActivity.UpdateThread(this).start();
+		// Appelée depuis l'activity principale ?
+		final boolean calledFromMainActivity = getIntent().getBooleanExtra(EXTRA_CALLED_FROM_MAIN_ACTIVITY, false);
 
 		// Récupération de la gare passée en extra info
 		String nom = getIntent().getStringExtra(EXTRA_NOM_GARE);
@@ -98,7 +104,7 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 						int rowid = Integer.valueOf(uri.getPathSegments().get(1));
 						Log.d("prochains départs", "rowid = " + rowid);
 						try {
-							gare = new Gare(this, rowid);
+							gare = new Gare(dataHelper, rowid);
 						} catch (IOException e) {
 							Util.showError(this, "Impossible de trouver la gare ID#" + rowid + " dans la base de données");
 							return;
@@ -112,7 +118,7 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 		ErrorReporter.getInstance().addCustomData("nomGare", nom);
 		if (nom != null) {
 			try {
-				gare = new Gare(this, nom);
+				gare = new Gare(dataHelper, nom);
 			} catch (IOException e) {
 				Util.showError(this, "Impossible de trouver la gare '" + nom + "' dans la base de données");
 				return;
@@ -122,18 +128,39 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 			Util.showError(this, "Paramètres de lancement insuffisants !");
 			return;
 		}
-
 		nomGare = gare.getNom();
-		setTitle(nomGare);
 
-		Log.d("prochains départs", "nomGare = " + nomGare);
+		// View
+		setContentView(R.layout.prochainsdeparts);
+
+		// Refresh button
+		findViewById(R.id.ButtonRefresh).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				new RefreshThread(true).start();
+			}
+		});
+
+		// Back button
+		findViewById(R.id.ButtonGares).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				if (calledFromMainActivity) {
+					finish();
+				} else {
+					finish();
+					startActivity(new Intent(ProchainsDepartsActivity.this, MainActivity.class));
+				}
+			}
+		});
+
+		// Start the update thread
+		new InitializeDataActivity.UpdateThread(this).start();
+		setTitle(nomGare);
 
 		// Requête
 		new SearchThread().start();
 	}
 
 	private final class SearchThread extends Thread {
-		@Override
 		public void run() {
 			sendMessage(MSG_SHOW_DIALOG, DIALOG_WAIT);
 			sendMessage(MSG_SET_DIALOG_MESSAGE, DIALOG_WAIT, "Recherche de la gare...");
@@ -192,7 +219,6 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 			mRefresh = refresh;
 		}
 
-		@Override
 		public void run() {
 			sendMessage(MSG_HIDE_WARNING_NORESULT);
 			sendMessage(MSG_SHOW_DIALOG, DIALOG_WAIT);
@@ -216,7 +242,6 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 
 	}
 
-	@Override
 	protected void handleMessage(Message msg) {
 		super.handleMessage(msg);
 
@@ -263,7 +288,6 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 		}
 	}
 
-	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 

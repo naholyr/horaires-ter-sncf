@@ -37,7 +37,7 @@ public class InitializeDataActivity extends Activity {
 
 	// Notification ID when using UpdateThread
 	private static final int NOTIFICATION_ID = R.string.update_notification;
-	private static final long UPDATE_CHECK_INTERVAL = 1000 * 1 * 60;//12 * 3600;
+	private static final long UPDATE_CHECK_INTERVAL = 12 * 3600;
 
 	// Download url
 	private static final String SPEC = "http";
@@ -63,7 +63,6 @@ public class InitializeDataActivity extends Activity {
 	MainThread mainThread;
 
 	private final Handler mHandler = new Handler(new Handler.Callback() {
-		@Override
 		public boolean handleMessage(Message msg) {
 			switch (msg.what) {
 				case MSG_SET_TEXT: {
@@ -105,7 +104,6 @@ public class InitializeDataActivity extends Activity {
 		mHandler.sendMessage(Message.obtain(mHandler, what, arg1, arg2, obj));
 	}
 
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -114,14 +112,12 @@ public class InitializeDataActivity extends Activity {
 		setContentView(R.layout.initialize_data);
 
 		((Button) findViewById(R.id.InitDialog_ButtonAbout)).setOnClickListener(new View.OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				startActivity(new Intent(InitializeDataActivity.this, AboutActivity.class));
 			}
 		});
 
-		new Thread(new Runnable() {
-			@Override
+		new Thread() {
 			public void run() {
 				// Cancel current notification
 				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -136,7 +132,7 @@ public class InitializeDataActivity extends Activity {
 					Util.showError(InitializeDataActivity.this, "Erreur lors de la mise à jour des données ! Essayez de redémarrer l'application SVP.");
 				}
 			}
-		}).start();
+		}.start();
 	}
 
 	private final class MainThread extends Thread {
@@ -149,7 +145,6 @@ public class InitializeDataActivity extends Activity {
 			setResult(RESULT_ERROR);
 			if (working) {
 				runOnUiThread(new Runnable() {
-					@Override
 					public void run() {
 						Util.showError(InitializeDataActivity.this, "Erreur : " + msg);
 					}
@@ -160,7 +155,6 @@ public class InitializeDataActivity extends Activity {
 		private void finishWithResult(int result) {
 			setResult(result);
 			runOnUiThread(new Runnable() {
-				@Override
 				public void run() {
 					Activity parent = getParent();
 					if (parent != null) {
@@ -248,7 +242,7 @@ public class InitializeDataActivity extends Activity {
 					sendMsg(MSG_SET_VISIBILITY, R.id.InitDialog_TextLoadLayout, View.VISIBLE);
 					viewState.putInt("load_progress", 0);
 					// Buffered reader pour du ligne à ligne
-					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()), 256);
 					String line;
 					int numGare = 0;
 					int numErrors = 0;
@@ -327,7 +321,6 @@ public class InitializeDataActivity extends Activity {
 
 	}
 
-	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 
@@ -350,7 +343,6 @@ public class InitializeDataActivity extends Activity {
 		}
 	}
 
-	@Override
 	public void finish() {
 		if (mainThread != null && mainThread.isWorking()) {
 			mainThread.cancel();

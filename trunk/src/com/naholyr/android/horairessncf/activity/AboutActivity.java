@@ -10,7 +10,6 @@ import com.naholyr.android.horairessncf.R;
 
 public class AboutActivity extends Activity {
 
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -18,13 +17,10 @@ public class AboutActivity extends Activity {
 		setContentView(R.layout.apropos);
 
 		new Thread(new Runnable() {
-			@Override
 			public void run() {
 				runOnUiThread(new Runnable() {
-					@Override
 					public void run() {
 						((Button) findViewById(R.id.AboutDialog_ButtonClose)).setOnClickListener(new View.OnClickListener() {
-							@Override
 							public void onClick(View v) {
 								finish();
 							}

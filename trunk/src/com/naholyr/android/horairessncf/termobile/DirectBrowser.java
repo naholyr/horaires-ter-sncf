@@ -67,12 +67,10 @@ public class DirectBrowser implements IBrowser {
 				}
 			}
 
-			@Override
 			public String getDuree() {
 				return retard;
 			}
 
-			@Override
 			public String getMotif() {
 				return motif;
 			}
@@ -87,26 +85,6 @@ public class DirectBrowser implements IBrowser {
 		public String destination = null;
 
 		public ProchainDepart(String html) throws ItemFormatException {
-			/*
-			 * <p align="right"> <font color="black">Résultat</font> 2/11 </p>
-			 * <p> <img alt="Logo" src="../../../img/clock131.gif"
-			 * style="margin-right: 4px;" />Départ dans 14min<br/> <font
-			 * color="black">Mode :</font> Car TER<br/> <font color="black">N°
-			 * :</font> C49604<br/> <font color="black">Heure :</font> 22h16
-			 * <br/> <font color="black">Destination :</font> gare de
-			 * Bourg-en-Bresse<br/> <font color="black"><a
-			 * href="detail.jsp?idxHoraire=1">Arrêts desservis </a></font><br/>
-			 * <img src="../../../img/warningIMODE.jpg"/> <font
-			 * color="black">Retard :</font> 50min<br/> <img
-			 * src="../../../img/warningwhite.gif"/> <font color="black">Motif
-			 * :</font> Conditions météo<br/> <img
-			 * src="../../../img/warningIMODE.jpg"/> <font color="black">Retard
-			 * :</font> 25min<br/> <img src="../../../img/warningwhite.gif"/>
-			 * <font color="black">Motif :</font> Conditions météo<br/> <!--
-			 * <sncfTag:Lien href="submit" libelle="Arrêts desservis" >
-			 * <postfield name="idxHoraire" value="$(idxHoraire)"></postfield>
-			 * </sncfTag:Lien> --> </p> <hr/>
-			 */
 			Matcher mAttentionDepart = PATTERN_ATTENTION_DEPART.matcher(html);
 			if (mAttentionDepart.find()) {
 				attentionDepart = mAttentionDepart.group(1);
@@ -137,27 +115,22 @@ public class DirectBrowser implements IBrowser {
 			}
 		}
 
-		@Override
 		public String getDestination() {
 			return destination;
 		}
 
-		@Override
 		public String getHeure() {
 			return heure;
 		}
 
-		@Override
 		public String getNumero() {
 			return numero;
 		}
 
-		@Override
 		public List<ProchainTrain.Retard> getRetards() {
 			return retards;
 		}
 
-		@Override
 		public int getType() {
 			if (type == null) {
 				return TYPE_AUTRE;
@@ -166,23 +139,19 @@ public class DirectBrowser implements IBrowser {
 			}
 		}
 
-		@Override
 		public String getTypeLabel() {
 			return typeLabel;
 		}
 
-		@Override
 		public String getVoie() {
 			return null;
 		}
 
-		@Override
 		public boolean isAQuai() {
 			// TODO
 			return false;
 		}
 
-		@Override
 		public boolean isSupprime() {
 			// TODO
 			return false;

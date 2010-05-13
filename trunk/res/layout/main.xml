@@ -6,4 +6,12 @@
 		android:id="@+id/ListeGares" android:layout_height="fill_parent"
 		android:layout_width="fill_parent" android:background="@android:color/transparent"
 		android:layout_weight="1" android:cacheColorHint="@android:color/transparent" />
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:orientation="horizontal"
+		android:id="@+id/Toolbar">
+		<Button android:id="@+id/ButtonMenu" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:gravity="center"
+			android:text="Plus d'options" android:drawableLeft="@android:drawable/ic_menu_more"
+			android:textSize="16dip" android:background="@android:drawable/menu_frame" />
+	</LinearLayout>
 </LinearLayout>

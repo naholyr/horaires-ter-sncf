@@ -11,7 +11,6 @@ import com.naholyr.android.horairessncf.R;
 
 public class GeolocationLiveFolder extends Activity {
 
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 

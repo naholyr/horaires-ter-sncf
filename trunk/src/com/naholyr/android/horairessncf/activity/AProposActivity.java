@@ -7,7 +7,6 @@ import com.naholyr.android.horairessncf.R;
 
 public class AProposActivity extends Activity {
 
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 

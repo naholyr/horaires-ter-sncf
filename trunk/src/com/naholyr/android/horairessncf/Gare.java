@@ -1,19 +1,12 @@
 package com.naholyr.android.horairessncf;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.naholyr.android.horairessncf.activity.ProchainsDepartsActivity;
-import com.naholyr.android.horairessncf.activity.ProgressHandlerActivity;
-
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.net.Uri;
 
 public class Gare {
 
@@ -23,22 +16,15 @@ public class Gare {
 	protected double latitude;
 	protected double longitude;
 
-	private ProgressHandlerActivity context;
-
-	public Gare(ProgressHandlerActivity context, String nom) throws IOException {
+	public Gare(DataHelper dataHelper, String nom) throws IOException {
 		this.nom = nom;
-		this.context = context;
 
-		DataHelper dataHelper = DataHelper.getInstance(context);
 		Map<String, Object> result = dataHelper.selectOne(nom);
 
 		load(result);
 	}
 
-	public Gare(ProgressHandlerActivity context, int rowid) throws IOException {
-		this.context = context;
-
-		DataHelper dataHelper = DataHelper.getInstance(context);
+	public Gare(DataHelper dataHelper, int rowid) throws IOException {
 		Map<String, Object> result = dataHelper.selectOne(rowid);
 
 		load(result);
@@ -56,28 +42,22 @@ public class Gare {
 		}
 	}
 
-	protected void save() throws IOException {
-		DataHelper dataHelper = DataHelper.getInstance(context);
-
+	protected void save(DataHelper dataHelper) throws IOException {
 		dataHelper.insertOrUpdate(nom, region, adresse, latitude, longitude);
 	}
 
-	public static List<Gare> getAll(ProgressHandlerActivity context, DataHelper helper) throws IOException {
+	public static List<Gare> getAll(DataHelper dataHelper) throws IOException {
 		List<Gare> gares = new ArrayList<Gare>();
 
-		List<String> noms = helper.selectAll();
+		List<String> noms = dataHelper.selectAll();
 		for (String nom : noms) {
-			gares.add(new Gare(context, nom));
+			gares.add(new Gare(dataHelper, nom));
 		}
 
 		return gares;
 	}
 
-	public static List<Gare> getAll(ProgressHandlerActivity context) throws IOException {
-		return getAll(context, DataHelper.getInstance(context));
-	}
-
-	public static List<Gare> getAll(ProgressHandlerActivity context, DataHelper helper, double latitude, double longitude, double radius_km) throws IOException {
+	public static List<Gare> getAll(DataHelper dataHelper, double latitude, double longitude, double radius_km) throws IOException {
 		double latitude_radians = latitude * (Math.PI / 180);
 		double latitude_delta = radius_km / Util.ONE_DEGREE_LAT_KM;
 		double longitude_delta = radius_km / Math.abs(Math.cos(latitude_radians) * Util.ONE_DEGREE_LAT_KM);
@@ -86,20 +66,16 @@ public class Gare {
 		double longitude_min = longitude - longitude_delta;
 		double longitude_max = longitude + longitude_delta;
 
-		List<String> noms = helper.selectInBox(latitude_min, latitude_max, longitude_min, longitude_max);
+		List<String> noms = dataHelper.selectInBox(latitude_min, latitude_max, longitude_min, longitude_max);
 
-		return getAll(context, noms);
+		return getAll(dataHelper, noms);
 	}
 
-	public static List<Gare> getAll(ProgressHandlerActivity context, double latitude, double longitude, double radius_km) throws IOException {
-		return getAll(context, DataHelper.getInstance(context), latitude, longitude, radius_km);
-	}
-
-	public static List<Gare> getAll(ProgressHandlerActivity context, List<String> noms) throws IOException {
+	public static List<Gare> getAll(DataHelper dataHelper, List<String> noms) throws IOException {
 		List<Gare> gares = new ArrayList<Gare>();
 
 		for (String nom : noms) {
-			gares.add(new Gare(context, nom));
+			gares.add(new Gare(dataHelper, nom));
 		}
 
 		return gares;
@@ -141,15 +117,15 @@ public class Gare {
 		return Util.distance(getLatitude(), getLongitude(), latitude, longitude);
 	}
 
-	public boolean isFavori() {
-		SharedPreferences prefs = context.getSharedPreferences(Util.PREFS_FAVORIS_GARE, Context.MODE_PRIVATE);
+	public boolean isFavori(SharedPreferences prefs) {
+		//SharedPreferences prefs = context.getSharedPreferences(Util.PREFS_FAVORIS_GARE, Context.MODE_PRIVATE);
 
 		return prefs.getBoolean(getNom(), false);
 	}
 
-	public void setFavori(boolean favori) {
-		if (isFavori() != favori) {
-			SharedPreferences prefs = context.getSharedPreferences(Util.PREFS_FAVORIS_GARE, Context.MODE_PRIVATE);
+	public void setFavori(SharedPreferences prefs, boolean favori) {
+		if (isFavori(prefs) != favori) {
+			//
 			Editor editor = prefs.edit();
 			if (favori) {
 				editor.putBoolean(getNom(), favori);
@@ -158,25 +134,6 @@ public class Gare {
 			}
 			editor.commit();
 		}
-	}
-
-	public void showInGoogleMaps() {
-		showInGoogleMaps(false);
-	}
-
-	public void showInGoogleMaps(boolean query) {
-		String sUri = "geo:" + getLatitude() + "," + getLongitude();
-		if (query) {
-			sUri += "?q=" + URLEncoder.encode(getAdresse());
-		}
-		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(sUri));
-		context.startActivity(intent);
-	}
-
-	public void showProchainsDepartsActivity() {
-		Intent intent = new Intent(context, ProchainsDepartsActivity.class);
-		intent.putExtra("nom", getNom());
-		context.startActivity(intent);
 	}
 
 }

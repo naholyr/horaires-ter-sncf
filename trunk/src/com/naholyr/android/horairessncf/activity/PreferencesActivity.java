@@ -6,7 +6,6 @@ import com.naholyr.android.horairessncf.R;
 
 public class PreferencesActivity extends android.preference.PreferenceActivity {
 
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 

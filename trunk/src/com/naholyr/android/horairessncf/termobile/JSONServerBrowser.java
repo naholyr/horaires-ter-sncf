@@ -56,12 +56,10 @@ public class JSONServerBrowser implements IBrowser {
 				}
 			}
 
-			@Override
 			public String getDuree() {
 				return mDuree;
 			}
 
-			@Override
 			public String getMotif() {
 				return mMotif;
 			}
@@ -155,47 +153,38 @@ public class JSONServerBrowser implements IBrowser {
 			}
 		}
 
-		@Override
 		public String getDestination() {
 			return mDestination;
 		}
 
-		@Override
 		public String getHeure() {
 			return mHeure;
 		}
 
-		@Override
 		public String getNumero() {
 			return mNumero;
 		}
 
-		@Override
 		public List<ProchainTrain.Retard> getRetards() {
 			return mRetards;
 		}
 
-		@Override
 		public int getType() {
 			return Util.typeTrainFromLabel(getTypeLabel());
 		}
 
-		@Override
 		public String getTypeLabel() {
 			return mTypeLabel;
 		}
 
-		@Override
 		public String getVoie() {
 			return null;
 		}
 
-		@Override
 		public boolean isAQuai() {
 			return mAQuai;
 		}
 
-		@Override
 		public boolean isSupprime() {
 			return mSupprime;
 		}
@@ -400,12 +389,10 @@ public class JSONServerBrowser implements IBrowser {
 		return;
 	}
 
-	@Override
 	public void confirmGare(int id) {
 		mIdGare = id;
 	}
 
-	@Override
 	public List<ProchainTrain.Depart> getItems(int nbItems) throws IOException {
 		return getItems(nbItems, true);
 	}
@@ -429,7 +416,6 @@ public class JSONServerBrowser implements IBrowser {
 		return new JSONResponse(writer.toString());
 	}
 
-	@Override
 	public SparseArray<String> searchGares(String nom) throws IOException {
 		numEssai = 1;
 		while (numEssai <= MAX_ESSAIS) {
@@ -470,7 +456,6 @@ public class JSONServerBrowser implements IBrowser {
 		throw new IOException("Erreur U1 ! Trop d'essais pour contacter le serveur, et pas d'erreur reconnue");
 	}
 
-	@Override
 	public List<ProchainTrain.Depart> getItems(int nbItems, boolean refresh) throws IOException {
 		if (mCachedDeparts != null && !refresh) {
 			// Résultats cachés depuis l'appel précédent

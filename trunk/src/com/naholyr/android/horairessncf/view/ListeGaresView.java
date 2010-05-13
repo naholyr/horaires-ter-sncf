@@ -1,11 +1,15 @@
 package com.naholyr.android.horairessncf.view;
 
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,6 +20,8 @@ import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
+import com.naholyr.android.horairessncf.Util;
+import com.naholyr.android.horairessncf.activity.ProchainsDepartsActivity;
 
 public class ListeGaresView extends ListView implements OnItemClickListener, OnItemLongClickListener {
 
@@ -24,24 +30,27 @@ public class ListeGaresView extends ListView implements OnItemClickListener, OnI
 	private static final String OPT_GMAP = "Localiser sur une carte";
 	private static final String OPT_DEPARTS = "Prochains départs";
 
+	private SharedPreferences prefs_favs;
+
 	public ListeGaresView(Context context) {
 		super(context);
-		setBehaviors();
+		init(context);
 	}
 
 	public ListeGaresView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setBehaviors();
+		init(context);
 	}
 
 	public ListeGaresView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		setBehaviors();
+		init(context);
 	}
 
-	private void setBehaviors() {
+	private void init(Context context) {
 		setOnItemClickListener(this);
 		setOnItemLongClickListener(this);
+		prefs_favs = Util.getFavsPreferences(context);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -49,30 +58,44 @@ public class ListeGaresView extends ListView implements OnItemClickListener, OnI
 		return (Gare) ((Map<String, Object>) getItemAtPosition(position)).get("gare");
 	}
 
-	@Override
-	public void onItemClick(AdapterView<?> adapterView, View v, int position, long arg3) {
-		Gare gare = getGare(position);
-		gare.showProchainsDepartsActivity();
+	private void showProchainsDeparts(int position) {
+		showProchainsDeparts(getGare(position));
 	}
 
-	@Override
+	private void showProchainsDeparts(Gare gare) {
+		Intent intent = new Intent(getContext(), ProchainsDepartsActivity.class);
+		intent.putExtra(ProchainsDepartsActivity.EXTRA_NOM_GARE, gare.getNom());
+		intent.putExtra(ProchainsDepartsActivity.EXTRA_CALLED_FROM_MAIN_ACTIVITY, true);
+		getContext().startActivity(intent);
+	}
+
+	private void showGoogleMap(Gare gare) {
+		String sUri = "geo:" + gare.getLatitude() + "," + gare.getLongitude();
+		sUri += "?q=" + URLEncoder.encode(gare.getAdresse());
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(sUri));
+		getContext().startActivity(intent);
+	}
+
+	public void onItemClick(AdapterView<?> adapterView, View v, int position, long arg3) {
+		showProchainsDeparts(position);
+	}
+
 	public boolean onItemLongClick(AdapterView<?> adapterView, final View v, int position, long arg3) {
 		final Gare gare = getGare(position);
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-		final CharSequence[] items = { gare.isFavori() ? OPT_SUPPR_FAVORI : OPT_ADD_FAVORI, OPT_GMAP, OPT_DEPARTS };
+		final CharSequence[] items = { gare.isFavori(prefs_favs) ? OPT_SUPPR_FAVORI : OPT_ADD_FAVORI, OPT_GMAP, OPT_DEPARTS };
 
 		builder.setTitle(gare.getNom());
 		builder.setItems(items, new DialogInterface.OnClickListener() {
-			@Override
 			public void onClick(DialogInterface dialog, int item) {
 				CharSequence opt = items[item];
 				if (opt.equals(OPT_SUPPR_FAVORI) || opt.equals(OPT_ADD_FAVORI)) {
 					v.findViewById(R.id.GareItemFavoriIcon).performClick();
 				} else if (opt.equals(OPT_GMAP)) {
-					gare.showInGoogleMaps(true);
+					showGoogleMap(gare);
 				} else if (opt.equals(OPT_DEPARTS)) {
-					gare.showProchainsDepartsActivity();
+					showProchainsDeparts(gare);
 				}
 			}
 		});

@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -73,65 +74,76 @@ public class MainActivity extends ProgressHandlerActivity {
 	private boolean searchCancelled = false;
 
 	private SharedPreferences prefs_data;
+	private SharedPreferences prefs_favs;
 
-	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// Preferences
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		prefs_data = getSharedPreferences(Util.PREFS_DATA, Context.MODE_PRIVATE);
+		prefs_favs = Util.getFavsPreferences(this);
 
 		// Window progress bar
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
+		// Dialogs
+		createProgressDialog(DIALOG_PROGRESS_DATA_INIT, "Initialisation...", "Initialisation des données (cette opération ne s'effectuera qu'une seule fois, au premier lancement)...", true);
+		createWaitDialog(DIALOG_WAIT_GARES_GEO, "Liste des gares...", "Calcul de votre position actuelle, et listing des gares autour de vous...", true, new DialogInterface.OnCancelListener() {
+			public void onCancel(DialogInterface dialog) {
+				geolocationCancelled = true;
+				showSearch();
+			}
+		});
+		createWaitDialog(DIALOG_WAIT_GARES_SEARCH, "Liste des gares...", "Recherche en cours...", true, new DialogInterface.OnCancelListener() {
+			public void onCancel(DialogInterface dialog) {
+				searchCancelled = true;
+				showSearch();
+			}
+		});
+		createProgressDialog(DIALOG_WAIT_GARES_FAVORITES, "Liste des gares...", "Récupération de la liste de vos gares favories...", true);
+
+		// Data access helper
+		try {
+			dataHelper = DataHelper.getInstance(getApplication());
+		} catch (IOException e) {
+			Util.showError(MainActivity.this, "Erreur lors de l'accès à la base de données ! Essayez de redémarrer l'application SVP.");
+			return;
+		}
+		// Check for data updates
+		long lastUpdate = dataHelper.getLastUpdateTime();
+		final boolean dataInitialization;
+		if (lastUpdate == 0) {
+			// No data ! Initialize data now
+			new AlertDialog.Builder(this).setCancelable(true).setOnCancelListener(new DialogInterface.OnCancelListener() {
+				public void onCancel(DialogInterface dialog) {
+					Toast.makeText(MainActivity.this, "Initialisation annulée par l'utilisateur", Toast.LENGTH_LONG).show();
+					finish();
+				}
+			}).setPositiveButton("Charger", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					Intent intent = new Intent(MainActivity.this, InitializeDataActivity.class);
+					startActivityForResult(intent, InitializeDataActivity.RESULT_UPDATED);
+				}
+			}).setTitle("Initialisation des données").setMessage("Aucune donnée n'a été trouvée. Cliquez sur OK pour télécharger les gares maintenant.").setIcon(R.drawable.icon).create().show();
+			dataInitialization = true;
+		} else {
+			dataInitialization = false;
+		}
+
 		// Layout
 		setContentView(R.layout.main);
 
-		// After setContentView, we work in a delayed runnable
-		new Thread(new Runnable() {
-			@Override
+		// Buttons
+		findViewById(R.id.ButtonMenu).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				openOptionsMenu();
+			}
+		});
+
+		// Main thread
+		new Thread() {
 			public void run() {
-				// Data access helper
-				try {
-					dataHelper = DataHelper.getInstance(MainActivity.this);
-				} catch (IOException e) {
-					Util.showError(MainActivity.this, "Erreur lors de l'accès à la base de données ! Essayez de redémarrer l'application SVP.");
-					return;
-				}
-
-				// Preferences
-				preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-				prefs_data = getSharedPreferences(Util.PREFS_DATA, Context.MODE_PRIVATE);
-
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						// Dialogs
-						createProgressDialog(DIALOG_PROGRESS_DATA_INIT, "Initialisation...", "Initialisation des données (cette opération ne s'effectuera qu'une seule fois, au premier lancement)...", true);
-						createWaitDialog(DIALOG_WAIT_GARES_GEO, "Liste des gares...", "Calcul de votre position actuelle, et listing des gares autour de vous...", true,
-								new DialogInterface.OnCancelListener() {
-									public void onCancel(DialogInterface dialog) {
-										geolocationCancelled = true;
-										showSearch();
-									}
-								});
-						createWaitDialog(DIALOG_WAIT_GARES_SEARCH, "Liste des gares...", "Recherche en cours...", true, new DialogInterface.OnCancelListener() {
-							public void onCancel(DialogInterface dialog) {
-								searchCancelled = true;
-								showSearch();
-							}
-						});
-						createProgressDialog(DIALOG_WAIT_GARES_FAVORITES, "Liste des gares...", "Récupération de la liste de vos gares favories...", true);
-					}
-				});
-
-				// Check for data updates
-				long lastUpdate = dataHelper.getLastUpdateTime();
-				boolean dataInitialization = false;
-				if (lastUpdate == 0) {
-					// No data ! Initialize data now
-					Intent intent = new Intent(MainActivity.this, InitializeDataActivity.class);
-					startActivityForResult(intent, InitializeDataActivity.RESULT_UPDATED);
-					dataInitialization = true;
-				}
-
 				// Start home, eventually show about dialog if first time
 				try {
 					versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
@@ -156,10 +168,9 @@ public class MainActivity extends ProgressHandlerActivity {
 				// Send pending error reports
 				ErrorReporter.getInstance().checkAndSendReports(MainActivity.this);
 			}
-		}).start();
+		}.start();
 	}
 
-	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (resultCode) {
 			case InitializeDataActivity.RESULT_CANCELED: {
@@ -182,10 +193,8 @@ public class MainActivity extends ProgressHandlerActivity {
 	}
 
 	private final class GeolocationThread extends Thread {
-		@Override
 		public void run() {
 			runOnUiThread(new Runnable() {
-				@Override
 				public void run() {
 					setTitle("Les gares autour de...");
 					setProgressBarIndeterminateVisibility(true);
@@ -243,7 +252,6 @@ public class MainActivity extends ProgressHandlerActivity {
 									address = null;
 								}
 								runOnUiThread(new Runnable() {
-									@Override
 									public void run() {
 										if (address == null) {
 											setTitle("Les gares autour de <" + latitude + "," + longitude + ">");
@@ -280,7 +288,6 @@ public class MainActivity extends ProgressHandlerActivity {
 			longitude = location.getLongitude();
 		}
 
-		@Override
 		public void run() {
 			// Liste gares
 			sendMessage(MSG_SET_DIALOG_TITLE, DIALOG_WAIT_GARES_GEO, "Les gares autour de vous...");
@@ -290,7 +297,7 @@ public class MainActivity extends ProgressHandlerActivity {
 					int defaultRadiusKm = getResources().getInteger(R.string.default_radiuskm);
 					int radiusKm = Integer.parseInt(preferences.getString(getString(R.string.pref_radiuskm), String.valueOf(defaultRadiusKm)));
 					if (!geolocationCancelled) {
-						gares = Gare.getAll(MainActivity.this, dataHelper, latitude, longitude, radiusKm);
+						gares = Gare.getAll(dataHelper, latitude, longitude, radiusKm);
 					}
 				} catch (IOException e1) {
 					gares = new ArrayList<Gare>();
@@ -306,10 +313,8 @@ public class MainActivity extends ProgressHandlerActivity {
 
 	private class FavorisThread extends Thread {
 
-		@Override
 		public void run() {
 			runOnUiThread(new Runnable() {
-				@Override
 				public void run() {
 					setTitle("Mes gares favories");
 					setProgressBarIndeterminateVisibility(true);
@@ -326,7 +331,7 @@ public class MainActivity extends ProgressHandlerActivity {
 				String nom = entry.getKey();
 				if (isFav) {
 					try {
-						Gare gare = new Gare(MainActivity.this, nom);
+						Gare gare = new Gare(dataHelper, nom);
 						gares.add(gare);
 					} catch (IOException e) {
 						Log.e("ErrorGare", e.getMessage());
@@ -347,7 +352,6 @@ public class MainActivity extends ProgressHandlerActivity {
 			this.keywords = keywords;
 		}
 
-		@Override
 		public void run() {
 			sendMessage(MSG_SHOW_DIALOG, DIALOG_WAIT_GARES_SEARCH);
 			// Note : on ne stocke pas la recherche comme last_home
@@ -362,7 +366,7 @@ public class MainActivity extends ProgressHandlerActivity {
 				List<String> noms = dataHelper.selectByKeywords(words);
 				try {
 					if (!searchCancelled) {
-						gares = Gare.getAll(MainActivity.this, noms);
+						gares = Gare.getAll(dataHelper, noms);
 					}
 				} catch (IOException e1) {
 					gares = new ArrayList<Gare>();
@@ -370,7 +374,6 @@ public class MainActivity extends ProgressHandlerActivity {
 			}
 			if (!searchCancelled) {
 				runOnUiThread(new Runnable() {
-					@Override
 					public void run() {
 						setTitle("Recherche : " + keywords);
 					}
@@ -382,7 +385,6 @@ public class MainActivity extends ProgressHandlerActivity {
 
 	}
 
-	@Override
 	protected void handleMessage(Message msg) {
 		super.handleMessage(msg);
 
@@ -402,7 +404,6 @@ public class MainActivity extends ProgressHandlerActivity {
 				}
 				Util.showError(this, "La géolocalisation a échoué, vérifiez que vous avez activé la localisation par le réseau " + "et que vous êtes sous couverture de votre opérateur "
 						+ "avant de relancer l'application.", false, new Runnable() {
-					@Override
 					public void run() {
 						sendMessage(MSG_SEARCH);
 					}
@@ -416,14 +417,12 @@ public class MainActivity extends ProgressHandlerActivity {
 		}
 	}
 
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
 		return true;
 	}
 
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_main_geolocation: {
@@ -471,12 +470,11 @@ public class MainActivity extends ProgressHandlerActivity {
 	private void updateListeGares(int nbGares, int dialogToDismiss) {
 		final boolean favsFirst = preferences.getBoolean(getString(R.string.pref_favsfirst), true);
 		Collections.sort(gares, new Comparator<Gare>() {
-			@Override
 			public int compare(Gare g1, Gare g2) {
 				if (favsFirst) {
-					if (g1.isFavori() && !g2.isFavori()) {
+					if (g1.isFavori(prefs_favs) && !g2.isFavori(prefs_favs)) {
 						return -1;
-					} else if (!g1.isFavori() && g2.isFavori()) {
+					} else if (!g1.isFavori(prefs_favs) && g2.isFavori(prefs_favs)) {
 						return 1;
 					}
 				}
@@ -504,7 +502,6 @@ public class MainActivity extends ProgressHandlerActivity {
 		sendMessage(MSG_UPDATE_LIST_DATA, dialogToDismiss);
 		if (dialogToDismiss == DIALOG_SCREEN_PROGRESS) {
 			runOnUiThread(new Runnable() {
-				@Override
 				public void run() {
 					setProgressBarIndeterminateVisibility(false);
 				}
@@ -516,7 +513,6 @@ public class MainActivity extends ProgressHandlerActivity {
 		updateListeGares(0, dialogToDismiss);
 	}
 
-	@Override
 	public boolean onSearchRequested() {
 		showSearch();
 
@@ -602,7 +598,6 @@ public class MainActivity extends ProgressHandlerActivity {
 		}
 	}
 
-	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 

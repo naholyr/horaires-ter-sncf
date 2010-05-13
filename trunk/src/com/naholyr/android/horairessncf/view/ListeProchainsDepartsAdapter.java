@@ -53,9 +53,8 @@ public class ListeProchainsDepartsAdapter extends SimpleAdapter {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		@SuppressWarnings("unchecked")
 		Map<String, Object> item = (Map<String, Object>) getItem(position);
 		// ProchainTrain.Depart train = (ProchainTrain.Depart)
 		// item.get("train");
