@@ -57,4 +57,13 @@ public interface IBrowser {
 	 */
 	public abstract SparseArray<String> searchGares(String nom, int nbItems) throws IOException;
 
+	/**
+	 * Informations sur un train particulier
+	 * 
+	 * @param numero
+	 * @return
+	 * @throws IOException
+	 */
+	public abstract ProchainTrain.Depart getItem(String numero) throws IOException;
+
 }

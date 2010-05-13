@@ -13,9 +13,10 @@ import android.util.SparseArray;
 
 import com.naholyr.android.horairessncf.ProchainTrain;
 import com.naholyr.android.horairessncf.Util;
-import com.naholyr.android.horairessncf.HTTP.Request;
-import com.naholyr.android.horairessncf.HTTP.Response;
+import com.naholyr.android.horairessncf.ProchainTrain.Depart;
 import com.naholyr.android.horairessncf.activity.ProgressHandlerActivity;
+import com.naholyr.android.horairessncf.termobile.HTTP.Request;
+import com.naholyr.android.horairessncf.termobile.HTTP.Response;
 
 /**
  * @deprecated
@@ -428,6 +429,10 @@ public class DirectBrowser implements IBrowser {
 				break;
 			}
 		}
+	}
+
+	public Depart getItem(String numero) throws IOException {
+		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 }

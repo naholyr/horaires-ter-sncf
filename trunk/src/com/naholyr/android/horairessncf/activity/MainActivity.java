@@ -82,7 +82,7 @@ public class MainActivity extends ProgressHandlerActivity {
 		// Preferences
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		prefs_data = getSharedPreferences(Util.PREFS_DATA, Context.MODE_PRIVATE);
-		prefs_favs = Util.getFavsPreferences(this);
+		prefs_favs = Util.getPreferencesGaresFavories(this);
 
 		// Window progress bar
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);

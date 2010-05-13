@@ -30,6 +30,17 @@
 	</LinearLayout>
 	<LinearLayout android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:gravity="top"
+		android:orientation="horizontal" android:id="@+id/TrainItemSupprime"
+		android:visibility="gone">
+		<ImageView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:src="@drawable/ic_delete"
+			android:layout_margin="5dip" />
+		<TextView android:layout_height="wrap_content"
+			android:layout_width="wrap_content" android:textColor="#FFFF0000"
+			android:textSize="16dip" android:typeface="sans" android:text="Train supprimé" />
+	</LinearLayout>
+	<LinearLayout android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:gravity="top"
 		android:orientation="horizontal" android:id="@+id/TrainItemRetard"
 		android:visibility="gone">
 		<ImageView android:layout_width="wrap_content"
@@ -47,17 +58,5 @@
 				android:textColor="@android:color/darker_gray" android:textSize="11dip"
 				android:typeface="sans" android:text="Motif" />
 		</LinearLayout>
-	</LinearLayout>
-	<LinearLayout android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:gravity="top"
-		android:orientation="horizontal" android:id="@+id/TrainItemSupprime"
-		android:visibility="visible">
-		<ImageView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:src="@drawable/ic_delete"
-			android:layout_margin="5dip" />
-		<TextView android:layout_height="wrap_content"
-			android:layout_width="wrap_content" android:id="@+id/TrainItemRetardDuree"
-			android:textColor="#FFFF0000" android:textSize="16dip"
-			android:typeface="sans" android:text="Train supprimé" />
 	</LinearLayout>
 </LinearLayout>

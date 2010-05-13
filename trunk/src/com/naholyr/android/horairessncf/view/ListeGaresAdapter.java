@@ -99,7 +99,7 @@ public class ListeGaresAdapter extends SimpleAdapter {
 		}
 
 		public static Drawable getIcon(Context context, Gare gare) {
-			SharedPreferences prefs = Util.getFavsPreferences(context);
+			SharedPreferences prefs = Util.getPreferencesGaresFavories(context);
 			int favoriIcon = gare.isFavori(prefs) ? android.R.drawable.star_big_on : android.R.drawable.star_big_off;
 			Drawable icon = context.getResources().getDrawable(favoriIcon);
 
@@ -107,7 +107,7 @@ public class ListeGaresAdapter extends SimpleAdapter {
 		}
 
 		public void onClick(View v) {
-			SharedPreferences prefs = Util.getFavsPreferences(v.getContext());
+			SharedPreferences prefs = Util.getPreferencesGaresFavories(v.getContext());
 			mGare.setFavori(prefs, !mGare.isFavori(prefs));
 			((ImageView) v).setImageDrawable(getIcon(mContext, mGare));
 		}

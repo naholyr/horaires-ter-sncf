@@ -1,4 +1,4 @@
-package com.naholyr.android.horairessncf;
+package com.naholyr.android.horairessncf.termobile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.naholyr.android.horairessncf.Util;
 
 public class HTTP {
 

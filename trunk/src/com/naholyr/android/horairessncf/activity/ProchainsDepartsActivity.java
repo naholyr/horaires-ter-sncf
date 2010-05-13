@@ -17,8 +17,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 
 import com.naholyr.android.horairessncf.DataHelper;
 import com.naholyr.android.horairessncf.Gare;
@@ -28,7 +26,7 @@ import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.TERMobileBrowser;
 import com.naholyr.android.horairessncf.Util;
 import com.naholyr.android.horairessncf.termobile.IBrowser;
-import com.naholyr.android.horairessncf.view.ListeProchainsDepartsAdapter;
+import com.naholyr.android.horairessncf.view.ListeProchainsDepartsView;
 
 public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 
@@ -247,8 +245,7 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 
 		switch (msg.what) {
 			case MSG_UPDATE_LIST_DATA: {
-				ListAdapter adapter = new ListeProchainsDepartsAdapter(this, trains);
-				((ListView) findViewById(R.id.ListeDeparts)).setAdapter(adapter);
+				((ListeProchainsDepartsView) findViewById(R.id.ListeDeparts)).setData(trains);
 				break;
 			}
 			case MSG_HIDE_WARNING_NORESULT: {

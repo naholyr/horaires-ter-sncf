@@ -38,8 +38,10 @@
 		<provider android:authorities="com.naholyr.android.horairessncf.garescontentprovider"
 			android:name=".GaresContentProvider" />
 		<activity android:name=".activity.InitializeDataActivity"
-			android:theme="@android:style/Theme.Dialog" android:configChanges="orientation" />
+			android:theme="@android:style/Theme.Dialog" />
 		<activity android:name=".activity.AboutActivity"
+			android:theme="@android:style/Theme.Dialog" />
+		<activity android:name=".activity.DetailsTrainActivity"
 			android:theme="@android:style/Theme.Dialog" />
 	</application>
 	<uses-sdk android:minSdkVersion="3" />

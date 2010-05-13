@@ -55,6 +55,7 @@ public class Util {
 	public static final String MASK_TRAIN_SUPPRIME = "^S$";
 
 	public static final String PREFS_FAVORIS_GARE = "favoris_gares";
+	public static final String PREFS_FAVORIS_TRAIN = "favoris_trains";
 	public static final String PREFS_DATA = "date";
 	public static final String PREFS_DATA_LAST_HOME = "last_home";
 	public static final String PREFS_DATA_LAST_SEARCH = "last_search";
@@ -164,8 +165,12 @@ public class Util {
 		return sb.toString();
 	}
 
-	public static SharedPreferences getFavsPreferences(Context context) {
+	public static SharedPreferences getPreferencesGaresFavories(Context context) {
 		return context.getSharedPreferences(Util.PREFS_FAVORIS_GARE, Context.MODE_PRIVATE);
+	}
+
+	public static SharedPreferences getPreferencesTrainsSuivis(Context context) {
+		return context.getSharedPreferences(Util.PREFS_FAVORIS_TRAIN, Context.MODE_PRIVATE);
 	}
 
 }

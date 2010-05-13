@@ -1,14 +1,8 @@
 package com.naholyr.android.horairessncf.termobile;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,16 +15,19 @@ import android.util.SparseArray;
 import com.naholyr.android.horairessncf.ProchainTrain;
 import com.naholyr.android.horairessncf.Util;
 import com.naholyr.android.horairessncf.activity.ProgressHandlerActivity;
+import com.naholyr.android.horairessncf.termobile.JSONWebServiceClient.JSONResponse;
 
 public class JSONServerBrowser implements IBrowser {
 
-	// 1&1 : http://s327488520.onlinehome.fr/prochainsdeparts.php5
-	// SFHost : http://termobile-ws.sfhost.net/prochainsdeparts.php
-	public static final String WS_URI = "http://termobile-ws.sfhost.net/prochainsdeparts.php";
+	public static final String WS_HOST = "http://termobile-ws.sfhost.net";
+	public static final String WS_GARE_URI = WS_HOST + "/prochainsdeparts.php";
+	public static final String WS_TRAIN_URI = WS_HOST + "/train.php";
 
 	private int mIdGare;
 	private String mNomGare;
 	private List<ProchainTrain.Depart> mCachedDeparts;
+
+	private static final JSONWebServiceClient mClient = new JSONWebServiceClient();
 
 	public static final class JSONDepart extends ProchainTrain.Depart {
 
@@ -191,150 +188,6 @@ public class JSONServerBrowser implements IBrowser {
 
 	}
 
-	private static final class JSONResponse {
-
-		private JSONObject mObject;
-
-		public JSONResponse(String json) throws JSONException {
-			mObject = new JSONObject(json);
-		}
-
-		public boolean isSuccess() {
-			return mObject.has("success");
-		}
-
-		public JSONObject getSuccessData() {
-			if (isSuccess()) {
-				try {
-					return mObject.getJSONObject("success");
-				} catch (JSONException e) {
-					return null;
-				}
-			} else {
-				return null;
-			}
-		}
-
-		public boolean isError() {
-			return mObject.has("error");
-		}
-
-		@SuppressWarnings("unused")
-		public JSONObject getErrorData() {
-			if (isError()) {
-				try {
-					return mObject.getJSONObject("info");
-				} catch (JSONException e) {
-					return null;
-				}
-			} else {
-				return null;
-			}
-		}
-
-		public String getErrorMessage() {
-			return getErrorMessage(true);
-		}
-
-		public String getErrorMessage(boolean withCode) {
-			if (isError()) {
-				try {
-					return mObject.getInt("code") + " - " + mObject.getString("error");
-				} catch (JSONException e) {
-					return null;
-				}
-			} else {
-				return null;
-			}
-		}
-
-		@SuppressWarnings("unused")
-		public int getCode() {
-			try {
-				return mObject.getInt("code");
-			} catch (JSONException e) {
-				return 0;
-			}
-		}
-
-		public boolean isListeDeparts() {
-			if (isSuccess()) {
-				JSONObject data = getSuccessData();
-				return data.has("departs");
-			}
-			return false;
-		}
-
-		public List<ProchainTrain.Depart> getListeDeparts() {
-			if (!isSuccess()) {
-				return null;
-			}
-			JSONObject data = getSuccessData();
-			List<ProchainTrain.Depart> result = new ArrayList<ProchainTrain.Depart>();
-			try {
-				JSONArray departs = data.getJSONArray("departs");
-				for (int i = 0; i < departs.length(); i++) {
-					result.add(new JSONDepart(departs.getJSONObject(i)));
-				}
-			} catch (JSONException e) {
-				// TODO handle error
-			}
-			return result;
-		}
-
-		public boolean isListeGares() {
-			if (isSuccess()) {
-				JSONObject data = getSuccessData();
-				return data.has("gares");
-			}
-			return false;
-		}
-
-		public SparseArray<String> getListeGares() {
-			if (!isSuccess()) {
-				return null;
-			}
-			try {
-				SparseArray<String> gares = new SparseArray<String>();
-				JSONObject listeGares = getSuccessData().getJSONObject("gares");
-				Iterator<?> noms = listeGares.keys();
-				while (noms.hasNext()) {
-					String nom = (String) noms.next();
-					int id = listeGares.getInt(nom);
-					gares.put(id, nom);
-				}
-				return gares;
-			} catch (JSONException e) {
-				return null;
-			}
-		}
-
-		public int getIdGare() {
-			if (isSuccess()) {
-				try {
-					return getSuccessData().getInt("id");
-				} catch (JSONException e) {
-					return 0;
-				}
-			} else {
-				return 0;
-			}
-		}
-
-		public String getNomGare() {
-			if (isSuccess()) {
-				try {
-					return getSuccessData().getString("nom");
-				} catch (JSONException e) {
-					return null;
-				}
-			} else {
-				return null;
-			}
-		}
-
-	}
-
 	private ProgressHandlerActivity progressHandlerActivity = null;
 	private int progressHandlerDialogId = 0;
 
@@ -397,48 +250,31 @@ public class JSONServerBrowser implements IBrowser {
 		return getItems(nbItems, true);
 	}
 
-	private JSONResponse getWSResponse(String params) throws IOException, MalformedURLException, JSONException {
-		String uri = WS_URI + "?" + params;
-		URL url = new URL(uri);
-		InputStream is = (InputStream) url.getContent();
-
-		if (is == null) {
-			throw new IOException("Erreur au chargement du service " + uri);
-		}
-
-		StringWriter writer = new StringWriter();
-		BufferedReader buffer = new BufferedReader(new InputStreamReader(is));
-		String line = "";
-		while (null != (line = buffer.readLine())) {
-			writer.write(line);
-		}
-
-		return new JSONResponse(writer.toString());
-	}
-
 	public SparseArray<String> searchGares(String nom, int nbItems) throws IOException {
 		numEssai = 1;
 		while (numEssai <= MAX_ESSAIS) {
 			try {
 				updateStatusMessage(STEP_SEARCH_GARE);
-				String params = "gare=" + URLEncoder.encode(Util.removeAccents(nom)) + "&nb=" + nbItems;
-				JSONResponse response = getWSResponse(params);
+				HashMap<String, Object> params = new HashMap<String, Object>();
+				params.put("gare", Util.removeAccents(nom));
+				params.put("nb", nbItems);
+				JSONResponse response = mClient.query(WS_GARE_URI, params);
 				if (response.isError()) {
 					throw new IOException(response.getErrorMessage());
 				}
 				if (response.isSuccess()) {
 					mNomGare = nom;
-					if (response.isListeDeparts()) {
-						int idGare = response.getIdGare();
+					if (isListeDeparts(response)) {
+						int idGare = getIdGare(response);
 						if (idGare != 0) {
-							mCachedDeparts = response.getListeDeparts();
+							mCachedDeparts = getListeDeparts(response);
 						}
 						SparseArray<String> gares = new SparseArray<String>();
-						gares.put(idGare, response.getNomGare());
+						gares.put(idGare, getNomGare(response));
 						return gares;
 					} else {
-						if (response.isListeGares()) {
-							return response.getListeGares();
+						if (isListeGares(response)) {
+							return getListeGares(response);
 						} else {
 							throw new IOException("Unexpected error 2");
 						}
@@ -467,14 +303,17 @@ public class JSONServerBrowser implements IBrowser {
 		while (numEssai <= MAX_ESSAIS) {
 			try {
 				updateStatusMessage(STEP_SEARCH_HORAIRES);
-				String params = "gare=" + URLEncoder.encode(Util.removeAccents(mNomGare)) + "&id=" + mIdGare + "&nb=" + nbItems;
-				JSONResponse response = getWSResponse(params);
+				HashMap<String, Object> params = new HashMap<String, Object>();
+				params.put("gare", Util.removeAccents(mNomGare));
+				params.put("id", mIdGare);
+				params.put("nb", nbItems);
+				JSONResponse response = mClient.query(WS_GARE_URI, params);
 				if (response.isError()) {
 					throw new IOException(response.getErrorMessage());
 				}
 				if (response.isSuccess()) {
 					updateStatusMessage(STEP_FOUND_HORAIRES);
-					return response.getListeDeparts();
+					return getListeDeparts(response);
 				} else {
 					throw new IOException("Unexpected error 3");
 				}
@@ -486,6 +325,88 @@ public class JSONServerBrowser implements IBrowser {
 			}
 		}
 		throw new IOException("Erreur U2 ! Trop d'essais pour contacter le serveur, et pas d'erreur reconnue");
+	}
+
+	public ProchainTrain.Depart getItem(String numero) throws IOException {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	// Analyse de la réponse
+
+	private static boolean isListeDeparts(JSONResponse response) {
+		if (response.isSuccess()) {
+			JSONObject data = response.getSuccessData();
+			return data.has("departs");
+		}
+		return false;
+	}
+
+	private static List<ProchainTrain.Depart> getListeDeparts(JSONResponse response) {
+		if (!response.isSuccess()) {
+			return null;
+		}
+		JSONObject data = response.getSuccessData();
+		List<ProchainTrain.Depart> result = new ArrayList<ProchainTrain.Depart>();
+		try {
+			JSONArray departs = data.getJSONArray("departs");
+			for (int i = 0; i < departs.length(); i++) {
+				result.add(new JSONDepart(departs.getJSONObject(i)));
+			}
+		} catch (JSONException e) {
+			// TODO handle error
+		}
+		return result;
+	}
+
+	private static boolean isListeGares(JSONResponse response) {
+		if (response.isSuccess()) {
+			JSONObject data = response.getSuccessData();
+			return data.has("gares");
+		}
+		return false;
+	}
+
+	private static SparseArray<String> getListeGares(JSONResponse response) {
+		if (!response.isSuccess()) {
+			return null;
+		}
+		try {
+			SparseArray<String> gares = new SparseArray<String>();
+			JSONObject listeGares = response.getSuccessData().getJSONObject("gares");
+			Iterator<?> noms = listeGares.keys();
+			while (noms.hasNext()) {
+				String nom = (String) noms.next();
+				int id = listeGares.getInt(nom);
+				gares.put(id, nom);
+			}
+			return gares;
+		} catch (JSONException e) {
+			return null;
+		}
+	}
+
+	private static int getIdGare(JSONResponse response) {
+		if (response.isSuccess()) {
+			try {
+				return response.getSuccessData().getInt("id");
+			} catch (JSONException e) {
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+	}
+
+	private static String getNomGare(JSONResponse response) {
+		if (response.isSuccess()) {
+			try {
+				return response.getSuccessData().getString("nom");
+			} catch (JSONException e) {
+				return null;
+			}
+		} else {
+			return null;
+		}
 	}
 
 }
