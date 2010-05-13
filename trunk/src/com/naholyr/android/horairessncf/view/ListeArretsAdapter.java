@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleAdapter;
 
 import com.naholyr.android.horairessncf.R;
+import com.naholyr.android.horairessncf.activity.ProchainsDepartsActivity;
 
 public class ListeArretsAdapter extends SimpleAdapter {
 
@@ -50,6 +52,18 @@ public class ListeArretsAdapter extends SimpleAdapter {
 		} else {
 			v.findViewById(R.id.ArretItemLayoutHeure).setVisibility(View.GONE);
 		}
+
+		// Click = prochains départs
+		final String gare = (String) item.get("gare");
+		v.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Intent intent = new Intent(v.getContext(), ProchainsDepartsActivity.class);
+				intent.putExtra(ProchainsDepartsActivity.EXTRA_NOM_GARE, gare);
+				intent.putExtra(ProchainsDepartsActivity.EXTRA_CALLED_FROM_MAIN_ACTIVITY, false);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				v.getContext().startActivity(intent);
+			}
+		});
 
 		return v;
 	}
