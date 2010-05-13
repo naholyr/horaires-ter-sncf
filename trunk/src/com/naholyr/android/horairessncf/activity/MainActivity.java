@@ -125,7 +125,7 @@ public class MainActivity extends ProgressHandlerActivity {
 					Intent intent = new Intent(MainActivity.this, InitializeDataActivity.class);
 					startActivityForResult(intent, InitializeDataActivity.RESULT_UPDATED);
 				}
-			}).setTitle("Initialisation des données").setMessage("Aucune donnée n'a été trouvée. Cliquez sur OK pour télécharger les gares maintenant.").setIcon(R.drawable.icon).create().show();
+			}).setTitle("Initialisation des données").setMessage("Aucune donnée n'a été trouvée. Validez pour télécharger les gares maintenant.").setIcon(R.drawable.icon).create().show();
 			dataInitialization = true;
 		} else {
 			dataInitialization = false;
@@ -353,7 +353,13 @@ public class MainActivity extends ProgressHandlerActivity {
 		}
 
 		public void run() {
-			sendMessage(MSG_SHOW_DIALOG, DIALOG_WAIT_GARES_SEARCH);
+			runOnUiThread(new Runnable() {
+				public void run() {
+					setProgressBarIndeterminateVisibility(true);
+					setTitle("Recherche : " + keywords);
+				}
+			});
+
 			// Note : on ne stocke pas la recherche comme last_home
 			// Histoire de ne pas changer le choix utilisateur à chaque
 			// recherche
@@ -373,13 +379,7 @@ public class MainActivity extends ProgressHandlerActivity {
 				}
 			}
 			if (!searchCancelled) {
-				runOnUiThread(new Runnable() {
-					public void run() {
-						setTitle("Recherche : " + keywords);
-					}
-				});
-				sendMessage(MSG_SET_DIALOG_MESSAGE, DIALOG_WAIT_GARES_SEARCH, "Initialisation de la liste...");
-				updateListeGares(-1, DIALOG_WAIT_GARES_SEARCH);
+				updateListeGares(-1, DIALOG_SCREEN_PROGRESS);
 			}
 		}
 
@@ -398,6 +398,7 @@ public class MainActivity extends ProgressHandlerActivity {
 				break;
 			}
 			case MSG_SHOW_GEOLOCATION_ERROR: {
+				setProgressBarIndeterminateVisibility(false);
 				Dialog waitDialog = getDialog(DIALOG_WAIT_GARES_GEO);
 				if (waitDialog != null) {
 					waitDialog.dismiss();

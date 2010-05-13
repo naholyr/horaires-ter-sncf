@@ -16,6 +16,8 @@ import java.util.regex.Pattern;
 
 public class HTTP {
 
+	public static final int BUFFER_SIZE = 1024;
+	
 	public static final class Response {
 
 		private Map<String, List<String>> headers = new HashMap<String, List<String>>();
@@ -221,7 +223,7 @@ public class HTTP {
 			Socket s = new Socket(host, port);
 			s.setSoTimeout(Util.READ_URL_SOCKET_TIMEOUT);
 			OutputStreamWriter w = new OutputStreamWriter(s.getOutputStream());
-			BufferedReader r = new BufferedReader(new InputStreamReader(s.getInputStream(), charset));
+			BufferedReader r = new BufferedReader(new InputStreamReader(s.getInputStream(), charset), BUFFER_SIZE);
 			w.write(method + " " + path + " HTTP/1.1\n");
 			w.write("Host: " + host + "\n");
 			if (content != null) {

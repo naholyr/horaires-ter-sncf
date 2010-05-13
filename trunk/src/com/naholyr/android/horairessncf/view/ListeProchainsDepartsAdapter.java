@@ -34,6 +34,7 @@ public class ListeProchainsDepartsAdapter extends SimpleAdapter {
 			row.put("numero", train.getNumero());
 			row.put("type", train.getTypeLabel());
 			row.put("voie", train.getVoie());
+			row.put("supprime", train.isSupprime());
 			String durees = "";
 			String motifs = "";
 			for (ProchainTrain.Retard retard : train.getRetards()) {
@@ -68,6 +69,13 @@ public class ListeProchainsDepartsAdapter extends SimpleAdapter {
 			v.findViewById(R.id.TrainItemRetard).setVisibility(View.GONE);
 		} else {
 			v.findViewById(R.id.TrainItemRetard).setVisibility(View.VISIBLE);
+		}
+
+		// Supprimé ?
+		if (item.containsKey("supprime") && (Boolean) item.get("supprime")) {
+			v.findViewById(R.id.TrainItemSupprime).setVisibility(View.VISIBLE);
+		} else {
+			v.findViewById(R.id.TrainItemSupprime).setVisibility(View.GONE);
 		}
 
 		return v;

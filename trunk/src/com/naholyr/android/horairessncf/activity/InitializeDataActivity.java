@@ -39,6 +39,9 @@ public class InitializeDataActivity extends Activity {
 	private static final int NOTIFICATION_ID = R.string.update_notification;
 	private static final long UPDATE_CHECK_INTERVAL = 12 * 3600;
 
+	// Buffer size
+	private static final int LINE_BUFFER_SIZE = 512;
+
 	// Download url
 	private static final String SPEC = "http";
 	private static final String HOST = "termobile-ws.sfhost.net";
@@ -60,8 +63,10 @@ public class InitializeDataActivity extends Activity {
 	// State of the view, to restore it when configuration change
 	Bundle viewState = new Bundle();
 
+	// Main thread
 	MainThread mainThread;
 
+	// Messages handler from main thread and children
 	private final Handler mHandler = new Handler(new Handler.Callback() {
 		public boolean handleMessage(Message msg) {
 			switch (msg.what) {
@@ -96,6 +101,7 @@ public class InitializeDataActivity extends Activity {
 		}
 	});
 
+	// Shortcut to send messages to handler
 	private void sendMsg(int what, int arg1, int arg2) {
 		mHandler.sendMessage(Message.obtain(mHandler, what, arg1, arg2));
 	}
@@ -104,6 +110,7 @@ public class InitializeDataActivity extends Activity {
 		mHandler.sendMessage(Message.obtain(mHandler, what, arg1, arg2, obj));
 	}
 
+	// Initialization
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -242,7 +249,7 @@ public class InitializeDataActivity extends Activity {
 					sendMsg(MSG_SET_VISIBILITY, R.id.InitDialog_TextLoadLayout, View.VISIBLE);
 					viewState.putInt("load_progress", 0);
 					// Buffered reader pour du ligne à ligne
-					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()), 256);
+					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()), LINE_BUFFER_SIZE);
 					String line;
 					int numGare = 0;
 					int numErrors = 0;

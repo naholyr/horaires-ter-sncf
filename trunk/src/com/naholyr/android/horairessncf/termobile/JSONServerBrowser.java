@@ -416,12 +416,12 @@ public class JSONServerBrowser implements IBrowser {
 		return new JSONResponse(writer.toString());
 	}
 
-	public SparseArray<String> searchGares(String nom) throws IOException {
+	public SparseArray<String> searchGares(String nom, int nbItems) throws IOException {
 		numEssai = 1;
 		while (numEssai <= MAX_ESSAIS) {
 			try {
 				updateStatusMessage(STEP_SEARCH_GARE);
-				String params = "gare=" + URLEncoder.encode(Util.removeAccents(nom));
+				String params = "gare=" + URLEncoder.encode(Util.removeAccents(nom)) + "&nb=" + nbItems;
 				JSONResponse response = getWSResponse(params);
 				if (response.isError()) {
 					throw new IOException(response.getErrorMessage());

@@ -17,6 +17,9 @@ import com.naholyr.android.horairessncf.HTTP.Request;
 import com.naholyr.android.horairessncf.HTTP.Response;
 import com.naholyr.android.horairessncf.activity.ProgressHandlerActivity;
 
+/**
+ * @deprecated
+ */
 public class DirectBrowser implements IBrowser {
 
 	private static final String CHARSET = "ISO-8859-1";
@@ -358,6 +361,10 @@ public class DirectBrowser implements IBrowser {
 	 */
 	public void confirmGare(int id) {
 		idGare = id;
+	}
+
+	public SparseArray<String> searchGares(String nom, int nbItems) throws IOException {
+		return searchGares(nom);
 	}
 
 	/*

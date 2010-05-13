@@ -40,7 +40,7 @@
 		<activity android:name=".activity.InitializeDataActivity"
 			android:theme="@android:style/Theme.Dialog" android:configChanges="orientation" />
 		<activity android:name=".activity.AboutActivity"
-			android:theme="@android:style/Theme.Black" />
+			android:theme="@android:style/Theme.Dialog" />
 	</application>
 	<uses-sdk android:minSdkVersion="3" />
 	<supports-screens android:smallScreens="true"

@@ -176,7 +176,7 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 
 					Exception error = null;
 					try {
-						options = client.searchGares(gare.getNom());
+						options = client.searchGares(gare.getNom(), nbTrains);
 					} catch (Exception e) {
 						error = e;
 						options = new SparseArray<String>();
