@@ -23,7 +23,7 @@ if (!function_exists('json_encode')) {
 // Nettoyage des noms de gares
 function nom_gare($nom)
 {
-  return preg_replace('/^gare de /', '', $nom);
+  return preg_replace('/^gare d[e\'] */i', '', $nom);
 }
 
 // Retour erreur
@@ -141,7 +141,7 @@ if (isset($_GET['nb'])) {
 $nb_departs = min(20, max(5, $nb_departs));
 
 // Test cache
-$key = 'prochainsdeparts-'.str_replace(array("/", "\\", " ", "'"), array('', '', '', ''), $nom_gare) . '-ID-' . $id_gare;
+$key = 'gare-'.str_replace(array("/", "\\", " ", "'"), array('', '', '', ''), $nom_gare) . '-ID-' . $id_gare;
 if ($cache_enabled) {
   cache($key, $cache_timeout);
 }
@@ -219,7 +219,7 @@ foreach ($m as $item) {
     $depart['heure'] = trim($m2[1]);
   }
   if (preg_match('#<(?:span|font)[^>]*>Destination *: *</(?:span|font)> *(.*?) *<br#i', $item, $m2)) {
-    $depart['destination'] = trim($m2[1]);
+    $depart['destination'] = nom_gare(trim($m2[1]));
   }
   preg_match_all('#<(?:span|font)[^>]*>Retard *: *</(?:span|font)>(.*?)<br(.*?Motif *:.*?<br)?#i', $item, $m2, PREG_SET_ORDER);
   $depart['retards'] = array();
