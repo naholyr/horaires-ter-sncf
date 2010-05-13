@@ -221,6 +221,9 @@ foreach ($m as $item) {
   if (preg_match('#<(?:span|font)[^>]*>Destination *: *</(?:span|font)> *(.*?) *<br#i', $item, $m2)) {
     $depart['destination'] = nom_gare(trim($m2[1]));
   }
+  if (preg_match('#<(?:span|font)[^>]*>Supprim.*?</(?:span|font)>#i', $item)) {
+    $depart['supprime'] = true;
+  }
   preg_match_all('#<(?:span|font)[^>]*>Retard *: *</(?:span|font)>(.*?)<br(.*?Motif *:.*?<br)?#i', $item, $m2, PREG_SET_ORDER);
   $depart['retards'] = array();
   foreach ($m2 as $item2) {
