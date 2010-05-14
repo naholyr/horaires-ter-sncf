@@ -2560,7 +2560,7 @@ Ste-Segrée#Picardie#Picardy, France#49.6636127#2.5280732
 St-Just-en-Chaussée#Picardie#Chemin de la Gare, 60130 Saint-Remy-en-l'Eau, France#49.4684816#2.4267628
 St-Leu-d'Esserent#Picardie#Avenue de la Gare de Saint-Leu-d'Esserent, 60340 Saint-Leu-d'Esserent, France#49.2142588#2.4189602
 St-Omer-en-Chaussée#Picardie#Rue de la Gare, 60860 Saint-Omer-en-Chaussée, France#49.5314379#2.0002397
-St-Quentin#Picardie#Rue de la Gare, 02100 Neuville-Saint-Amand, France#49.8235571#3.3252767
+St Quentin#Picardie#Rue de la Gare, 02100 Neuville-Saint-Amand, France#49.8235571#3.3252767
 St-Rémy-en-l'Eau#Picardie#Chemin de la Gare, 60130 Saint-Remy-en-l'Eau, France#49.4684816#2.4267628
 St-Roch (Somme)#Picardie#Gare d'Amiens Saint-Roch, 80000 Amiens, France#49.8934139#2.2837667
 St-Sulpice-Auteuil#Picardie#Rue de la Gare, 60430 Warluis, France#49.3915452#2.1371564
