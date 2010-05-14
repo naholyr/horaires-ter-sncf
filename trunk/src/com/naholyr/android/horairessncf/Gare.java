@@ -21,16 +21,16 @@ public class Gare {
 
 		Map<String, Object> result = dataHelper.selectOne(nom);
 
-		load(result);
+		load(result, "nom = '" + nom + "'");
 	}
 
 	public Gare(DataHelper dataHelper, int rowid) throws IOException {
 		Map<String, Object> result = dataHelper.selectOne(rowid);
 
-		load(result);
+		load(result, "rowid = '" + rowid + "'");
 	}
 
-	protected void load(Map<String, Object> result) throws IOException {
+	protected void load(Map<String, Object> result, String ident) throws IOException {
 		if (result != null) {
 			nom = (String) result.get("nom");
 			region = (String) result.get("region");
@@ -38,7 +38,7 @@ public class Gare {
 			latitude = (Double) result.get("latitude");
 			longitude = (Double) result.get("longitude");
 		} else {
-			throw new IOException();
+			throw new IOException("Données de la gare introuvable : " + ident);
 		}
 	}
 
@@ -118,7 +118,9 @@ public class Gare {
 	}
 
 	public boolean isFavori(SharedPreferences prefs) {
-		//SharedPreferences prefs = context.getSharedPreferences(Util.PREFS_FAVORIS_GARE, Context.MODE_PRIVATE);
+		// SharedPreferences prefs =
+		// context.getSharedPreferences(Util.PREFS_FAVORIS_GARE,
+		// Context.MODE_PRIVATE);
 
 		return prefs.getBoolean(getNom(), false);
 	}

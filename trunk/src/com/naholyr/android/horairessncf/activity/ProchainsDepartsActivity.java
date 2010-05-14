@@ -68,9 +68,10 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 		try {
 			dataHelper = DataHelper.getInstance(getApplication());
 		} catch (IOException e) {
-			Util.showError(this, "Erreur lors de l'accès à la base de données ! Essayez de redémarrer l'application SVP.");
+			Util.showError(this, "Erreur lors de l'accès à la base de données ! Essayez de redémarrer l'application SVP.", e);
 			return;
 		}
+		ErrorReporter.getInstance().addCustomData("update_hash", dataHelper.getLastUpdateHash());
 		if (dataHelper.getLastUpdateTime() == 0) {
 			Util.showError(this, "Aucune donnée trouvée dans la base ! Relancez l'application principale pour initialiser les données", new Runnable() {
 				public void run() {
@@ -104,7 +105,7 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 						try {
 							gare = new Gare(dataHelper, rowid);
 						} catch (IOException e) {
-							Util.showError(this, "Impossible de trouver la gare ID#" + rowid + " dans la base de données");
+							Util.showError(this, "Impossible de trouver la gare ID#" + rowid + " dans la base de données", e);
 							return;
 						}
 						break;
@@ -118,12 +119,12 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 			try {
 				gare = new Gare(dataHelper, nom);
 			} catch (IOException e) {
-				Util.showError(this, "Impossible de trouver la gare '" + nom + "' dans la base de données");
+				Util.showError(this, "Impossible de trouver la gare '" + nom + "' dans la base de données", e);
 				return;
 			}
 		}
 		if (gare == null) {
-			Util.showError(this, "Paramètres de lancement insuffisants !");
+			Util.showError(this, "Paramètres de lancement insuffisants !", new IllegalAccessError("ProchainsDepartsActivity sans parametre"));
 			return;
 		}
 		nomGare = gare.getNom();
@@ -188,17 +189,23 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 						idGare = options.keyAt(0);
 						new RefreshThread(false).start();
 					} else {
-						String msg = "TERMobile n'a permis de trouver aucune gare trouvée correspondant à votre demande !";
-						if (error != null) {
-							msg += "\n\nErreur : " + error.getLocalizedMessage();
-						}
-						sendMessage(MSG_SHOW_ERROR, msg);
+						final String msg = "TERMobile n'a permis de trouver aucune gare trouvée correspondant à votre demande !";
+						final Throwable e = error;
+						runOnUiThread(new Runnable() {
+							public void run() {
+								Util.showError(ProchainsDepartsActivity.this, msg, e);
+							}
+						});
 						dismissDialog = true;
 					}
 					// trains = client.getItems(nbTrains, gare.getNom(),
 					// idGare);
-				} catch (IOException e) {
-					sendMessage(MSG_SHOW_ERROR, e.getMessage());
+				} catch (final IOException e) {
+					runOnUiThread(new Runnable() {
+						public void run() {
+							Util.showError(ProchainsDepartsActivity.this, e);
+						}
+					});
 					dismissDialog = true;
 				}
 			}
@@ -231,8 +238,12 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 				} else {
 					sendMessage(MSG_UPDATE_LIST_DATA);
 				}
-			} catch (IOException e) {
-				sendMessage(MSG_SHOW_ERROR, e.getMessage());
+			} catch (final IOException e) {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						Util.showError(ProchainsDepartsActivity.this, e);
+					}
+				});
 			}
 
 			getDialog(DIALOG_WAIT).dismiss();

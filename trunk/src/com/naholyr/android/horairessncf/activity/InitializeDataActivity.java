@@ -136,7 +136,7 @@ public class InitializeDataActivity extends Activity {
 					mainThread = new MainThread(helper);
 					mainThread.start();
 				} catch (IOException e) {
-					Util.showError(InitializeDataActivity.this, "Erreur lors de la mise à jour des données ! Essayez de redémarrer l'application SVP.");
+					Util.showError(InitializeDataActivity.this, "Erreur lors de la mise à jour des données ! Essayez de redémarrer l'application SVP.", e);
 				}
 			}
 		}.start();
@@ -148,12 +148,28 @@ public class InitializeDataActivity extends Activity {
 
 		public boolean working = false;
 
-		private final void error(final String msg) {
+		private final void error(String msg) {
+			error(msg, null);
+		}
+
+		private final void error(Throwable e) {
+			error(null, e);
+		}
+
+		private final void error(final String msg, final Throwable e) {
 			setResult(RESULT_ERROR);
 			if (working) {
 				runOnUiThread(new Runnable() {
 					public void run() {
-						Util.showError(InitializeDataActivity.this, "Erreur : " + msg);
+						if (e != null) {
+							if (msg != null) {
+								Util.showError(InitializeDataActivity.this, msg, e);
+							} else {
+								Util.showError(InitializeDataActivity.this, e);
+							}
+						} else if (msg != null) {
+							Util.showError(InitializeDataActivity.this, msg);
+						}
 					}
 				});
 			}
@@ -197,12 +213,12 @@ public class InitializeDataActivity extends Activity {
 						connection = (HttpURLConnection) url.openConnection();
 						connection.connect();
 					} catch (IOException e) {
-						error("Impossible de télécharger le fichier de signature (URL inaccessible !)");
+						error("Impossible de télécharger le fichier de signature (URL inaccessible !)", e);
 						working = false;
 						return;
 					}
 					if (connection.getResponseCode() != 200 && connection.getResponseCode() != 302) {
-						error("Fichier introuvable !");
+						error("Fichier introuvable (statut incorrect) !");
 					}
 					InputStream stream = connection.getInputStream();
 					byte[] buffer = new byte[32];
@@ -227,12 +243,12 @@ public class InitializeDataActivity extends Activity {
 						connection = (HttpURLConnection) url.openConnection();
 						connection.connect();
 					} catch (IOException e) {
-						error("Impossible de télécharger le fichier de données (URL inaccessible !)");
+						error("Impossible de télécharger le fichier de données (URL inaccessible !)", e);
 						working = false;
 						return;
 					}
 					if (connection.getResponseCode() != 200 && connection.getResponseCode() != 302) {
-						error("Fichier introuvable !");
+						error("Fichier introuvable (statut incorrect) !");
 					}
 					int contentLength = connection.getContentLength();
 					if (contentLength > 0) {
@@ -292,7 +308,7 @@ public class InitializeDataActivity extends Activity {
 							}
 						}
 						if (numErrors > numMaxErrors) {
-							error("Trop d'erreurs rencontrées dans le fichier (+ de 5%), merci d'essayer encore.");
+							error("Trop d'erreurs rencontrées dans le fichier (+ de 5%), merci d'essayer encore.", new Throwable(numErrors + " erreurs au chargement"));
 							working = false;
 						}
 						// Enregistrer la progression
@@ -320,9 +336,9 @@ public class InitializeDataActivity extends Activity {
 				working = false;
 				finishWithResult(result);
 			} catch (MalformedURLException e) {
-				error(e.getLocalizedMessage());
+				error(e);
 			} catch (IOException e) {
-				error(e.getLocalizedMessage());
+				error(e);
 			}
 		}
 

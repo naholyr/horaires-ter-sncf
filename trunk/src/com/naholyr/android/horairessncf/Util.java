@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.acra.ErrorReporter;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -78,29 +80,31 @@ public class Util {
 	}
 
 	public static void showError(final Activity activity, String message) {
-		showError(activity, message, true);
-	}
-
-	public static void showError(final Activity activity, String message, Runnable onClose) {
-		showError(activity, message, true, onClose);
-	}
-
-	public static void showError(final Activity activity, String message, boolean addDisclaimer) {
-		showError(activity, message, addDisclaimer, new Runnable() {
+		showError(activity, message, new Runnable() {
 			public void run() {
 				activity.finish();
 			}
 		});
 	}
 
-	public static void showError(final Activity activity, String message, boolean addDisclaimer, final Runnable onClose) {
-		if (addDisclaimer) {
-			message += "\n\nN'hésitez pas à vous rendre sur 'termobile.fr' pour réessayer";
-		}
+	public static void showError(final Activity activity, final Throwable throwable) {
+		showError(activity, throwable.getLocalizedMessage(), throwable);
+	}
 
+	public static void showError(final Activity activity, String message, final Throwable throwable) {
+		message += "\n\nUn rapport d'erreur sera envoyé au développeur.";
+		showError(activity, message, new Runnable() {
+			public void run() {
+				ErrorReporter.getInstance().handleException(throwable);
+				activity.finish();
+			}
+		});
+	}
+
+	public static void showError(final Activity activity, String message, final Runnable onClose) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-		builder.setTitle("Erreur");
-		builder.setIcon(android.R.drawable.ic_dialog_alert);
+		builder.setTitle("Woops !");
+		builder.setIcon(R.drawable.icon_error);
 		builder.setMessage(message);
 		builder.setCancelable(true);
 		builder.setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {

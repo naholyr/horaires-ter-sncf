@@ -107,10 +107,11 @@ public class MainActivity extends ProgressHandlerActivity {
 		try {
 			dataHelper = DataHelper.getInstance(getApplication());
 		} catch (IOException e) {
-			Util.showError(MainActivity.this, "Erreur lors de l'accès à la base de données ! Essayez de redémarrer l'application SVP.");
+			Util.showError(MainActivity.this, "Erreur lors de l'accès à la base de données ! Essayez de redémarrer l'application SVP.", e);
 			return;
 		}
 		// Check for data updates
+		ErrorReporter.getInstance().addCustomData("update_hash", dataHelper.getLastUpdateHash());
 		long lastUpdate = dataHelper.getLastUpdateTime();
 		final boolean dataInitialization;
 		if (lastUpdate == 0) {
@@ -186,7 +187,7 @@ public class MainActivity extends ProgressHandlerActivity {
 			}
 			case InitializeDataActivity.RESULT_ERROR:
 			default: {
-				Util.showError(this, "Erreur lors de l'initialisation des données ! Redémarrez l'application SVP.");
+				Util.showError(this, "Erreur lors de l'initialisation des données ! Redémarrez l'application SVP.", new Throwable("Erreur fatale à l'initialisation"));
 				break;
 			}
 		}
@@ -403,8 +404,8 @@ public class MainActivity extends ProgressHandlerActivity {
 				if (waitDialog != null) {
 					waitDialog.dismiss();
 				}
-				Util.showError(this, "La géolocalisation a échoué, vérifiez que vous avez activé la localisation par le réseau " + "et que vous êtes sous couverture de votre opérateur "
-						+ "avant de relancer l'application.", false, new Runnable() {
+				Util.showError(this, "La géolocalisation a échoué, vérifiez que vous avez activé la localisation par le réseau et que vous êtes sous couverture de votre opérateur "
+						+ "avant de relancer l'application.", new Runnable() {
 					public void run() {
 						sendMessage(MSG_SEARCH);
 					}

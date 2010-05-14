@@ -1,7 +1,5 @@
 package com.naholyr.android.horairessncf.activity;
 
-import com.naholyr.android.horairessncf.Util;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -19,7 +17,6 @@ public class ProgressHandlerActivity extends Activity {
 	public static final int MSG_DISMISS_DIALOG = 11;
 	public static final int MSG_SET_DIALOG_TITLE = 12;
 	public static final int MSG_SET_DIALOG_MESSAGE = 13;
-	public static final int MSG_SHOW_ERROR = 14;
 
 	public void sendMessage(int what, Bundle data) {
 		Message msg = Message.obtain(handler, what);
@@ -58,7 +55,7 @@ public class ProgressHandlerActivity extends Activity {
 		data.putInt("value", value);
 		sendMessage(what, data);
 	}
-
+	
 	protected ProgressDialog createProgressDialog(int id, String title, String message, int style, boolean cancelable, DialogInterface.OnCancelListener onCancel) {
 		ProgressDialog dialog = new ProgressDialog(this);
 		dialog.setTitle(title);
@@ -151,11 +148,6 @@ public class ProgressHandlerActivity extends Activity {
 				if (dialog != null) {
 					getDialog(dialogId).setMessage(message);
 				}
-				break;
-			}
-			case MSG_SHOW_ERROR: {
-				String message = msg.getData().getString("value");
-				Util.showError(this, message);
 				break;
 			}
 		}
