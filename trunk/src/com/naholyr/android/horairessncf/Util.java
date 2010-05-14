@@ -10,9 +10,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 
 public class Util {
+
+	public static final String INTENT_NOTIFICATION_ACTION = "com.naholyr.android.horairessncf.notifications";
 
 	public static final int NB_GARES_TOTAL = 3081;
 
@@ -175,6 +179,18 @@ public class Util {
 
 	public static SharedPreferences getPreferencesTrainsSuivis(Context context) {
 		return context.getSharedPreferences(Util.PREFS_FAVORIS_TRAIN, Context.MODE_PRIVATE);
+	}
+
+	public static boolean isIntentAvailable(Context context, String action) {
+		return context.getPackageManager().queryIntentActivities(new Intent(action), PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
+	}
+
+	public static boolean isNotificationActivityAvailable(Context context) {
+		return isIntentAvailable(context, INTENT_NOTIFICATION_ACTION);
+	}
+
+	public static void startNotificationActivity(Context context) {
+		context.startActivity(new Intent(INTENT_NOTIFICATION_ACTION));
 	}
 
 }
