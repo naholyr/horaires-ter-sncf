@@ -22,6 +22,7 @@ import android.database.SQLException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -133,7 +134,7 @@ public class InitializeDataActivity extends Activity {
 
 				// Update database
 				try {
-					DataHelper helper = DataHelper.getInstance(InitializeDataActivity.this);
+					final DataHelper helper = DataHelper.getInstance(InitializeDataActivity.this);
 					mainThread = new MainThread(helper);
 					mainThread.start();
 				} catch (IOException e) {
@@ -147,7 +148,9 @@ public class InitializeDataActivity extends Activity {
 
 		private DataHelper mHelper;
 
-		public boolean working = false;
+		private PowerManager.WakeLock mWakeLock;
+
+		public boolean mWorking = false;
 
 		private final void error(String msg) {
 			error(msg, null);
@@ -159,21 +162,27 @@ public class InitializeDataActivity extends Activity {
 
 		private final void error(final String msg, final Throwable e) {
 			setResult(RESULT_ERROR);
-			if (working) {
+			if (mWorking) {
+				final Runnable finishAfterError = new Runnable() {
+					public void run() {
+						finishWithResult(RESULT_ERROR);
+					}
+				};
 				runOnUiThread(new Runnable() {
 					public void run() {
 						if (e != null) {
 							if (msg != null) {
-								Util.showError(InitializeDataActivity.this, msg, e);
+								Util.showError(InitializeDataActivity.this, msg, e, finishAfterError);
 							} else {
-								Util.showError(InitializeDataActivity.this, e);
+								Util.showError(InitializeDataActivity.this, e, finishAfterError);
 							}
 						} else if (msg != null) {
-							Util.showError(InitializeDataActivity.this, msg);
+							Util.showError(InitializeDataActivity.this, msg, finishAfterError);
 						}
 					}
 				});
 			}
+			mWorking = false;
 		}
 
 		private void finishWithResult(int result) {
@@ -190,11 +199,18 @@ public class InitializeDataActivity extends Activity {
 		}
 
 		public boolean isWorking() {
-			return working;
+			return mWorking;
 		}
 
 		public void cancel() {
-			working = false;
+			mWorking = false;
+			if (mHelper.getDb().inTransaction()) {
+				mHelper.getDb().endTransaction();
+			}
+			if (mWakeLock != null) {
+				mWakeLock.release();
+				mWakeLock = null;
+			}
 			setResult(RESULT_CANCELED);
 		}
 
@@ -203,11 +219,11 @@ public class InitializeDataActivity extends Activity {
 		}
 
 		public void run() {
-			working = true;
+			mWorking = true;
 			try {
 				String signature;
 				// 1. Récupération du MD5
-				if (working) {
+				if (mWorking) {
 					URL url = new URL(SPEC, HOST, 80, PATH_HASH);
 					HttpURLConnection connection;
 					try {
@@ -215,11 +231,11 @@ public class InitializeDataActivity extends Activity {
 						connection.connect();
 					} catch (IOException e) {
 						error("Impossible de télécharger le fichier de signature (URL inaccessible !)", e);
-						working = false;
 						return;
 					}
 					if (connection.getResponseCode() != 200 && connection.getResponseCode() != 302) {
 						error("Fichier introuvable (statut incorrect) !");
+						return;
 					}
 					InputStream stream = connection.getInputStream();
 					byte[] buffer = new byte[HASH_SIZE];
@@ -231,13 +247,13 @@ public class InitializeDataActivity extends Activity {
 					return;
 				}
 				// Démarrage d'une transaction
-				if (working) {
+				if (mWorking) {
 					mHelper.getDb().beginTransaction();
 				} else {
 					return;
 				}
 				// 2. Chargement des données
-				if (working) {
+				if (mWorking) {
 					URL url = new URL(SPEC, HOST, 80, PATH_DATA);
 					HttpURLConnection connection;
 					try {
@@ -245,15 +261,17 @@ public class InitializeDataActivity extends Activity {
 						connection.connect();
 					} catch (IOException e) {
 						error("Impossible de télécharger le fichier de données (URL inaccessible !)", e);
-						working = false;
 						return;
 					}
 					if (connection.getResponseCode() != 200 && connection.getResponseCode() != 302) {
 						error("Fichier introuvable (statut incorrect) !");
+						return;
 					}
 					int contentLength = connection.getContentLength();
 					if (contentLength > 0) {
-						sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextTotalDownload, 0, String.valueOf((int) (contentLength / 1024)));
+						int kb = (int) (contentLength / 1024);
+						sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextTotalDownload, 0, String.valueOf(kb));
+						viewState.putInt("download_total", kb);
 					} else {
 						sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextTotalDownload, 0, "?");
 					}
@@ -265,6 +283,10 @@ public class InitializeDataActivity extends Activity {
 					sendMsg(MSG_SET_TEXT, R.id.InitDialog_TextNumGare, 0, "0");
 					sendMsg(MSG_SET_VISIBILITY, R.id.InitDialog_TextLoadLayout, View.VISIBLE);
 					viewState.putInt("load_progress", 0);
+					// Vérouiller l'écran pendant le téléchargement
+					PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+					mWakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "HorairesSNCF_Download");
+					mWakeLock.acquire();
 					// Buffered reader pour du ligne à ligne
 					BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()), LINE_BUFFER_SIZE);
 					String line;
@@ -280,7 +302,6 @@ public class InitializeDataActivity extends Activity {
 							}
 						} catch (IOException e) {
 							line = null;
-							Log.e("horairessncf", "fail read line");
 							numErrors++;
 						}
 						if (line != null) {
@@ -303,14 +324,13 @@ public class InitializeDataActivity extends Activity {
 									numErrors++;
 								}
 							} else {
-								// TODO better handling
 								Log.e("horairessncf", "Skip invalid line " + line);
 								numErrors++;
 							}
 						}
 						if (numErrors > numMaxErrors) {
 							error("Trop d'erreurs rencontrées dans le fichier (+ de 5%), merci d'essayer encore.", new Throwable(numErrors + " erreurs au chargement"));
-							working = false;
+							return;
 						}
 						// Enregistrer la progression
 						numGare++;
@@ -320,29 +340,39 @@ public class InitializeDataActivity extends Activity {
 						}
 						viewState.putInt("load_progress", numGare);
 					}
+					// Tolérance : on tolère une marge de 5% d'erreurs + 5%
+					// d'incohérence dans la constante NB_GARES_TOTAL
+					if (numGare < Util.NB_GARES_TOTAL - 2 * numMaxErrors) {
+						error("Après chargement des données, le nombre de gares (" + numGare + ") semble incohérent avec le nombre attendu. Essayez de relancer l'application SVP", new Throwable(
+								numGare + " gares chargées incohérent"));
+						return;
+					}
+					mWakeLock.release();
+					mWakeLock = null;
 				} else {
 					return;
 				}
 				// 3. Stocker la nouvelle version du fichier
-				if (working) {
+				if (mWorking) {
 					mHelper.saveNewUpdateHash(signature);
 				}
 				// Finaliser la transaction
-				if (working) {
+				if (mWorking) {
 					mHelper.getDb().setTransactionSuccessful();
 				}
 				mHelper.getDb().endTransaction();
 				// Finir l'activity
-				int result = working ? RESULT_UPDATED : RESULT_CANCELED;
-				working = false;
+				int result = mWorking ? RESULT_UPDATED : RESULT_CANCELED;
+				mWorking = false;
 				finishWithResult(result);
 			} catch (MalformedURLException e) {
 				error(e);
+				return;
 			} catch (IOException e) {
 				error(e);
+				return;
 			}
 		}
-
 	}
 
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -352,6 +382,12 @@ public class InitializeDataActivity extends Activity {
 
 		if (viewState.containsKey("signature") && viewState.getBoolean("signature")) {
 			((TextView) findViewById(R.id.InitDialog_TextRemoteMD5)).setText("OK");
+		}
+
+		if (viewState.containsKey("download_total")) {
+			((TextView) findViewById(R.id.InitDialog_TextTotalDownload)).setText(String.valueOf(viewState.getInt("download_total")));
+		} else {
+			((TextView) findViewById(R.id.InitDialog_TextTotalDownload)).setText("?");
 		}
 
 		if (viewState.containsKey("load_total")) {

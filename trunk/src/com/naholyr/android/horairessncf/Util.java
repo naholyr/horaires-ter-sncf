@@ -91,16 +91,28 @@ public class Util {
 		});
 	}
 
-	public static void showError(final Activity activity, final Throwable throwable) {
+	public static void showError(Activity activity, Throwable throwable) {
 		showError(activity, throwable.getLocalizedMessage(), throwable);
 	}
 
-	public static void showError(final Activity activity, String message, final Throwable throwable) {
+	public static void showError(Activity activity, Throwable throwable, Runnable onClose) {
+		showError(activity, throwable.getLocalizedMessage(), throwable);
+	}
+
+	public static void showError(final Activity activity, String message, Throwable throwable) {
+		showError(activity, message, throwable, new Runnable() {
+			public void run() {
+				activity.finish();
+			}
+		});
+	}
+
+	public static void showError(Activity activity, String message, final Throwable throwable, final Runnable onClose) {
 		message += "\n\nUn rapport d'erreur sera envoyé au développeur.";
 		showError(activity, message, new Runnable() {
 			public void run() {
 				ErrorReporter.getInstance().handleException(throwable);
-				activity.finish();
+				onClose.run();
 			}
 		});
 	}

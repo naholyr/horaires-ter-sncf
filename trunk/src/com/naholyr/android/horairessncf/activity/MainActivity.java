@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -188,7 +187,8 @@ public class MainActivity extends ProgressHandlerActivity {
 			}
 			case InitializeDataActivity.RESULT_ERROR:
 			default: {
-				Util.showError(this, "Erreur lors de l'initialisation des données ! Redémarrez l'application SVP.", new Throwable("Erreur fatale à l'initialisation"));
+				Toast.makeText(this, "Erreur lors de l'initialisation des données ! Redémarrez l'application SVP.", Toast.LENGTH_LONG).show();
+				finish();
 				break;
 			}
 		}
@@ -606,12 +606,6 @@ public class MainActivity extends ProgressHandlerActivity {
 				break;
 			}
 		}
-	}
-
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-
-		setContentView(R.layout.main);
 	}
 
 }

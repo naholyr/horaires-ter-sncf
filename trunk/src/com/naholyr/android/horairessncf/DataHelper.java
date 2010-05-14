@@ -13,6 +13,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.provider.LiveFolders;
@@ -244,15 +245,28 @@ public class DataHelper {
 	}
 
 	public long countGares() {
-		return db.compileStatement("SELECT COUNT(*) FROM db_updates " + TABLE_NAME).simpleQueryForLong();
+		try {
+			return db.compileStatement("SELECT COUNT(*) FROM db_updates " + TABLE_NAME).simpleQueryForLong();
+		} catch (SQLiteException e) {
+			return 0;
+		}
 	}
 
 	public String getLastUpdateHash() {
-		return db.compileStatement("SELECT hash FROM db_updates ORDER BY updated_at DESC LIMIT 1").simpleQueryForString();
+		try {
+			return db.compileStatement("SELECT hash FROM db_updates ORDER BY updated_at DESC LIMIT 1").simpleQueryForString();
+		} catch (SQLiteException e) {
+			return null;
+		}
 	}
 
 	public long getLastUpdateTime() {
-		String dateTime = db.compileStatement("SELECT MAX(updated_at) FROM db_updates").simpleQueryForString();
+		String dateTime;
+		try {
+			dateTime = db.compileStatement("SELECT MAX(updated_at) FROM db_updates").simpleQueryForString();
+		} catch (SQLiteException e) {
+			dateTime = null;
+		}
 
 		if (dateTime == null) {
 			return 0;

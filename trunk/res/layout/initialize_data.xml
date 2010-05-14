@@ -3,7 +3,16 @@
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:orientation="vertical" android:padding="5dip"
 	android:paddingTop="0dip">
-
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:orientation="horizontal"
+		android:layout_marginBottom="15dip" android:gravity="top">
+		<ImageView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:src="@android:drawable/stat_sys_warning" />
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_marginLeft="15dip"
+			android:textSize="12dip"
+			android:text="Durant cette opération ne mettez pas votre téléphone en veille et ne coupez pas la connexion." />
+	</LinearLayout>
 	<LinearLayout android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:orientation="horizontal">
 		<TextView android:layout_width="wrap_content"
@@ -12,7 +21,6 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="..." />
 	</LinearLayout>
-
 	<LinearLayout android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:orientation="horizontal"
 		android:layout_marginTop="5dip">
@@ -39,7 +47,6 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="..." />
 	</LinearLayout>
-
 	<Button android:id="@+id/InitDialog_ButtonAbout"
 		android:layout_marginTop="10dip" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:text="À propos"
