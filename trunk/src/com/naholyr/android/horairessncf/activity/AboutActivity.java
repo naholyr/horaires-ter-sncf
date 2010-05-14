@@ -14,7 +14,7 @@ public class AboutActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setTitle("À propos");
-		setContentView(R.layout.apropos);
+		setContentView(R.layout.about);
 
 		new Thread(new Runnable() {
 			public void run() {

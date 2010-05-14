@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.SparseArray;
+import android.view.WindowManager.BadTokenException;
 
 public class ProgressHandlerActivity extends Activity {
 
@@ -55,7 +56,7 @@ public class ProgressHandlerActivity extends Activity {
 		data.putInt("value", value);
 		sendMessage(what, data);
 	}
-	
+
 	protected ProgressDialog createProgressDialog(int id, String title, String message, int style, boolean cancelable, DialogInterface.OnCancelListener onCancel) {
 		ProgressDialog dialog = new ProgressDialog(this);
 		dialog.setTitle(title);
@@ -120,7 +121,11 @@ public class ProgressHandlerActivity extends Activity {
 				int dialogId = msg.getData().getInt("value");
 				Dialog dialog = getDialog(dialogId);
 				if (dialog != null && !dialog.isShowing()) {
-					getDialog(dialogId).show();
+					try {
+						dialog.show();
+					} catch (BadTokenException e) {
+						// Activity not running : ignore
+					}
 				}
 				break;
 			}
@@ -128,7 +133,11 @@ public class ProgressHandlerActivity extends Activity {
 				int dialogId = msg.getData().getInt("value");
 				Dialog dialog = getDialog(dialogId);
 				if (dialog != null && dialog.isShowing()) {
-					getDialog(dialogId).dismiss();
+					try {
+						dialog.dismiss();
+					} catch (BadTokenException e) {
+						// Activity not running : ignore
+					}
 				}
 				break;
 			}
@@ -137,16 +146,24 @@ public class ProgressHandlerActivity extends Activity {
 				String title = msg.getData().getString("value");
 				Dialog dialog = getDialog(dialogId);
 				if (dialog != null) {
-					getDialog(dialogId).setTitle(title);
+					try {
+						dialog.setTitle(title);
+					} catch (BadTokenException e) {
+						// Activity not running : ignore
+					}
 				}
 				break;
 			}
 			case MSG_SET_DIALOG_MESSAGE: {
 				int dialogId = msg.getData().getInt("id");
 				String message = msg.getData().getString("value");
-				Dialog dialog = getDialog(dialogId);
+				ProgressDialog dialog = getDialog(dialogId);
 				if (dialog != null) {
-					getDialog(dialogId).setMessage(message);
+					try {
+						dialog.setMessage(message);
+					} catch (BadTokenException e) {
+						// Activity not running : ignore
+					}
 				}
 				break;
 			}

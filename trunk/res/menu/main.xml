@@ -6,7 +6,7 @@
 		android:icon="@android:drawable/btn_star" />
 	<item android:id="@+id/menu_main_search" android:title="Rechercher"
 		android:icon="@android:drawable/ic_menu_search" />
-	<item android:id="@+id/menu_main_apropos" android:title="À propos"
+	<item android:id="@+id/menu_main_about" android:title="À propos"
 		android:icon="@android:drawable/ic_menu_info_details" />
 	<item android:id="@+id/menu_main_preferences" android:title="Préférences"
 		android:icon="@android:drawable/ic_menu_preferences" />

@@ -33,6 +33,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager.BadTokenException;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -154,7 +155,7 @@ public class MainActivity extends ProgressHandlerActivity {
 				if (versionName == null || !preferences.getString("app_version", "").equals(versionName)) {
 					// Show about dialog, if there is no initialization pending
 					if (!dataInitialization) {
-						showAPropos();
+						showAbout();
 					}
 					if (versionName != null) {
 						preferences.edit().putString("app_version", versionName).commit();
@@ -394,7 +395,11 @@ public class MainActivity extends ProgressHandlerActivity {
 				((ListeGaresView) findViewById(R.id.ListeGares)).setData(gares, latitude, longitude);
 				int dialogId = msg.getData().getInt("value");
 				if (dialogId > 0) {
-					getDialog(dialogId).dismiss();
+					try {
+						getDialog(dialogId).dismiss();
+					} catch (BadTokenException e) {
+						// Activity not running : ignore
+					}
 				}
 				break;
 			}
@@ -402,7 +407,11 @@ public class MainActivity extends ProgressHandlerActivity {
 				setProgressBarIndeterminateVisibility(false);
 				Dialog waitDialog = getDialog(DIALOG_WAIT_GARES_GEO);
 				if (waitDialog != null) {
-					waitDialog.dismiss();
+					try {
+						waitDialog.dismiss();
+					} catch (BadTokenException e) {
+						// Activity not running : ignore
+					}
 				}
 				Util.showError(this, "La géolocalisation a échoué, vérifiez que vous avez activé la localisation par le réseau et que vous êtes sous couverture de votre opérateur "
 						+ "avant de relancer l'application.", new Runnable() {
@@ -439,8 +448,8 @@ public class MainActivity extends ProgressHandlerActivity {
 				showSearch();
 				return true;
 			}
-			case R.id.menu_main_apropos: {
-				showAPropos();
+			case R.id.menu_main_about: {
+				showAbout();
 				return true;
 			}
 			case R.id.menu_main_preferences: {
@@ -465,7 +474,7 @@ public class MainActivity extends ProgressHandlerActivity {
 		}
 	}
 
-	private void showAPropos() {
+	private void showAbout() {
 		startActivity(new Intent(this, AboutActivity.class));
 	}
 
