@@ -470,37 +470,36 @@ public class MainActivity extends ProgressHandlerActivity {
 	}
 
 	private void updateListeGares(int nbGares, int dialogToDismiss) {
-		final boolean favsFirst = preferences.getBoolean(getString(R.string.pref_favsfirst), true);
-		Collections.sort(gares, new Comparator<Gare>() {
-			public int compare(Gare g1, Gare g2) {
-				if (favsFirst) {
-					if (g1.isFavori(prefs_favs) && !g2.isFavori(prefs_favs)) {
-						return -1;
-					} else if (!g1.isFavori(prefs_favs) && g2.isFavori(prefs_favs)) {
-						return 1;
-					}
-				}
-
-				if (latitude == null || longitude == null) {
-					return 0;
-				}
-
-				double d1 = g1.getDistance(latitude, longitude);
-				double d2 = g2.getDistance(latitude, longitude);
-
-				return (d1 > d2) ? 1 : ((d1 < d2) ? -1 : 0);
-			}
-		});
-
 		if (gares.size() > 0 && nbGares >= 0) {
+			// Tri par éloignement + favoris en premier
+			final boolean favsFirst = preferences.getBoolean(getString(R.string.pref_favsfirst), true);
+			Collections.sort(gares, new Comparator<Gare>() {
+				public int compare(Gare g1, Gare g2) {
+					if (favsFirst) {
+						if (g1.isFavori(prefs_favs) && !g2.isFavori(prefs_favs)) {
+							return -1;
+						} else if (!g1.isFavori(prefs_favs) && g2.isFavori(prefs_favs)) {
+							return 1;
+						}
+					}
+					if (latitude == null || longitude == null) {
+						return 0;
+					}
+					double d1 = g1.getDistance(latitude, longitude);
+					double d2 = g2.getDistance(latitude, longitude);
+					return (d1 > d2) ? 1 : ((d1 < d2) ? -1 : 0);
+				}
+			});
+			// Récupération du nombre de gares à afficher
 			if (nbGares == 0) {
 				int defaultNbGares = getResources().getInteger(R.string.default_nbgares);
 				nbGares = Integer.parseInt(preferences.getString(getString(R.string.pref_nbgares), String.valueOf(defaultNbGares)));
 			}
 			nbGares = Math.min(gares.size(), nbGares);
+			// Sous-ensemble
 			gares = gares.subList(0, nbGares);
 		}
-
+		// Finir les barres de chargement
 		sendMessage(MSG_UPDATE_LIST_DATA, dialogToDismiss);
 		if (dialogToDismiss == DIALOG_SCREEN_PROGRESS) {
 			runOnUiThread(new Runnable() {

@@ -41,6 +41,7 @@ public class InitializeDataActivity extends Activity {
 
 	// Buffer size
 	private static final int LINE_BUFFER_SIZE = 512;
+	private static final int HASH_SIZE = 32;
 
 	// Download url
 	private static final String SPEC = "http";
@@ -221,7 +222,7 @@ public class InitializeDataActivity extends Activity {
 						error("Fichier introuvable (statut incorrect) !");
 					}
 					InputStream stream = connection.getInputStream();
-					byte[] buffer = new byte[32];
+					byte[] buffer = new byte[HASH_SIZE];
 					stream.read(buffer);
 					signature = new String(buffer);
 					viewState.putBoolean("signature", true);
