@@ -1151,7 +1151,7 @@ Andrésy#Ile de France#Rue de la Gare, 78570 Andrésy, France#48.9756294#2.05203
 Angerville#Ile de France#Rue de la Gare, 91670 Angerville, France#48.3123581#2.0002683
 Argenteuil#Ile de France#Gare d'Argenteuil, 95100 Argenteuil, France#48.947266#2.257169
 Arpajon (Essonne)#Ile de France#Gare d'Arpajon, 91290 Arpajon, France#48.5852778#2.2402778
-Asnières-sur-Seine#Ile de France#Gare d'Asnières sur Seine, 92600 Asnières-sur-Seine, France#48.905909#2.283107
+Asnière#Ile de France#Gare d'Asnières sur Seine, 92600 Asnières-sur-Seine, France#48.906057#2.282860
 Athis-Mons#Ile de France#Rue de la Gare, 91200 Athis-Mons, France#48.7128331#2.401338
 Aubergenville-Élisabeth#Ile de France#Île-de-France, France#48.8499198#2.6370411
 Aubervilliers-La Courneuve#Ile de France#Gare de La Courneuve - Aubervilliers, 93120 La Courneuve, France#48.9238889#2.3844444
@@ -2766,7 +2766,7 @@ Nice-St-Augustin#Provence-Alpes Côte d'Azur#Provence-Alpes-Côte d'Azur, France
 Nice-St-Roch#Provence-Alpes Côte d'Azur#Provence-Alpes-Côte d'Azur, France#43.9351691#6.0679194
 Nice-Ville#Provence-Alpes Côte d'Azur#Tunnel de la Gare, 06000 Nice, France#43.7048732#7.2623712
 Niolon#Provence-Alpes Côte d'Azur#Niolon, Le Rove, France#43.3387082#5.2570614
-Ollioules-Sanary-sur-Mer#Provence-Alpes Côte d'Azur#Route de la Gare, 83110 Sanary-sur-Mer, France#43.1222317#5.8223226
+Ollioules-Sanary-S-Mer#Provence-Alpes Côte d'Azur#Route de la Gare, 83110 Sanary-sur-Mer, France#43.130229#5.843028
 Orange#Provence-Alpes Côte d'Azur#Avenue de la Gare, 84420 Piolenc, France#44.1808342#4.7622155
 Orgon#Provence-Alpes Côte d'Azur#Route de la Gare, 13660 Orgon, France#43.7805794#5.0496245
 Pas-des-Lanciers#Provence-Alpes Côte d'Azur#Gare de Pas-des-Lanciers, 13700 Marignane, France#43.4097222#5.2536111
@@ -2794,7 +2794,7 @@ Sospel#Provence-Alpes Côte d'Azur#Sospel, France#43.8778991#7.4473165
 St-Antoine#Provence-Alpes Côte d'Azur#Saint-Antoine, 05600 Eygliers, France#44.6764143#6.6343779
 St-Barthélémy#Provence-Alpes Côte d'Azur#Provence-Alpes-Côte d'Azur, France#43.9351691#6.0679194
 St-Chamas#Provence-Alpes Côte d'Azur#Avenue de la Gare, 13250 Saint-Chamas, France#43.5515686#5.036429
-St-Cyr-les-Lèques-La Cadière#Provence-Alpes Côte d'Azur#Provence-Alpes-Côte d'Azur, France#43.9351691#6.0679194
+St-Cyr-les-Lecq.la-Cad.#Provence-Alpes Côte d'Azur#Gare de Saint-Cyr-les-Lecques-la-Cadière, 83270 Saint-Cyr-sur-Mer, France#43.18729#5.70493
 St-Dalmas-de-Tende#Provence-Alpes Côte d'Azur#Rue de la Gare, 06430 Tende, France#44.0901716#7.5929284
 Ste-Marthe-en-Provence#Provence-Alpes Côte d'Azur#Provence-Alpes-Côte d'Azur, France#43.9351691#6.0679194
 St-Joseph Castellas#Provence-Alpes Côte d'Azur#Provence-Alpes-Côte d'Azur, France#43.9351691#6.0679194
