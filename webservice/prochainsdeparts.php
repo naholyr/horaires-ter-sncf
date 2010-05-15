@@ -88,6 +88,9 @@ function init_curl_cookie($url, &$cookie)
   curl_setopt($s, CURLOPT_NO_BODY, true);
   curl_setopt($s, CURLOPT_URL, $url);
   $header_string = curl_exec($s);
+  if (!$header_string) {
+    erreur('Erreur serveur termobile.fr inaccessible ! Réessayez plus tard', 400);
+  }
   if (preg_match('#Set-Cookie *: *(.*?)(?:\n|$)#i', $header_string, $m)) {
     $cookie = trim($m[1]);
   } else {
