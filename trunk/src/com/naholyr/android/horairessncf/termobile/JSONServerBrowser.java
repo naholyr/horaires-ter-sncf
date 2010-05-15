@@ -19,7 +19,7 @@ import com.naholyr.android.horairessncf.termobile.JSONWebServiceClient.JSONRespo
 
 public class JSONServerBrowser implements IBrowser {
 
-	public static final String WS_HOST = "http://termobile-ws.sfhost.net";
+	public static final String WS_HOST = "http://termobile-ws.sfhost.net/beta";
 	public static final String WS_GARE_URI = WS_HOST + "/prochainsdeparts.php";
 	public static final String WS_TRAIN_URI = WS_HOST + "/train.php";
 
@@ -67,6 +67,7 @@ public class JSONServerBrowser implements IBrowser {
 		private String mHeure;
 		private String mNumero;
 		private String mTypeLabel;
+		private String mVoie;
 		private boolean mAQuai;
 		private boolean mSupprime;
 		private List<ProchainTrain.Retard> mRetards;
@@ -111,6 +112,16 @@ public class JSONServerBrowser implements IBrowser {
 				}
 			} else {
 				mTypeLabel = null;
+			}
+			// Voie
+			if (object.has("voie")) {
+				try {
+					mVoie = object.getString("voie");
+				} catch (JSONException e) {
+					mVoie = null;
+				}
+			} else {
+				mVoie = null;
 			}
 			// A quai ?
 			if (object.has("aquai")) {
@@ -175,7 +186,7 @@ public class JSONServerBrowser implements IBrowser {
 		}
 
 		public String getVoie() {
-			return null;
+			return mVoie;
 		}
 
 		public boolean isAQuai() {

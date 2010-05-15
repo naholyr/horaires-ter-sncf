@@ -17,8 +17,9 @@ import com.naholyr.android.horairessncf.Util;
 public class ListeProchainsDepartsAdapter extends SimpleAdapter {
 
 	private static final int LAYOUT = R.layout.depart_item;
-	private static final String[] FROM = new String[] { "destination", "heure", "type", "numero", "retard_duree", "retard_motif" };
-	private static final int[] TO = new int[] { R.id.TrainItemDestination, R.id.TrainItemHeure, R.id.TrainItemType, R.id.TrainItemNumero, R.id.TrainItemRetardDuree, R.id.TrainItemRetardMotif };
+	private static final String[] FROM = new String[] { "destination", "heure", "type", "numero", "retard_duree", "retard_motif", "voie" };
+	private static final int[] TO = new int[] { R.id.TrainItemDestination, R.id.TrainItemHeure, R.id.TrainItemType, R.id.TrainItemNumero, R.id.TrainItemRetardDuree, R.id.TrainItemRetardMotif,
+			R.id.TrainItemVoie };
 
 	public ListeProchainsDepartsAdapter(Context context, List<ProchainTrain.Depart> trains) {
 		super(context, getData(trains), LAYOUT, FROM, TO);
@@ -65,7 +66,7 @@ public class ListeProchainsDepartsAdapter extends SimpleAdapter {
 		v.setBackgroundColor(position % 2 == 1 ? Util.BACKGROUND_1 : Util.BACKGROUND_2);
 
 		// Retard
-		if (!item.containsKey("retard_duree") || item.get("retard_duree").equals("")) {
+		if (!item.containsKey("retard_duree") || item.get("retard_duree") == null || item.get("retard_duree").equals("")) {
 			v.findViewById(R.id.TrainItemRetard).setVisibility(View.GONE);
 		} else {
 			v.findViewById(R.id.TrainItemRetard).setVisibility(View.VISIBLE);
@@ -76,6 +77,13 @@ public class ListeProchainsDepartsAdapter extends SimpleAdapter {
 			v.findViewById(R.id.TrainItemSupprime).setVisibility(View.VISIBLE);
 		} else {
 			v.findViewById(R.id.TrainItemSupprime).setVisibility(View.GONE);
+		}
+
+		// Voie
+		if (item.containsKey("voie") && item.get("voie") != null && !item.get("voie").equals("")) {
+			v.findViewById(R.id.TrainItemVoie).setVisibility(View.VISIBLE);
+		} else {
+			v.findViewById(R.id.TrainItemVoie).setVisibility(View.GONE);
 		}
 
 		return v;
