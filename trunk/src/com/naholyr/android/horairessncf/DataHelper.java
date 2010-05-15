@@ -26,7 +26,7 @@ public class DataHelper {
 	private static final String DATABASE_NAME = "gares.db";
 	private static final String TABLE_NAME = "gares";
 	private static final String[] SELECT_COLUMNS = new String[] { "nom", "region", "adresse", "latitude", "longitude" };
-	private static final String SELECT_WHERE_NOM = "nom = ?";
+	private static final String SELECT_WHERE_NOM = "nom LIKE ?";
 	private static final String SELECT_WHERE_ROWID = "_ROWID_ = ";
 	private static final String SELECT_WHERE_BOX = "latitude between ? and ? and longitude between ? and ?";
 	private static final String[] SELECT_ALL_COLUMNS = new String[] { "nom" };

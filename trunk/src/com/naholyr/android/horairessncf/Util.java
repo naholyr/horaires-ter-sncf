@@ -18,7 +18,7 @@ public class Util {
 
 	public static final String INTENT_NOTIFICATION_ACTION = "com.naholyr.android.horairessncf.notifications";
 
-	public static final int NB_GARES_TOTAL = 3081;
+	public static final int NB_GARES_TOTAL = 3078;
 
 	public static final int BACKGROUND_1 = 0x33FFFFFF;
 	public static final int BACKGROUND_2 = 0x33999999;
