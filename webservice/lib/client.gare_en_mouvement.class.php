@@ -53,7 +53,7 @@ class client_gare_en_mouvement implements client_interface
           'type' => preg_match('#alt="(.*?)"#i', $type, $m) ? $m[1] : strip_tags($type),
           'numero' => $num,
           'heure' => $heure,
-          'destination' => $dest,
+          'destination' => nom_gare($dest),
           'voie' => $voie,
           'supprime' => preg_match('#SUPPR#i', $situation) ? true : false,
           'retards' => array(),

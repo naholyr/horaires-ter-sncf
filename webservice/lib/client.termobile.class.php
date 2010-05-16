@@ -138,10 +138,7 @@ class client_termobile implements client_interface
     foreach ($m as $item) {
       $item = utf8_encode(trim($item[0]));
       $depart = array();
-      if (preg_match('#Départ dans (.*?)<br#i', $item, $m2)) {
-        $depart['attention'] = trim($m2[1]);
-      }
-      if (preg_match('#<(?:span|font)[^>]*>Mode *: *</(?:span|font)> *([^<>]+).*?<br[^>]*> *<(?:span|font)[^>]*>N° *: *</(?:span|font)> *(.*?) *<br#i', $item, $m2)) {
+      if (preg_match('#<(?:span|font)[^>]*>Mode *: *</(?:span|font)> *(?:train)? *([^<>]+).*?<br[^>]*> *<(?:span|font)[^>]*>N° *: *</(?:span|font)> *(.*?) *<br#i', $item, $m2)) {
         $depart['type'] = trim($m2[1]);
         $depart['numero'] = trim($m2[2]);
       }
@@ -168,6 +165,9 @@ class client_termobile implements client_interface
           $retard['motif'] = trim($m3[1]);
         }
         $depart['retards'][] = $retard;
+      }
+      if (preg_match('#Départ dans (.*?)<br#i', $item, $m2)) {
+        $depart['attention'] = trim($m2[1]);
       }
       $depart['source'] = 'termobile';
       $departs[] = $depart;

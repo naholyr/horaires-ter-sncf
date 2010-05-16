@@ -9,7 +9,7 @@ class client_termobile_plus_gem implements client_interface
   private $client_gem;
 
   private $sources = array();
-  
+
   public function __construct()
   {
     $this->client_termobile = get_client('termobile');
@@ -53,6 +53,8 @@ class client_termobile_plus_gem implements client_interface
       $departs_gem = array();
     }
     $added = false;
+    // On complète les informations de voie avec les départs de gare-en-mouvement
+    // On ajoute tous les départs gare-en-mouvement qui ne sont pas inclus
     foreach ($departs_gem as $depart_gem) {
       $found = false;
       foreach ($departs as &$depart) {
@@ -67,29 +69,56 @@ class client_termobile_plus_gem implements client_interface
         $added = true;
       }
     }
+    // Supprimer les doublons
+    $departs_uniq = array();
+    foreach ($departs as $depart) {
+      foreach ($departs_uniq as &$depart_uniq) {
+        if ($this->meme_depart($depart, $depart_uniq)) {
+          if (isset($depart['voie']) && $depart['voie'] != '' && (!isset($depart_uniq['voie']) || $depart_uniq['voie'] == '')) {
+            $depart_uniq['voie'] == $depart['voie'];
+          }
+          if (isset($depart['retards']) && count($depart['retards']) == 0 && (!isset($depart_uniq['retards']) || count($depart_uniq['retards']) == 0)) {
+            $depart_uniq['retards'] = $depart['retards'];
+          }
+          continue 2;
+        }
+      }
+      $departs_uniq[] = $depart;
+    }
+    $departs = $departs_uniq;
+    // Trier s'il y a eu des ajouts
     if ($added) {
       usort($departs, array($this, 'cmp_departs'));
       $departs = array_slice($departs, 0, $nb_departs);
     }
     return $departs;
   }
-  
-  private function cmp_departs($d1, $d2) 
+
+  private function cmp_departs($d1, $d2)
   {
     $h1 = $d1['heure'];
     $h2 = $d2['heure'];
     return strcmp($h1, $h2);
   }
-  
+
   private function meme_depart($d1, $d2)
   {
     // Même train
     if ($d1['numero'] == $d2['numero']) {
       return true;
     }
-    // Cas particulier : entre GEM et TERMobile on a parfois pour les TER un décalage d'1 pour les numéro
-    if (is_numeric($d1['numero']) && is_numeric($d2['numero']) && $d1['heure'] == $d2['heure']) {
-      return true;
+    // Cas particulier : entre GEM et TERMobile on n'a parfois pas les mêmes numéros pour un même train
+    if ($d1['heure'] == $d2['heure']) {
+      // On cherche les mêmes heures de départ + même destination
+      // Encore une différence : les destination ne sont pas indiquées de la même manière, on vérifie simplement que
+      // l'une est contenue dans l'autre
+      $k1 = str_replace(' ', '-', strtolower(iconv("UTF-8", "ASCII//TRANSLIT", $d1['destination'])));
+      $k2 = str_replace(' ', '-', strtolower(iconv("UTF-8", "ASCII//TRANSLIT", $d2['destination'])));
+      $v1 = isset($d1['voie']) ? $d1['voie'] : '';
+      $v2 = isset($d2['voie']) ? $d2['voie'] : '';
+      if ((strpos($k1, $k2) !== false || strpos($k2, $k1) !== false) && ($v1 == '' || $v2 == '' || $v1 == $v2)) {
+        return true;
+      }
     }
     return false;
   }
@@ -110,5 +139,5 @@ class client_termobile_plus_gem implements client_interface
   {
     return $this->client_termobile->cherche_train($num);
   }
-  
+
 }
