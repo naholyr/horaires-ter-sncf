@@ -86,7 +86,7 @@ Moosch#Alsace#Rue de la Gare, 68690 Moosch, France#47.8618438#7.0521165
 Mothern#Alsace#Place de la Gare, 67630 Lauterbourg, France#48.9648899#8.1811
 Muhlbach-sur-Munster#Alsace#Rue de la Gare, 68380 Muhlbach-sur-Munster, France#48.0246331#7.0873337
 Mulhouse-Dornach#Alsace#Dornach, Mulhouse, France#47.7469683#7.3089948
-Mulhouse-Ville#Alsace#Gare de Mulhouse-Ville, 68100 Mulhouse, France#47.7422382#7.3427296
+Mulhouse#Alsace#Gare de Mulhouse-Ville, 68100 Mulhouse, France#47.7422382#7.3427296
 Mullerhof#Alsace#Alsace, France#48.3181795#7.4416241
 Munchhausen#Alsace#Rue de la Gare, 67470 Munchhausen, France#48.9234052#8.1413828
 Mundolsheim#Alsace#Rue de la Gare, 67450 Mundolsheim, France#48.6440638#7.7193175
@@ -134,7 +134,7 @@ St-Gilles (Haut-Rhin)#Alsace#Haut-Rhin, France#47.9315041#7.2441099
 St-Louis (Haut-Rhin)#Alsace#Saint-Louis (Haut-Rhin), 68300 Saint-Louis, France#47.5896496#7.5569536
 St-Louis-la-Chaussée#Alsace#Rue de la Gare, 68730 Blotzheim, France#47.6046002#7.4982793
 Strasbourg-Roethig#Alsace#Alsace, France#48.3181795#7.4416241
-Strasbourg-Ville#Alsace#Place de la Gare, 67000 Strasbourg, France#48.5847646#7.7359203
+Strasbourg#Alsace#Place de la Gare, 67000 Strasbourg, France#48.5847646#7.7359203
 Tagolsheim#Alsace#Rue de la Gare, 68720 Tagolsheim, France#47.6549753#7.2650504
 Thann#Alsace#Rue de la Gare, 68760 Willer-sur-Thur, France#47.8431443#7.0692472
 Thann Saint-Jacques#Alsace#Alsace, France#48.3181795#7.4416241
@@ -171,7 +171,7 @@ Artix#Aquitaine#Rue de la Gare, 64170 Artix, France#43.3940125#-0.5710127
 Assat#Aquitaine#Impasse de la Gare, 64510 Assat, France#43.2545999#-0.2954568
 Aubie-St-Antoine#Aquitaine#Rue de la Gare, 33240 Aubie-et-Espessas, France#45.0184506#-0.4173483
 Barsac#Aquitaine#Rue de la Gare, 33720 Barsac, France#44.6034124#-0.3189932
-Bassens-Ville#Aquitaine#Place de la Gare, 33530 Bassens, France#44.9009811#-0.5219228
+Bassens#Aquitaine#Place de la Gare, 33530 Bassens, France#44.9009811#-0.5219228
 Bayonne#Aquitaine#Route de la Gare, 64990 Lahonce, France#43.4905478#-1.3863871
 Beautiran#Aquitaine#Rue de la Gare, 33640 Beautiran, France#44.7011057#-0.4511702
 Bègles#Aquitaine#Rue de la Gare, 33130 Bègles, France#44.8005026#-0.5445
@@ -180,7 +180,7 @@ Bénesse-Maremne#Aquitaine#La Gare, 40150 Soorts-Hossegor, France#43.6648829#-1.
 Bergerac#Aquitaine#La Gare, 24520 Saint-Nexans, France#44.8066113#0.5624448
 Biarritz#Aquitaine#Avenue de la Gare, 64200 Biarritz, France#43.4783919#-1.5570007
 Blanquefort#Aquitaine#Rue de la Gare, 33290 Blanquefort, France#44.9174173#-0.6254938
-Bordeaux-St-Jean#Aquitaine#Gare Saint-Jean, 33800 Bordeaux, France#44.8259#-0.55683
+Bordeaux-Saint-Jean#Aquitaine#Gare Saint-Jean, 33800 Bordeaux, France#44.8259#-0.55683
 Bordeaux-St-Louis-Voyageurs#Aquitaine#Aquitania, France#44.7002222#-0.2995785
 Bruges#Aquitaine#Rue de la Gare, 33290 Blanquefort, France#44.9174173#-0.6254938
 Buzy-en-Béarn#Aquitaine#Aquitania, France#44.7002222#-0.2995785
@@ -193,7 +193,7 @@ Cavignac#Aquitaine#Rue de la Gare, 33620 Cavignac, France#45.106856#-0.3838171
 Cenon#Aquitaine#Cenon Gare, 33150 Cenon, France#44.856#-0.53423
 Cerons#Aquitaine#Rue de la Gare, 33720 Barsac, France#44.6034124#-0.3189932
 Château-l'Evèque#Aquitaine#La Gare, 24000 Périgueux, France#45.1883305#0.7075646
-Coarraze-Nay#Aquitaine#Avenue de la Gare, 64800 Coarraze, France#43.1763823#-0.2382964
+Coarraze - Nay#Aquitaine#Avenue de la Gare, 64800 Coarraze, France#43.1763823#-0.2382964
 Condat-le-Lardin#Aquitaine#Aquitania, France#44.7002222#-0.2995785
 Coutras#Aquitaine#Avenue de la Gare, 33230 Guîtres, France#45.038648#-0.1926094
 Couze#Aquitaine#Avenue de la Gare, 24150 Lalinde, France#44.8355012#0.7037868
@@ -641,7 +641,8 @@ Brélidy-Plouëc#Bretagne#Rue de la Gare, 22260 Plouëc-du-Trieux, France#48.672
 Brest#Bretagne#Gare de Brest, 29200 Brest, France#48.387779#-4.480458
 Breteil#Bretagne#Gare de Breteil, 35160 Breteil, France#48.140526#-1.897384
 Broons#Bretagne#Rue de la Gare, 22250 Broons, France#48.3184569#-2.2573595
-Bruz#Bretagne#Gare de Ker-Lann, 35170 Bruz, France#48.043158#-1.738545
+Bruz#Bretagne#43 Avenue Jules Tricault, 35170 Bruz, France#48.029557#-1.751096
+Ker Lann#Bretagne#Gare de Ker-Lann, 35170 Bruz, France#48.043158#-1.738545
 Callac#Bretagne#Rue de la Gare, 22160 Callac, France#48.4072869#-3.418454
 Carhaix#Bretagne#Place de la Gare, 29270 Carhaix-Plouguer, France#48.2773942#-3.5634765
 Carnoët-Locarn#Bretagne#Locarn, France#48.3192792#-3.4225156
@@ -1200,7 +1201,7 @@ Chambenoist-Poigny#Ile de France#Poigny, France#48.5394422#3.2832226
 Champagne-sur-Oise#Ile de France#Gare de Champagne sur Oise, 95660 Champagne-sur-Oise, France#49.136138#2.24181
 Champagne-sur-Seine#Ile de France#Gare de Champagne sur Seine, 77430 Champagne-sur-Seine, France#48.406779#2.799279
 Champ-de-Courses-d'Enghien#Ile de France#Gare de Champ de Courses d'Enghien, 95230 Soisy-sous-Montmorency, France#48.980072#2.291786
-Champs-de-Mars-Tour-Eiffel#Ile de France#Eiffel Tower, Paris, France#48.858205#2.294359
+Ch. de Mars-Tour-Eiffel#Ile de France#Eiffel Tower, Paris, France#48.858205#2.294359
 Changis-St-Jean#Ile de France#Gare de Changis St Jean, 77660 Changis-sur-Marne, France#48.959599#3.025699
 Chanteloup-les-Vignes#Ile de France#Gare de Chanteloup Les Vignes, 78570 Chanteloup-les-Vignes, France#48.971078#2.027656
 Chaponval#Ile de France#Gare de Chaponval, 95430 Auvers-sur-Oise, France#49.069426#2.142112
@@ -1252,7 +1253,6 @@ Essonnes-Robinson#Ile de France#Gare d'Essonnes - Robinson, 91100 Villabé, Fran
 Etampes#Ile de France#Gare d'Etampes, 91150 Etampes, France#48.4369444#2.1594444
 Etréchy#Ile de France#Boulevard de la Gare, 91580 Etréchy, France#48.4915456#2.1918474
 Evry#Ile de France#Place de la Gare, 91000 Evry, France#48.625345#2.4298851
-Evry-Courcouronnes#Ile de France#Evry, 91000 Evry, France#48.6345745#2.4521965
 Faremoutiers-Pommeuse#Ile de France#Gare de Faremoutiers Pommeuse, 77515 Pommeuse, France#48.808781#2.993268
 Fontainebleau-Avon#Ile de France#Gare de Fontainebleau Avon, 77210 Avon, France#48.416572#2.72652
 Fontaine-le-Port#Ile de France#Gare de Fontaine le Port, 77590 Fontaine-le-Port, France#48.487708#2.751396
@@ -1329,7 +1329,6 @@ Les Saules#Ile de France#Gare des Saules, 94310 Orly, France#48.7461111#2.417777
 Les Vallées#Ile de France#Place de la Gare des Vallées, France#48.913695#2.2594194
 Les Yvris-Noisy-le-Grand#Ile de France#Les Yvris - Noisy-le-Grand, 93160 Noisy-le-Grand, France#48.8232827#2.5795708
 L'Etang-la-Ville#Ile de France#Gare de l'Etang la Ville, 78620 L'Etang-la-Ville, France#48.868407#2.07676
-Lieusaint-Moissy#Ile de France#Lieusaint - Moissy, 77127 Lieusaint, France#48.6283613#2.5694672
 Limay#Ile de France#Gare de Limay, 78520 Limay, France#48.984428#1.747048
 L'Isle-Adam-Parmain#Ile de France#Gare de l'Isle Adam Parmain, 95620 Parmain, France#49.114316#2.209556
 Livry-sur-Seine#Ile de France#Gare de Livry sur Seine, 77000 Livry-sur-Seine, France#48.510336#2.679263
@@ -1370,7 +1369,6 @@ Mitry-Claye#Ile de France#Mitry - Claye, 77290 Mitry-Mory, France#48.975715#2.64
 Monnerville#Ile de France#Rue de la Gare, 91670 Angerville, France#48.3123581#2.0002683
 Montereau#Ile de France#Route de la Gare, 77130 Montereau-Fault-Yonne, France#48.3784939#2.9414433
 Montfort-l'Amaury-Mère#Ile de France#Gare de Montfort l'Amaury Méré, 78490 Méré, France#48.802883#1.815396
-Montgeron-Crosne#Ile de France#Montgeron - Crosne, 91230 Montgeron, France#48.7082721#2.4623697
 Montgeroult-Courcelles#Ile de France#Gare de Montgeroult Courcelles, 95650 Montgeroult, France#49.080936#2.003179
 Montigny-Beauchamp#Ile de France#Montigny - Beauchamp, 95250 Beauchamp, France#49.0073157#2.1981207
 Montigny-sur-Loing#Ile de France#Avenue de la Gare, 77690 Montigny-sur-Loing, France#48.3366778#2.739919
@@ -1397,7 +1395,6 @@ Noisy-le-Sec#Ile de France#Noisy-le-Sec, 93130 Noisy-le-Sec, France#48.8966785#2
 Norville-St-Germain-Arpajon#Ile de France#La Norville - Saint-Germain-les-Arpajon, 91290 La Norville, France#48.5916606#2.2674023
 Orangis-Bois-de-l'Epine#Ile de France#Gare d'Orangis - Bois de l'Epine, 91130 Ris-Orangis, France#48.6361111#2.4075
 Orgérus-Béhoust#Ile de France#Gare d'Orgerus Behoust, 78910 Orgerus, France#48.827493#1.703796
-Orly-Ville#Ile de France#Gare des Saules, 94310 Orly, France#48.7461111#2.4177778
 Osny#Ile de France#Lotissement de la Gare, 95520 Osny, France#49.0578515#2.0577488
 Ozoir-la-Ferrière#Ile de France#Ozoir la Ferrière, 77330 Ozoir-la-Ferrière, France#48.770722#2.6903784
 Pantin#Ile de France#Avenue de la Gare, 93500 Pantin, France#48.8976128#2.4003153
@@ -1471,7 +1468,6 @@ St-Gratien#Ile de France#Boulevard de la Gare, 95210 Saint-Gratien, France#48.96
 St-Leu-la-Fôret#Ile de France#Passage de la Gare, 95320 Saint-Leu-la-Forêt, France#49.0163022#2.2430185
 St-Mammès#Ile de France#Rue de la Gare, 77670 Saint-Mammès, France#48.3819647#2.8159925
 St-Martin-d'Etampes#Ile de France#Gare de Saint-Martin-d'Etampes, 91150 Etampes, France#48.4275#2.145
-St-Michel-Notre-Dame#Ile de France#St-Michel - Notre-Dame, 75005 Paris, France#48.8534509#2.3457339
 St-Michel-sur-Orge#Ile de France#Brétigny-sur-Orge, 91220 Brétigny-sur-Orge, France#48.6066102#2.3019254
 St-Nom-la-Bretêche-Forêt Marly#Ile de France#Gare de St Nom la Bretèche Forêt de Marly, 78620 L'Etang-la-Ville, France#48.86806#2.050875
 St-Ouen#Ile de France#Gare de Saint-Ouen, 93400 Saint-Ouen, France#48.9055556#2.3222222
@@ -1511,10 +1507,6 @@ Viarmes#Ile de France#Rue de la Gare, 95270 Viarmes, France#49.120787#2.3693001
 Vigneux-sur-Seine#Ile de France#Vigneux-sur-Seine, 91270 Vigneux-sur-Seine, France#48.708479#2.4144387
 Villabé#Ile de France#Avenue de la Gare, 91100 Villabé, France#48.5926425#2.4576751
 Villaines (Val-d'Oise)#Ile de France#Rue de la Gare, 95570 Villaines-sous-Bois, France#49.0775687#2.354554
-Villeneuve-le-Roi#Ile de France#Villeneuve le-Roi, 94290 Villeneuve-le-Roi, France#48.7398542#2.4263692
-Villeneuve-Prairie#Ile de France#Gare de Villeneuve - Prairie, 94600 Choisy-le-Roi, France#48.7652778#2.4336111
-Villeneuve-St-Georges#Ile de France#Gare de Villeneuve - Triage, 94190 Villeneuve-Saint-Georges, France#48.7463889#2.4377778
-Villeneuve-St-Georges-Triage#Ile de France#Villeneuve-Triage, 94190 Villeneuve-Saint-Georges, France#48.7453586#2.4383801
 Villennes-sur-Seine#Ile de France#Gare de Villennes sur Seine, 78670 Villennes-sur-Seine, France#48.939769#1.999437
 Villeparisis#Ile de France#Avenue de la Gare, 93290 Tremblay-en-France, France#48.9453334#2.5654924
 Villepinte#Ile de France#Gare de Villepinte, 93420 Villepinte, France#48.9627778#2.5122222
@@ -1632,7 +1624,7 @@ Pomas#Languedoc-Roussillon#Pomas, France#43.1109034#2.2922695
 Porta#Languedoc-Roussillon#Route de la Gare, 66760 Latour-de-Carol, France#42.4645629#1.8906998
 Porté-Puymorens#Languedoc-Roussillon#Porté-Puymorens, France#42.548041#1.8303448
 Port-la-Nouvelle#Languedoc-Roussillon#Port-la-Nouvelle, France#43.0218042#3.0434361
-Port-Vendres-Ville#Languedoc-Roussillon#Avenue de la Gare, 66650 Banyuls-sur-Mer, France#42.4828825#3.1261815
+Port-Vendres#Languedoc-Roussillon#Avenue de la Gare, 66650 Banyuls-sur-Mer, France#42.4828825#3.1261815
 Prades-Molitg-les-Bains#Languedoc-Roussillon#Boulevard de la Gare, 66500 Prades, France#42.6177394#2.4295748
 Quillan#Languedoc-Roussillon#Avenue de la Gare, 11260 Espéraza, France#42.9352424#2.2196052
 Ria#Languedoc-Roussillon#Boulevard de la Gare, 66500 Prades, France#42.6177394#2.4295748
@@ -2014,7 +2006,7 @@ Mérenvielle#Midi-Pyrénées#Mérenvielle, France#43.6281859#1.1567613
 Millau#Midi-Pyrénées#Millau, France#44.0995818#3.0812677
 Moissac#Midi-Pyrénées#Moissac, France#44.1040176#1.084942
 Montastruc-la-Conseillère#Midi-Pyrénées#Avenue de la Gare, 31380 Montastruc-la-Conseillère, France#43.7163578#1.5955026
-Montauban-Ville-Bourbon#Midi-Pyrénées#Midi-Pyrénées, France#44.0859426#1.5208624
+Montauban-Villebourbon#Midi-Pyrénées#Midi-Pyrénées, France#44.0859426#1.5208624
 Montaudran#Midi-Pyrénées#Boulevard de la Gare, 31500 Toulouse, France#43.6054509#1.4570224
 Montbartier#Midi-Pyrénées#Chemin de la Gare, 82170 Dieupentale, France#43.8657896#1.2763682
 Montlaur#Midi-Pyrénées#Avenue de la Gare, 31750 Escalquens, France#43.5163934#1.5377476
@@ -2112,7 +2104,7 @@ Blangy-sur-Ternoise#Nord Pas de Calais#Blangy-sur-Ternoise, France#50.4216992#2.
 Boisleux#Nord Pas de Calais#Nord-Pas de Calais, France#50.4801153#2.7937265
 Bouchain#Nord Pas de Calais#Rue de la Gare, 59111 Bouchain, France#50.2774675#3.3308884
 Boulogne-Tintelleries#Nord Pas de Calais#Nord-Pas de Calais, France#50.4801153#2.7937265
-Boulogne-Ville#Nord Pas de Calais#Rue de la Gare, 62360 Hesdigneul-les-Boulogne, France#50.6602516#1.6690835
+Boulogne Ville#Nord Pas de Calais#Rue de la Gare, 62360 Hesdigneul-les-Boulogne, France#50.6602516#1.6690835
 Bourbourg#Nord Pas de Calais#Rue de la Gare, 59630 Bourbourg, France#50.9520176#2.1936918
 Bouvines#Nord Pas de Calais#Rue de la Gare, 59152 Gruson, France#50.5936139#3.2018861
 Brebières-Sud#Nord Pas de Calais#Rue de la Gare, 62112 Corbehem, France#50.3403676#3.0440232
@@ -2122,7 +2114,7 @@ Bully-Grenay#Nord Pas de Calais#Place de la Gare, 62160 Bully-les-Mines, France#
 Busigny#Nord Pas de Calais#Rue de la Gare, 59137 Busigny, France#50.0374261#3.4506716
 Caffiers#Nord Pas de Calais#Caffiers, France#50.8400862#1.8135166
 Calais-Fréthun#Nord Pas de Calais#Rue de la Gare, 62185 Fréthun, France#50.904794#1.8113304
-Calais-Ville#Nord Pas de Calais#Quai de la Gare Maritime, 62100 Calais, France#50.9652334#1.8542268
+Calais Ville#Nord Pas de Calais#Quai de la Gare Maritime, 62100 Calais, France#50.9652334#1.8542268
 Calonne-Ricouart#Nord Pas de Calais#Rue de la Gare, 62470 Calonne-Ricouart, France#50.4824821#2.4803444
 Cambrai#Nord Pas de Calais#Place de la Gare, 59400 Cambrai, France#50.1766033#3.2406112
 Cantin#Nord Pas de Calais#Rue de la Gare, 59169 Cantin, France#50.3114477#3.1212256
@@ -2196,8 +2188,8 @@ Liévin#Nord Pas de Calais#Rue de la Gare, 62300 Lens, France#50.4275982#2.83129
 Ligny-St-Flochel#Nord Pas de Calais#Ligny-Saint-Flochel, France#50.3582154#2.4264925
 Lille CHR#Nord Pas de Calais#CHR B Calmette, 59000 Lille, France#50.608408#3.039608
 Lille Europe#Nord Pas de Calais#Place de la Gare, 59800 Lille, France#50.636762#3.0694657
-Lille-Flandres#Nord Pas de Calais#Gare Lille Flandres, 59800 Lille, France#50.6369009#3.0703461
-Lille-Porte-de-Douai#Nord Pas de Calais#Porte de Douai, 59000 Lille, France#50.6180008#3.0721486
+Lille Flandres#Nord Pas de Calais#Gare Lille Flandres, 59800 Lille, France#50.6369009#3.0703461
+Lille Porte de Douai#Nord Pas de Calais#Porte de Douai, 59000 Lille, France#50.6180008#3.0721486
 Lillers#Nord Pas de Calais#Rue de la Gare, 62190 Lillers, France#50.5621042#2.4793273
 Loison#Nord Pas de Calais#Rue de la Gare, 62300 Lens, France#50.4275982#2.831297
 Loos-en-Gohelle#Nord Pas de Calais#Rue de la Gare, 62300 Lens, France#50.4275982#2.831297
@@ -2747,7 +2739,7 @@ L'Isle-Fontaine-de-Vaucluse#Provence-Alpes Côte d'Azur#Fontaine-de-Vaucluse, Fr
 Mandelieu-la-Napoule#Provence-Alpes Côte d'Azur#Traverse de la Gare, 83700 Saint-Raphaël, France#43.477857#6.9282668
 Manosque-Gréoux-les-Bains#Provence-Alpes Côte d'Azur#Gréoux-les-Bains, France#43.758644#5.8852709
 Marseille-Blancarde#Provence-Alpes Côte d'Azur#Blancarde Chave, 13004 Marseilles, France#43.2959451#5.4060942
-Marseille-St-Charles#Provence-Alpes Côte d'Azur#Saint-Charles, 13001 Marseilles, France#43.3025704#5.3799319
+Marseille-Saint-Charles#Provence-Alpes Côte d'Azur#Saint-Charles, 13001 Marseilles, France#43.3025704#5.3799319
 Martigues#Provence-Alpes Côte d'Azur#Traverse de la Gare, 13500 Martigues, France#43.3387391#5.052107
 Menton#Provence-Alpes Côte d'Azur#Avenue de la Gare, 06500 Menton, France#43.7752031#7.4943454
 Menton-Garavan#Provence-Alpes Côte d'Azur#Avenue de la Gare, 06500 Menton, France#43.7752031#7.4943454
@@ -2761,7 +2753,7 @@ Mouans-Sartoux#Provence-Alpes Côte d'Azur#Traverse de la Gare, 06130 Grasse, Fr
 Nice-Riquier#Provence-Alpes Côte d'Azur#Provence-Alpes-Côte d'Azur, France#43.9351691#6.0679194
 Nice-St-Augustin#Provence-Alpes Côte d'Azur#Provence-Alpes-Côte d'Azur, France#43.9351691#6.0679194
 Nice-St-Roch#Provence-Alpes Côte d'Azur#Provence-Alpes-Côte d'Azur, France#43.9351691#6.0679194
-Nice-Ville#Provence-Alpes Côte d'Azur#Tunnel de la Gare, 06000 Nice, France#43.7048732#7.2623712
+Nice#Provence-Alpes Côte d'Azur#Tunnel de la Gare, 06000 Nice, France#43.7048732#7.2623712
 Niolon#Provence-Alpes Côte d'Azur#Niolon, Le Rove, France#43.3387082#5.2570614
 Ollioules-Sanary-S-Mer#Provence-Alpes Côte d'Azur#Route de la Gare, 83110 Sanary-sur-Mer, France#43.130229#5.843028
 Orange#Provence-Alpes Côte d'Azur#Avenue de la Gare, 84420 Piolenc, France#44.1808342#4.7622155
@@ -3076,3 +3068,6 @@ Viviers-du-Lac#Rhône-Alpes#Rue de la Gare, 73420 Viviers-du-Lac, France#45.6485
 Voiron#Rhône-Alpes#Avenue Léon et Joanny Tardy, 38500 Voiron, France#45.364373#5.595394
 Vonnas#Rhône-Alpes#Avenue de la Gare, 01540 Vonnas, France#46.2251457#4.9924211
 Voreppe#Rhône-Alpes#Rue de la Gare, 38340 Voreppe, France#45.2908245#5.6339041
+Le Puy-en-Velay#Auvergne#6 Rue de la Gare, 15170 Neussargues Moissac, France#45.245087#3.949178
+St-Cyr-en-Val-La-Source#Centre#45590 Saint-Cyr-en-Val, France#45.762273#4.889175
+Epône-Méziéres#Ile-de-France#Avenue de la Gare, 78970 Mézières-sur-Seine, France#47.820532#1.94458
