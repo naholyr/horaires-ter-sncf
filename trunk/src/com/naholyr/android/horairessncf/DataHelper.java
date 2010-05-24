@@ -246,7 +246,7 @@ public class DataHelper {
 
 	public long countGares() {
 		try {
-			return db.compileStatement("SELECT COUNT(*) FROM db_updates " + TABLE_NAME).simpleQueryForLong();
+			return db.compileStatement("SELECT COUNT(*) FROM " + TABLE_NAME).simpleQueryForLong();
 		} catch (SQLiteException e) {
 			return 0;
 		}
