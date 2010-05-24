@@ -6,10 +6,11 @@
 		android:icon="@android:drawable/btn_star" />
 	<item android:id="@+id/menu_main_search" android:title="Rechercher"
 		android:icon="@android:drawable/ic_menu_search" />
-	<item android:id="@+id/menu_main_about" android:title="À propos"
-		android:icon="@android:drawable/ic_menu_info_details" />
+	<item android:id="@+id/menu_main_map" android:title="Carte des gares" />
 	<item android:id="@+id/menu_main_preferences" android:title="Préférences"
 		android:icon="@android:drawable/ic_menu_preferences" />
+	<item android:id="@+id/menu_main_about" android:title="À propos"
+		android:icon="@android:drawable/ic_menu_info_details" />
 	<group android:id="@+id/menu_main_liens">
 		<item android:id="@+id/menu_main_lien_termobile" android:title="TERMobile.fr" android:icon="@drawable/ic_menu_globe"/>
 		<item android:id="@+id/menu_main_lien_garesenmouvement"

@@ -21,6 +21,7 @@
 				<data android:mimeType="vnd.android.cursor.item/vnd.horairessncf.gare" />
 			</intent-filter>
 		</activity>
+		<activity android:name=".activity.MapActivity" />
 		<activity android:name=".activity.PreferencesActivity" />
 		<activity android:name=".activity.InitializeDataActivity"
 			android:theme="@android:style/Theme.Dialog" android:configChanges="orientation" />
