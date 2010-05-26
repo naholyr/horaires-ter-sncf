@@ -60,32 +60,42 @@ class client_termobile_plus_gem implements client_interface
       foreach ($departs as &$depart) {
         if ($this->meme_depart($depart, $depart_gem)) {
           $depart['voie'] = $depart_gem['voie'];
+          if (count($depart['retards']) == 0 && count($depart_gem['retards']) != 0) {
+            $depart['retards'] = $depart_gem['retards'];
+          }
           $found = true;
           break;
         }
       }
+      // Désactivation de l'ajout des horaires de gare-en-mouvement
+      // Le temps de résoudre le problème de détection des doublons correcte
       if (!$found) {
         $departs[] = $depart_gem;
         $added = true;
       }
     }
     // Supprimer les doublons
-    $departs_uniq = array();
-    foreach ($departs as $depart) {
-      foreach ($departs_uniq as &$depart_uniq) {
-        if ($this->meme_depart($depart, $depart_uniq)) {
-          if (isset($depart['voie']) && $depart['voie'] != '' && (!isset($depart_uniq['voie']) || $depart_uniq['voie'] == '')) {
-            $depart_uniq['voie'] == $depart['voie'];
+    // Désactivation de la suppression des doublons : les doublons termobile sont normaux et
+    // affichés en gare, donc on les garde. Reste le problème des vrais doublons causés par
+    // ajout des horaires GEM.
+    if ($added) {
+      $departs_uniq = array();
+      foreach ($departs as $depart) {
+        foreach ($departs_uniq as &$depart_uniq) {
+          if ($depart['source'] != $depart_uniq['source'] && $this->meme_depart($depart, $depart_uniq)) {
+            if (isset($depart['voie']) && $depart['voie'] != '' && (!isset($depart_uniq['voie']) || $depart_uniq['voie'] == '')) {
+              $depart_uniq['voie'] == $depart['voie'];
+            }
+            if (isset($depart['retards']) && count($depart['retards']) == 0 && (!isset($depart_uniq['retards']) || count($depart_uniq['retards']) == 0)) {
+              $depart_uniq['retards'] = $depart['retards'];
+            }
+            continue 2;
           }
-          if (isset($depart['retards']) && count($depart['retards']) == 0 && (!isset($depart_uniq['retards']) || count($depart_uniq['retards']) == 0)) {
-            $depart_uniq['retards'] = $depart['retards'];
-          }
-          continue 2;
         }
+        $departs_uniq[] = $depart;
       }
-      $departs_uniq[] = $depart;
+      $departs = $departs_uniq;
     }
-    $departs = $departs_uniq;
     // Trier s'il y a eu des ajouts
     if ($added) {
       usort($departs, array($this, 'cmp_departs'));
