@@ -116,7 +116,7 @@ class client_termobile_plus_gem implements client_interface
     if (strcmp($h1, '12h00') <= 0 && strcmp($h2, '18h00') >= 0) {
       return 1;
     }
-    if (strcmp($h1, '18h00') >= 0 && strcmp($h1, '12h00') <= 0) {
+    if (strcmp($h1, '18h00') >= 0 && strcmp($h2, '12h00') <= 0) {
       return -1;
     }
     return strcmp($h1, $h2);
