@@ -19,7 +19,7 @@ import com.naholyr.android.horairessncf.termobile.JSONWebServiceClient.JSONRespo
 
 public class JSONServerBrowser implements IBrowser {
 
-	public static final String WS_HOST = "http://termobile-ws.sfhost.net/beta";
+	public static final String WS_HOST = "http://termobile-ws.sfhost.net";
 	public static final String WS_GARE_URI = WS_HOST + "/prochainsdeparts.php";
 	public static final String WS_TRAIN_URI = WS_HOST + "/train.php";
 
