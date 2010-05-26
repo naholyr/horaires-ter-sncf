@@ -108,6 +108,17 @@ class client_termobile_plus_gem implements client_interface
   {
     $h1 = $d1['heure'];
     $h2 = $d2['heure'];
+    
+    // En fin de journée, on a les résultats du lendemain ! si une heure est
+    // avant midi et l'autre après 18h00, on est probablement dans ce cas...
+    // h1 < 12h et h2 > 18h : h1 > h2
+    // h1 > 18h et h2 < 12h : h1 < h2
+    if (strcmp($h1, '12h00') <= 0 && strcmp($h2, '18h00') >= 0) {
+      return 1;
+    }
+    if (strcmp($h1, '18h00') >= 0 && strcmp($h1, '12h00') <= 0) {
+      return -1;
+    }
     return strcmp($h1, $h2);
   }
 

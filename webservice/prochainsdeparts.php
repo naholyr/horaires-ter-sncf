@@ -6,7 +6,7 @@ if (isset($_GET['source']) && $_GET['source'] == 1) { highlight_file(__FILE__); 
 $nb_max_departs = 20;
 $nb_min_departs = 4;
 $cache_timeout = 300;
-$cache_enabled = false;
+$cache_enabled = true;
 
 // Libraries
 require_once 'lib/common.inc.php';
