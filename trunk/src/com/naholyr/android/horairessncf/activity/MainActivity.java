@@ -88,13 +88,15 @@ public class MainActivity extends ProgressHandlerActivity {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
 		// Dialogs
-		createProgressDialog(DIALOG_PROGRESS_DATA_INIT, "Initialisation...", "Initialisation des données (cette opération ne s'effectuera qu'une seule fois, au premier lancement)...", true);
-		createWaitDialog(DIALOG_WAIT_GARES_GEO, "Liste des gares...", "Calcul de votre position actuelle, et listing des gares autour de vous...", true, new DialogInterface.OnCancelListener() {
-			public void onCancel(DialogInterface dialog) {
-				geolocationCancelled = true;
-				showSearch();
-			}
-		});
+		createProgressDialog(DIALOG_PROGRESS_DATA_INIT, "Initialisation...",
+				"Initialisation des données (cette opération ne s'effectuera qu'une seule fois, au premier lancement)...", true);
+		createWaitDialog(DIALOG_WAIT_GARES_GEO, "Liste des gares...", "Calcul de votre position actuelle, et listing des gares autour de vous...", true,
+				new DialogInterface.OnCancelListener() {
+					public void onCancel(DialogInterface dialog) {
+						geolocationCancelled = true;
+						showSearch();
+					}
+				});
 		createWaitDialog(DIALOG_WAIT_GARES_SEARCH, "Liste des gares...", "Recherche en cours...", true, new DialogInterface.OnCancelListener() {
 			public void onCancel(DialogInterface dialog) {
 				searchCancelled = true;
@@ -126,7 +128,8 @@ public class MainActivity extends ProgressHandlerActivity {
 					Intent intent = new Intent(MainActivity.this, InitializeDataActivity.class);
 					startActivityForResult(intent, InitializeDataActivity.RESULT_UPDATED);
 				}
-			}).setTitle("Initialisation des données").setMessage("Aucune donnée n'a été trouvée. Validez pour télécharger les gares maintenant.").setIcon(R.drawable.icon).create().show();
+			}).setTitle("Initialisation des données").setMessage("Aucune donnée n'a été trouvée. Validez pour télécharger les gares maintenant.").setIcon(R.drawable.icon).create()
+					.show();
 			dataInitialization = true;
 		} else {
 			dataInitialization = false;
@@ -413,12 +416,13 @@ public class MainActivity extends ProgressHandlerActivity {
 						// Activity not running : ignore
 					}
 				}
-				Util.showError(this, "La géolocalisation a échoué, vérifiez que vous avez activé la localisation par le réseau et que vous êtes sous couverture de votre opérateur "
-						+ "avant de relancer l'application.", new Runnable() {
-					public void run() {
-						sendMessage(MSG_SEARCH);
-					}
-				});
+				Util.showError(this,
+						"La géolocalisation a échoué, vérifiez que vous avez activé la localisation par le réseau et que vous êtes sous couverture de votre opérateur "
+								+ "avant de relancer l'application.", new Runnable() {
+							public void run() {
+								sendMessage(MSG_SEARCH);
+							}
+						});
 				break;
 			}
 			case MSG_SEARCH: {

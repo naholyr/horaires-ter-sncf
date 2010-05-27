@@ -52,14 +52,14 @@ public class GaresContentProvider extends ContentProvider {
 	 */
 	public String getType(Uri uri) {
 		switch (URI_MATCHER.match(uri)) {
-			case LIVE_FOLDER_FAVS:
-			case LIVE_FOLDER_GEO:
-				return CONTENT_TYPE_LIST;
-			case PROCHAINS_DEPARTS_ROWID:
-			case PROCHAINS_DEPARTS_NOM:
-				return CONTENT_TYPE_ITEM;
-			default:
-				throw new IllegalArgumentException("Unsupported URI: " + uri);
+		case LIVE_FOLDER_FAVS:
+		case LIVE_FOLDER_GEO:
+			return CONTENT_TYPE_LIST;
+		case PROCHAINS_DEPARTS_ROWID:
+		case PROCHAINS_DEPARTS_NOM:
+			return CONTENT_TYPE_ITEM;
+		default:
+			throw new IllegalArgumentException("Unsupported URI: " + uri);
 		}
 	}
 
@@ -97,60 +97,60 @@ public class GaresContentProvider extends ContentProvider {
 		}
 
 		switch (URI_MATCHER.match(uri)) {
-			case LIVE_FOLDER_FAVS: {
-				// Liste des gares favories
-				List<String> noms = new ArrayList<String>();
-				SharedPreferences prefs = getContext().getSharedPreferences(Util.PREFS_FAVORIS_GARE, Context.MODE_PRIVATE);
-				Map<String, ?> allPrefs = prefs.getAll();
-				for (Map.Entry<String, ?> entry : allPrefs.entrySet()) {
-					boolean isFav = (Boolean) entry.getValue();
-					String nom = entry.getKey();
-					if (isFav) {
-						noms.add(nom);
-					}
+		case LIVE_FOLDER_FAVS: {
+			// Liste des gares favorites
+			List<String> noms = new ArrayList<String>();
+			SharedPreferences prefs = getContext().getSharedPreferences(Util.PREFS_FAVORIS_GARE, Context.MODE_PRIVATE);
+			Map<String, ?> allPrefs = prefs.getAll();
+			for (Map.Entry<String, ?> entry : allPrefs.entrySet()) {
+				boolean isFav = (Boolean) entry.getValue();
+				String nom = entry.getKey();
+				if (isFav) {
+					noms.add(nom);
 				}
+			}
 
+			Cursor c = helper.selectForLiveFolder(noms.toArray(new String[0]), "nom ASC");
+			c.setNotificationUri(getContext().getContentResolver(), uri);
+
+			return c;
+		}
+		case LIVE_FOLDER_GEO: {
+			// Récupérer la localisation
+			LocationManager locManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+			String provider = "network";
+			if (locManager.isProviderEnabled(provider)) {
+				Location location = locManager.getLastKnownLocation(provider);
+				double latitude = location.getLatitude();
+				double longitude = location.getLongitude();
+
+				SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+				int default_radius_km = getContext().getResources().getInteger(R.string.default_radiuskm);
+				int radius_km = Integer.parseInt(preferences.getString(getContext().getString(R.string.pref_radiuskm), String.valueOf(default_radius_km)));
+
+				double latitude_radians = latitude * (Math.PI / 180);
+				double latitude_delta = radius_km / Util.ONE_DEGREE_LAT_KM;
+				double longitude_delta = radius_km / Math.abs(Math.cos(latitude_radians) * Util.ONE_DEGREE_LAT_KM);
+				double latitude_min = latitude - latitude_delta;
+				double latitude_max = latitude + latitude_delta;
+				double longitude_min = longitude - longitude_delta;
+				double longitude_max = longitude + longitude_delta;
+
+				List<String> noms = helper.selectInBox(latitude_min, latitude_max, longitude_min, longitude_max);
+
+				// TODO Tri par distance
 				Cursor c = helper.selectForLiveFolder(noms.toArray(new String[0]), "nom ASC");
 				c.setNotificationUri(getContext().getContentResolver(), uri);
 
 				return c;
+			} else {
+				Toast.makeText(getContext(), "Erreur : gÃ©olocalisation indisponible !", Toast.LENGTH_LONG).show();
+
+				return null;
 			}
-			case LIVE_FOLDER_GEO: {
-				// Récupérer la localisation
-				LocationManager locManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-				String provider = "network";
-				if (locManager.isProviderEnabled(provider)) {
-					Location location = locManager.getLastKnownLocation(provider);
-					double latitude = location.getLatitude();
-					double longitude = location.getLongitude();
-
-					SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-					int default_radius_km = getContext().getResources().getInteger(R.string.default_radiuskm);
-					int radius_km = Integer.parseInt(preferences.getString(getContext().getString(R.string.pref_radiuskm), String.valueOf(default_radius_km)));
-
-					double latitude_radians = latitude * (Math.PI / 180);
-					double latitude_delta = radius_km / Util.ONE_DEGREE_LAT_KM;
-					double longitude_delta = radius_km / Math.abs(Math.cos(latitude_radians) * Util.ONE_DEGREE_LAT_KM);
-					double latitude_min = latitude - latitude_delta;
-					double latitude_max = latitude + latitude_delta;
-					double longitude_min = longitude - longitude_delta;
-					double longitude_max = longitude + longitude_delta;
-
-					List<String> noms = helper.selectInBox(latitude_min, latitude_max, longitude_min, longitude_max);
-
-					// TODO Tri par distance
-					Cursor c = helper.selectForLiveFolder(noms.toArray(new String[0]), "nom ASC");
-					c.setNotificationUri(getContext().getContentResolver(), uri);
-
-					return c;
-				} else {
-					Toast.makeText(getContext(), "Erreur : géolocalisation indisponible !", Toast.LENGTH_LONG).show();
-
-					return null;
-				}
-			}
-			default:
-				throw new IllegalArgumentException("Unsupported URI: " + uri);
+		}
+		default:
+			throw new IllegalArgumentException("Unsupported URI: " + uri);
 		}
 	}
 

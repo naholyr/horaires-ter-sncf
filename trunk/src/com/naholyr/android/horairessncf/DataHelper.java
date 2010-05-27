@@ -153,8 +153,8 @@ public class DataHelper {
 	}
 
 	public List<String> selectInBox(double latitude_min, double latitude_max, double longitude_min, double longitude_max) {
-		Cursor cursor = db.query(TABLE_NAME, SELECT_ALL_COLUMNS, SELECT_WHERE_BOX, new String[] { String.valueOf(latitude_min), String.valueOf(latitude_max), String.valueOf(longitude_min),
-				String.valueOf(longitude_max) }, null, null, null);
+		Cursor cursor = db.query(TABLE_NAME, SELECT_ALL_COLUMNS, SELECT_WHERE_BOX, new String[] { String.valueOf(latitude_min), String.valueOf(latitude_max),
+				String.valueOf(longitude_min), String.valueOf(longitude_max) }, null, null, null);
 
 		List<String> result = new ArrayList<String>();
 

@@ -343,8 +343,8 @@ public class InitializeDataActivity extends Activity {
 					// Tolérance : on tolère une marge de 5% d'erreurs + 5%
 					// d'incohérence dans la constante NB_GARES_TOTAL
 					if (numGare < Util.NB_GARES_TOTAL - 2 * numMaxErrors) {
-						error("Après chargement des données, le nombre de gares (" + numGare + ") semble incohérent avec le nombre attendu. Essayez de relancer l'application SVP", new Throwable(
-								numGare + " gares chargées incohérent"));
+						error("Après chargement des données, le nombre de gares (" + numGare + ") semble incohérent avec le nombre attendu. Essayez de relancer l'application SVP",
+								new Throwable(numGare + " gares chargées incohérent"));
 						return;
 					}
 					mWakeLock.release();

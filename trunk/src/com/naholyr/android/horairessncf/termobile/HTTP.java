@@ -19,7 +19,7 @@ import com.naholyr.android.horairessncf.Util;
 public class HTTP {
 
 	public static final int BUFFER_SIZE = 1024;
-	
+
 	public static final class Response {
 
 		private Map<String, List<String>> headers = new HashMap<String, List<String>>();
@@ -221,7 +221,8 @@ public class HTTP {
 			return request(method, host, port, path, headers, content, true, charset);
 		}
 
-		public static Response request(String method, String host, int port, String path, Map<String, String> headers, String content, boolean readBody, String charset) throws IOException {
+		public static Response request(String method, String host, int port, String path, Map<String, String> headers, String content, boolean readBody, String charset)
+				throws IOException {
 			Socket s = new Socket(host, port);
 			s.setSoTimeout(Util.READ_URL_SOCKET_TIMEOUT);
 			OutputStreamWriter w = new OutputStreamWriter(s.getOutputStream());
