@@ -219,7 +219,7 @@ class client_gare_en_mouvement implements client_interface
           'numero' => $num,
           'heure' => $heure,
           'destination' => nom_gare($dest),
-          'voie' => $voie,
+          'voie' => $voie == 'AN' ? '' : $voie,
           'supprime' => preg_match('#SUPPR#i', $situation) ? true : false,
           'retards' => array(),
           'source' => 'gare-en-mouvement',

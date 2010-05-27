@@ -15,7 +15,7 @@ if (!function_exists('json_encode')) {
 // Nettoyage des noms de gares
 function nom_gare($nom)
 {
-  return preg_replace('/^gare d[e\'] */i', '', $nom);
+  return trim(preg_replace('/^gare d[e\'] */i', '', $nom));
 }
 
 // Retour erreur
@@ -50,7 +50,7 @@ function cache($key, $cache_timeout)
   if (file_exists($file)) {
     if (time() - filemtime($file) < $cache_timeout) { // cached ?
       header("HTTP/1.0 200 CACHE OK");
-      //header('Content-type: application/json');
+      header('Content-type: application/json');
       echo file_get_contents($file);
       exit(0);
     } else {

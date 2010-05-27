@@ -15,7 +15,7 @@ class client_termobile implements client_interface
 
   public function __construct()
   {
-    $this->init_curl_cookie('http://www.termobile.fr/pages/imode/accueil.jsp');
+    $this->init_curl_cookie('http://www.termobile.fr/pages/mobi/accueil.jsp');
   }
 
   // Initialiser la session cURL
@@ -76,8 +76,8 @@ class client_termobile implements client_interface
 
     // Extraire la liste des gares correspondant au nom demandé
     $gares = array();
-    if (preg_match('#<select name=[\'"]?idxGare[\'"]?.*?>(.*?)</select>#is', $html, $m1)) {
-      $options = $m1[1];
+    if (preg_match('#<select.*? name=[\'"]?idxGare[\'"]?.*?>(.*?)</select>#is', $html, $m1)) {
+      $options = trim($m1[1]);
       preg_match_all('#<option.*?value=[\'"]?(\d+)[\'"]?.*?>(.*?)</option>#i', $options, $m2,  PREG_SET_ORDER);
       foreach ($m2 as $g) {
         $gares[utf8_encode(nom_gare($g[2]))] = intval($g[1]);
@@ -134,40 +134,42 @@ class client_termobile implements client_interface
     // Analyser le résultat
     $departs = array();
     $html = str_replace(array("\r", "\n", '&nbsp;', "\t"), array('', '', ' ', ' '), $html);
-    preg_match_all('#<p (?:class|align)=\"right\">.*?<hr */>#i', $html, $m, PREG_SET_ORDER);
+    preg_match_all('#<td.*? class="train"> *<table.*?> *<tr> *(.*?</tr> *<tr>.*?<table.*? class="sticker">.*?</table>.*?) *</tr> *</table> *</td>#i', $html, $m, PREG_SET_ORDER);
     foreach ($m as $item) {
-      $item = utf8_encode(trim($item[0]));
+      $item = utf8_encode(trim($item[1]));
       $depart = array();
-      if (preg_match('#<(?:span|font)[^>]*>Mode *: *</(?:span|font)> *(?:train)? *([^<>]+).*?<br[^>]*> *<(?:span|font)[^>]*>N° *: *</(?:span|font)> *(.*?) *<br#i', $item, $m2)) {
-        $depart['type'] = trim($m2[1]);
-        $depart['numero'] = trim($m2[2]);
+      if (preg_match('#<td.*? class=[\'"]trainInfos[\'"].*?> *<span.*? class=[\'"]purpleL[\'"].*?> *(.*?) *</span#i', $item, $m2)) {
+        $depart['type'] = trim($m2[1], ' -');
       }
-      if (preg_match('#<(?:span|font)[^>]*>Heure *: *</(?:span|font)> *(.*?) *<br#i', $item, $m2)) {
+      if (preg_match('#<td.*? class=[\'"]schedule[\'"].*?> *<span.*? class=[\'"]black[\'"].*?> *N° *</span> *(.*?) *<br#i', $item, $m2)) {
+        $depart['numero'] = trim($m2[1]);
+      }
+      if (preg_match('#<td.*? class=[\'"]schedule[\'"].*?> *<span.*? class=[\'"]blackB[\'"].*?> *(\d+h\d+) *</span#i', $item, $m2)) {
         $depart['heure'] = trim($m2[1]);
       }
-      if (preg_match('#<(?:span|font)[^>]*>Destination *: *</(?:span|font)> *(.*?) *<br#i', $item, $m2)) {
+      if (preg_match('#Destination.*?<span.*? class=[\'"]blackB[\'"].*?>(.*?)</span#i', $item, $m2)) {
         $depart['destination'] = nom_gare(trim($m2[1]));
       }
-      if (preg_match('#<(?:span|font)[^>]*>Supprim.*?</(?:span|font)>#i', $item)) {
+      if (preg_match('#Supprim#i', $item)) {
         $depart['supprime'] = true;
       }
-      preg_match_all('#<(?:span|font)[^>]*>Retard *: *</(?:span|font)>(.*?)<br(.*?Motif *:.*?<br)?#i', $item, $m2, PREG_SET_ORDER);
+      if (preg_match('#Départ dans (.*?)<#i', $item, $m2)) {
+        $depart['attention'] = trim($m2[1]);
+      }
+      preg_match_all('#<p.*? class="alert".*?> *(.*?) *</p#i', $item, $m2, PREG_SET_ORDER);
       $depart['retards'] = array();
       foreach ($m2 as $item2) {
-        $item2 = $item2[0];
+        $item2 = $item2[1];
         $retard = array();
-        if (preg_match('#(?:<(?:span|font)[^>]*>)?Retard *: *</(?:span|font)> *(.*?) *<br#i', $item2, $m3)) {
+        if (preg_match('#Retard[^<]*?</span> *(.*?) *<br#i', $item2, $m3)) {
           $retard['retard'] = trim($m3[1]);
         } else {
           continue;
         }
-        if (preg_match('#<(?:span|font)[^>]*>Motif *: *</(?:span|font)> *(.*?) *<br#i', $item2, $m3)) {
+        if (preg_match('#Motif[^<]*?</span> *(.*?) *<br#i', $item2, $m3)) {
           $retard['motif'] = trim($m3[1]);
         }
         $depart['retards'][] = $retard;
-      }
-      if (preg_match('#Départ dans (.*?)<br#i', $item, $m2)) {
-        $depart['attention'] = trim($m2[1]);
       }
       $depart['source'] = 'termobile';
       $departs[] = $depart;
