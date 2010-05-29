@@ -473,11 +473,11 @@ public class MainActivity extends ProgressHandlerActivity {
 				startActivity(i);
 				return true;
 			}
-			case R.id.menu_main_map: {
+			/*case R.id.menu_main_map: {
 				Intent intent = new Intent(this, MapActivity.class);
 				startActivity(intent);
 				return true;
-			}
+			}*/
 			default:
 				return false;
 		}
