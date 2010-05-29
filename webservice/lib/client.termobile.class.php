@@ -187,30 +187,35 @@ class client_termobile implements client_interface
     // Extraire la liste des arrêts du train demandé
     $info = array();
     $html = str_replace(array("\r", "\n", '&nbsp;', "\t"), array('', '', ' ', ' '), $html);
-    if (preg_match('#<body> *(.*?) *</body>#i', $html, $match)) {
+    if (preg_match('#<table.*? id=[\'"]content[\'"].*?> *(.+) *</table> *</form>#i', $html, $match)) {
       $body = utf8_encode($match[1]);
       // Numéro
-      if (preg_match('#N° *(.+?) *<#i', $body, $m)) {
+      if (preg_match('#N° *: *<span.*? class=[\'"]blackB[\'"].*?> *(.*?) *<#i', $body, $m)) {
         $info['numero'] = trim($m[1]);
       }
       // Date
-      if (preg_match('#<(?:span|font)[^>]*>Date *: *</(?:span|font)> *(.*?) *<br#i', $body, $m)) {
+      if (preg_match('#<p.*? class=[\'"]blueL[\'"].*?>le (.*?) *</p#i', $body, $m)) {
         $info['date'] = trim($m[1]);
       }
       // Départ/Arrivée
       $info['heures'] = array();
-      if (preg_match('#<(?:span|font)[^>]*>Départ *: *</(?:span|font)> *(.*?) *<br.*?<(?:span|font)[^>]*>Heure *: *</(?:span|font)> *(.*?) *<br#i', $body, $m)) {
-        $info['heures'][nom_gare(trim($m[1]))] = trim($m[2]);
+      if (preg_match('#D(?:é|&eacute;)part *: *<br.*?> *<span.*? class=[\'"]blackB[\'"].*?> *(.*?) *</span#i', $body, $m)) {
+        $gare_depart = nom_gare($m[1]);
+        if (preg_match('#<table.*? class=[\'"]sticker[\'"].*?> *<td.*? class=[\'"]trainPic[\'"].*?>.*?<td.*?><span.*? class=[\'"]blackB[\'"].*?> *(.*?) *</span#i', $body, $m)) {
+          $info['heures'][$gare_depart] = $m[1];
+        }
       }
-      if (preg_match('#<(?:span|font)[^>]*>Destination *: *</(?:span|font)> *(.*?) *<br.*?<(?:span|font)[^>]*>Heure *: *</(?:span|font)> *(.*?) *<br#i', $body, $m)) {
-        $info['heures'][nom_gare(trim($m[1]))] = trim($m[2]);
+      if (preg_match('#Destination *: *<br.*?> *<span.*? class=[\'"]blackB[\'"].*?> *(.*?) *</span#i', $body, $m)) {
+        $gare_arrivee = nom_gare($m[1]);
+        if (preg_match('#<tr.*? class=[\'"]arrival[\'"].*.>.*?Arriv(?:é|&eacute;)e *: *<span.*? class=[\'"]blackB[\'"].*?> *(.*?) *</span.*?</tr#i', $body, $m)) {
+          $info['heures'][$gare_arrivee] = $m[1];
+        }
       }
       // Arrêts
       $info['arrets'] = array();
-      if (($i = strpos($body, 'Arrêts desservis')) !== false) {
-        $arrets = substr($body, $i);
-        preg_match_all('#\* *(.+?)<br#i', $arrets, $mm, PREG_SET_ORDER);
-        foreach ($mm as $arret) {
+      if (preg_match('#Arr(?:ê|&ecirc;)ts desservis.*?<ul>(.*?)</ul>#i', $body, $m)) {
+        preg_match_all('#<li> *(.*?) *</li#i', $m[1], $m, PREG_SET_ORDER);
+        foreach ($m as $arret) {
           $info['arrets'][] = trim(nom_gare($arret[1]));
         }
       }

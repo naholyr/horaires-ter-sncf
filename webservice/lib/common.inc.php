@@ -26,7 +26,7 @@ function erreur($message, $code, $additional_info = null)
 }
 function exception_handler($exception)
 {
-  //header('Content-type: application/json');
+  header('Content-type: application/json');
   echo $exception->getMessage();
   exit(0);
 }
@@ -35,7 +35,7 @@ set_exception_handler('exception_handler');
 // Retour succès
 function retour($data, $code = 200)
 {
-  //header('Content-type: application/json');
+  header('Content-type: application/json');
   echo $contents = json_encode(array('code' => $code, 'success' => $data));
   if (isset($GLOBALS['cache.key'])) {
     do_cache($GLOBALS['cache.key'], $contents);

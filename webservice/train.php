@@ -3,7 +3,7 @@
 if (isset($_GET['source']) && $_GET['source'] == 1) { highlight_file(__FILE__); exit(0); }
 
 // Configuration
-$cache_timeout = 3600;
+$cache_timeout = 10000;
 $cache_enabled = true;
 
 // Libraries
