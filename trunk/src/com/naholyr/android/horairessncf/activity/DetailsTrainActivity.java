@@ -47,6 +47,14 @@ public class DetailsTrainActivity extends Activity {
 
 		// Main thread
 		new Thread() {
+			private void error() {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(getApplicationContext(), "Erreur lors de la récupération des informations du train", Toast.LENGTH_SHORT).show();
+						finish();
+					}
+				});
+			}
 			public void run() {
 				JSONWebServiceClient client = new JSONWebServiceClient();
 				Map<String, Object> params = new HashMap<String, Object>();
@@ -77,19 +85,14 @@ public class DetailsTrainActivity extends Activity {
 							}
 						});
 					} else {
-						runOnUiThread(new Runnable() {
-							public void run() {
-								Toast.makeText(getApplicationContext(), "Erreur lors de la récupération des informations du train", Toast.LENGTH_SHORT).show();
-								finish();
-							}
-						});
+						error();
 					}
 				} catch (MalformedURLException e) {
 					throw new IllegalArgumentException("Invalid url (" + e.getMessage() + ")");
 				} catch (IOException e) {
-					// Skip
+					error();
 				} catch (JSONException e) {
-					// Skip
+					error();
 				}
 			}
 		}.start();
