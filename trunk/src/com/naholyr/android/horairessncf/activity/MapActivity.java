@@ -5,18 +5,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
-import android.view.HapticFeedbackConstants;
+import android.os.Handler;
+import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
@@ -42,6 +53,10 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 	private OverlayManager mOverlayManager;
 	private MyLocationOverlay mMyLocationOverlay;
 	private DataHelper mDataHelper;
+	private Button mBoutonGare;
+	private TextView mTexteRechercheGare;
+	private Button mBoutonRechercheGare;
+	private SeekBar mSeekBar;
 
 	private boolean mDisabledMyLocation = false;
 
@@ -55,9 +70,42 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 
 		setContentView(R.layout.maps);
 
-		mMapView = (MapView) findViewById(R.id.mapview);
-		mMapView.setBuiltInZoomControls(true);
+		mBoutonGare = (Button) findViewById(R.id.nom_gare);
+		mTexteRechercheGare = (TextView) findViewById(R.id.text_address);
+		mBoutonRechercheGare = (Button) findViewById(R.id.btn_search);
 
+		mMapView = (MapView) findViewById(R.id.mapview);
+		mMapView.setBuiltInZoomControls(false);
+
+		mSeekBar = (SeekBar) findViewById(R.id.zoombar);
+		mSeekBar.setMax(mMapView.getMaxZoomLevel() - 1);
+		mSeekBar.setProgress(mMapView.getZoomLevel() - 1);
+		mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				mMapView.getController().setZoom(seekBar.getProgress() + 1);
+				mOverlayManager.getOverlay("gares").invokeLazyLoad(1000);
+			}
+
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+			}
+		});
+
+		new Thread() {
+			public void run() {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						initialize();
+					}
+				});
+			}
+		}.start();
+	}
+
+	protected void initialize() {
 		try {
 			mDataHelper = DataHelper.getInstance(getApplication());
 		} catch (IOException e) {
@@ -123,10 +171,11 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 			@Override
 			public boolean onSingleTap(MotionEvent arg0, ManagedOverlay arg1, GeoPoint arg2, ManagedOverlayItem item) {
 				if (item != null) {
-					Toast.makeText(MapActivity.this, item.getTitle() + "\n(appui long pour les options)", Toast.LENGTH_SHORT);
+					mBoutonGare.setText(item.getTitle());
 					return true;
+				} else {
+					return false;
 				}
-				return false;
 			}
 
 			@Override
@@ -136,8 +185,40 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 
 			@Override
 			public void onLongPressFinished(MotionEvent event, ManagedOverlay overlay, GeoPoint point, ManagedOverlayItem item) {
-				if (item != null) {
-					final String nom = item.getTitle();
+				// Non utilisé : buggé :(
+			}
+
+			@Override
+			public void onLongPress(MotionEvent event, ManagedOverlay overlay) {
+				// Non utilisé : buggé :(
+			}
+
+			@Override
+			public boolean onDoubleTap(MotionEvent event, ManagedOverlay overlay, GeoPoint point, ManagedOverlayItem item) {
+				mMapView.getController().animateTo(point);
+				mMapView.getController().zoomIn();
+				mSeekBar.setProgress(mMapView.getZoomLevel() - 1);
+				return true;
+			}
+		});
+
+		mOverlayManager.populate();
+
+		// My Location
+
+		mMyLocationOverlay = new MyLocationOverlay(getApplicationContext(), mMapView);
+		mMapView.getOverlays().add(mMyLocationOverlay);
+
+		// Zone "gare sélectionnée"
+
+		mBoutonGare.setClickable(true);
+		mBoutonGare.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				final CharSequence nom = mBoutonGare.getText();
+				if (nom == null || nom.toString().trim().length() == 0) {
+					Toast.makeText(v.getContext(), "Sélectionnez une gare", Toast.LENGTH_SHORT).show();
+				} else {
 					AlertDialog.Builder dialog = new AlertDialog.Builder(MapActivity.this);
 					dialog.setTitle(nom);
 					dialog.setIcon(R.drawable.icon);
@@ -157,31 +238,89 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 						}
 					});
 					dialog.show();
-				} else {
-
 				}
-			}
-
-			@Override
-			public void onLongPress(MotionEvent event, ManagedOverlay overlay) {
-				mMapView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-			}
-
-			@Override
-			public boolean onDoubleTap(MotionEvent event, ManagedOverlay overlay, GeoPoint point, ManagedOverlayItem item) {
-				mMapView.getController().animateTo(point);
-				mMapView.getController().zoomIn();
-				return true;
 			}
 		});
 
-		mOverlayManager.populate();
+		// Géolocalisation
 
-		// My Location
+		final Geocoder geocoder = new Geocoder(this);
+		mBoutonRechercheGare.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				final String adresse = mTexteRechercheGare.getText().toString().trim();
+				if (adresse.equals("")) {
+					Toast.makeText(MapActivity.this, "Veuillez entrer une adresse", Toast.LENGTH_SHORT).show();
+				} else {
+					final ProgressDialog dialog = ProgressDialog.show(MapActivity.this, "Recherche", "Veuillez patienter...", true);
+					new Thread() {
+						public void run() {
+							try {
+								List<Address> results = geocoder.getFromLocationName(adresse, 1);
+								if (results.size() > 0) {
+									Address result = results.get(0);
+									final GeoPoint p = new GeoPoint((int) (result.getLatitude() * 1000000), (int) (result.getLongitude() * 1000000));
+									runOnUiThread(new Runnable() {
+										@Override
+										public void run() {
+											mMapView.getController().animateTo(p);
+											mMapView.getController().setZoom(15);
+											mOverlayManager.getOverlay("gares").invokeLazyLoad(1000);
+										}
+									});
+								} else {
+									Toast.makeText(MapActivity.this, "Aucun résultat", Toast.LENGTH_SHORT).show();
+								}
+							} catch (IOException e) {
+								Toast.makeText(MapActivity.this, "La recherche a échoué", Toast.LENGTH_SHORT).show();
+							}
+							dialog.dismiss();
+						}
+					}.start();
+				}
+			}
+		});
 
-		mMyLocationOverlay = new MyLocationOverlay(getApplicationContext(), mMapView);
-		mMapView.getOverlays().add(mMyLocationOverlay);
-		enableMyLocation();
+		// Gestion des zones de contrôle
+
+		initFadingControls();
+	}
+
+	private void initFadingControls() {
+		final Handler touchHandler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				((ViewGroup) findViewById(R.id.layout_controls)).setVisibility(msg.what);
+				((ViewGroup) findViewById(R.id.layout_recherche)).setVisibility(msg.what);
+			}
+		};
+
+		touchHandler.sendEmptyMessage(View.GONE);
+
+		View.OnTouchListener fixAppearOnTouch = new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				touchHandler.removeMessages(View.GONE);
+				touchHandler.sendEmptyMessage(View.VISIBLE);
+				return false;
+			}
+		};
+
+		View.OnTouchListener tempAppearOnTouch = new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				touchHandler.removeMessages(View.GONE);
+				touchHandler.sendEmptyMessage(View.VISIBLE);
+				touchHandler.sendEmptyMessageDelayed(View.GONE, 5000);
+				return false;
+			}
+		};
+
+		mMapView.setOnTouchListener(tempAppearOnTouch);
+		mSeekBar.setOnTouchListener(tempAppearOnTouch);
+		mBoutonGare.setOnTouchListener(tempAppearOnTouch);
+		mBoutonRechercheGare.setOnTouchListener(tempAppearOnTouch);
+		mTexteRechercheGare.setOnTouchListener(fixAppearOnTouch);
 	}
 
 	private void enableMyLocation() {
@@ -191,7 +330,8 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 			@Override
 			public void run() {
 				mMapView.getController().animateTo(mMyLocationOverlay.getMyLocation());
-				mOverlayManager.getOverlay("gares").invokeLazyLoad(500);
+				mMapView.getController().setZoom(14);
+				mOverlayManager.getOverlay("gares").invokeLazyLoad(1000);
 			}
 		});
 		mDisabledMyLocation = false;
@@ -211,7 +351,7 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (!mDisabledMyLocation) {
+		if (mMyLocationOverlay != null && !mDisabledMyLocation) {
 			enableMyLocation();
 		}
 	}
@@ -219,7 +359,7 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if (!mDisabledMyLocation) {
+		if (mMyLocationOverlay != null && !mDisabledMyLocation) {
 			disableMyLocation();
 		}
 	}

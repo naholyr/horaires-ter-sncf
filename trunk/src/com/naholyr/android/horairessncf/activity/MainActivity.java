@@ -82,92 +82,101 @@ public class MainActivity extends ProgressHandlerActivity {
 		// Preferences
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		prefs_data = getSharedPreferences(Util.PREFS_DATA, Context.MODE_PRIVATE);
-		prefs_favs = Util.getPreferencesGaresFavories(this);
+		prefs_favs = Util.getPreferencesGaresFavorites(this);
 
 		// Window progress bar
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
-		// Dialogs
-		createProgressDialog(DIALOG_PROGRESS_DATA_INIT, "Initialisation...",
-				"Initialisation des données (cette opération ne s'effectuera qu'une seule fois, au premier lancement)...", true);
-		createWaitDialog(DIALOG_WAIT_GARES_GEO, "Liste des gares...", "Calcul de votre position actuelle, et listing des gares autour de vous...", true,
-				new DialogInterface.OnCancelListener() {
-					public void onCancel(DialogInterface dialog) {
-						geolocationCancelled = true;
-						showSearch();
-					}
-				});
-		createWaitDialog(DIALOG_WAIT_GARES_SEARCH, "Liste des gares...", "Recherche en cours...", true, new DialogInterface.OnCancelListener() {
-			public void onCancel(DialogInterface dialog) {
-				searchCancelled = true;
-				showSearch();
-			}
-		});
-		createProgressDialog(DIALOG_WAIT_GARES_FAVORITES, "Liste des gares...", "Récupération de la liste de vos gares favories...", true);
-
-		// Data access helper
-		try {
-			dataHelper = DataHelper.getInstance(getApplication());
-		} catch (IOException e) {
-			Util.showError(MainActivity.this, "Erreur lors de l'accès à la base de données ! Essayez de redémarrer l'application SVP.", e);
-			return;
-		}
-		// Check for data updates
-		ErrorReporter.getInstance().addCustomData("update_hash", dataHelper.getLastUpdateHash());
-		long lastUpdate = dataHelper.getLastUpdateTime();
-		final boolean dataInitialization;
-		if (lastUpdate == 0) {
-			// No data ! Initialize data now
-			new AlertDialog.Builder(this).setCancelable(true).setOnCancelListener(new DialogInterface.OnCancelListener() {
-				public void onCancel(DialogInterface dialog) {
-					Toast.makeText(MainActivity.this, "Initialisation annulée par l'utilisateur", Toast.LENGTH_LONG).show();
-					finish();
-				}
-			}).setPositiveButton("Charger", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					Intent intent = new Intent(MainActivity.this, InitializeDataActivity.class);
-					startActivityForResult(intent, InitializeDataActivity.RESULT_UPDATED);
-				}
-			}).setTitle("Initialisation des données").setMessage("Aucune donnée n'a été trouvée. Validez pour télécharger les gares maintenant.").setIcon(R.drawable.icon).create()
-					.show();
-			dataInitialization = true;
-		} else {
-			dataInitialization = false;
-		}
-
 		// Layout
 		setContentView(R.layout.main);
-
-		// Buttons
-		findViewById(R.id.ButtonMenu).setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				openOptionsMenu();
-			}
-		});
 
 		// Main thread
 		new Thread() {
 			public void run() {
-				// Start home, eventually show about dialog if first time
+				// Data access helper
 				try {
-					versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-				} catch (NameNotFoundException e) {
-					versionName = null;
-				}
-				if (versionName == null || !preferences.getString("app_version", "").equals(versionName)) {
-					// Show about dialog, if there is no initialization pending
-					if (!dataInitialization) {
-						showAbout();
-					}
-					if (versionName != null) {
-						preferences.edit().putString("app_version", versionName).commit();
-					}
+					dataHelper = DataHelper.getInstance(getApplication());
+				} catch (IOException e) {
+					Util.showError(MainActivity.this, "Erreur lors de l'accès à la base de données ! Essayez de redémarrer l'application SVP.", e);
+					return;
 				}
 
-				// If no data initialization is pending, start home now
-				if (!dataInitialization) {
-					displayHome();
-				}
+				// Progress dialogs
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						// Dialogs
+						createProgressDialog(DIALOG_PROGRESS_DATA_INIT, "Initialisation...",
+								"Initialisation des données (cette opération ne s'effectuera qu'une seule fois, au premier lancement)...", true);
+						createWaitDialog(DIALOG_WAIT_GARES_GEO, "Liste des gares...", "Calcul de votre position actuelle, et listing des gares autour de vous...", true,
+								new DialogInterface.OnCancelListener() {
+									public void onCancel(DialogInterface dialog) {
+										geolocationCancelled = true;
+										showSearch();
+									}
+								});
+						createWaitDialog(DIALOG_WAIT_GARES_SEARCH, "Liste des gares...", "Recherche en cours...", true, new DialogInterface.OnCancelListener() {
+							public void onCancel(DialogInterface dialog) {
+								searchCancelled = true;
+								showSearch();
+							}
+						});
+						createProgressDialog(DIALOG_WAIT_GARES_FAVORITES, "Liste des gares...", "Récupération de la liste de vos gares favorites...", true);
+
+						// Check for data updates
+						ErrorReporter.getInstance().addCustomData("update_hash", dataHelper.getLastUpdateHash());
+						long lastUpdate = dataHelper.getLastUpdateTime();
+						final boolean dataInitialization;
+						if (lastUpdate == 0) {
+							// No data ! Initialize data now
+							new AlertDialog.Builder(MainActivity.this).setCancelable(true).setOnCancelListener(new DialogInterface.OnCancelListener() {
+								public void onCancel(DialogInterface dialog) {
+									Toast.makeText(MainActivity.this, "Initialisation annulée par l'utilisateur", Toast.LENGTH_LONG).show();
+									finish();
+								}
+							}).setPositiveButton("Charger", new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									Intent intent = new Intent(MainActivity.this, InitializeDataActivity.class);
+									startActivityForResult(intent, InitializeDataActivity.RESULT_UPDATED);
+								}
+							}).setTitle("Initialisation des données").setMessage("Aucune donnée n'a été trouvée. Validez pour télécharger les gares maintenant.").setIcon(
+									R.drawable.icon).create().show();
+							dataInitialization = true;
+						} else {
+							dataInitialization = false;
+						}
+
+						// Buttons
+						findViewById(R.id.ButtonMenu).setOnClickListener(new View.OnClickListener() {
+							public void onClick(View v) {
+								openOptionsMenu();
+							}
+						});
+
+						// Start home, eventually show about dialog if first
+						// time
+						try {
+							versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+						} catch (NameNotFoundException e) {
+							versionName = null;
+						}
+						if (versionName == null || !preferences.getString("app_version", "").equals(versionName)) {
+							// Show about dialog, if there is no initialization
+							// pending
+							if (!dataInitialization) {
+								showAbout();
+							}
+							if (versionName != null) {
+								preferences.edit().putString("app_version", versionName).commit();
+							}
+						}
+
+						// If no data initialization is pending, start home now
+						if (!dataInitialization) {
+							displayHome();
+						}
+					}
+				});
 
 				// Send pending error reports
 				ErrorReporter.getInstance().checkAndSendReports(MainActivity.this);
@@ -321,7 +330,7 @@ public class MainActivity extends ProgressHandlerActivity {
 		public void run() {
 			runOnUiThread(new Runnable() {
 				public void run() {
-					setTitle("Mes gares favories");
+					setTitle("Mes gares favorites");
 					setProgressBarIndeterminateVisibility(true);
 				}
 			});
@@ -473,11 +482,11 @@ public class MainActivity extends ProgressHandlerActivity {
 				startActivity(i);
 				return true;
 			}
-			/*case R.id.menu_main_map: {
+			case R.id.menu_main_map: {
 				Intent intent = new Intent(this, MapActivity.class);
 				startActivity(intent);
 				return true;
-			}*/
+			}
 			default:
 				return false;
 		}

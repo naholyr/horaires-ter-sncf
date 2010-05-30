@@ -186,7 +186,7 @@ public class Util {
 		return sb.toString();
 	}
 
-	public static SharedPreferences getPreferencesGaresFavories(Context context) {
+	public static SharedPreferences getPreferencesGaresFavorites(Context context) {
 		return context.getSharedPreferences(Util.PREFS_FAVORIS_GARE, Context.MODE_PRIVATE);
 	}
 

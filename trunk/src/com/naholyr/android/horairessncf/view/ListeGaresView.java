@@ -50,7 +50,7 @@ public class ListeGaresView extends ListView implements OnItemClickListener, OnI
 	private void init(Context context) {
 		setOnItemClickListener(this);
 		setOnItemLongClickListener(this);
-		prefs_favs = Util.getPreferencesGaresFavories(context);
+		prefs_favs = Util.getPreferencesGaresFavorites(context);
 	}
 
 	private Gare getGare(int position) {

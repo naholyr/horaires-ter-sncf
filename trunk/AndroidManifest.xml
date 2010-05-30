@@ -27,7 +27,7 @@
 		<activity android:name=".activity.InitializeDataActivity"
 			android:theme="@android:style/Theme.Dialog" android:configChanges="orientation" />
 		<activity android:name=".activity.AboutActivity"
-			android:theme="@android:style/Theme.Dialog" />
+			android:theme="@android:style/Theme.Dialog" android:configChanges="orientation" />
 		<activity android:name=".activity.DetailsTrainActivity"
 			android:theme="@android:style/Theme.Dialog" />
 		<activity android:icon="@drawable/folder_favorites"

@@ -39,7 +39,7 @@ public class FavoritesLiveFolder extends Activity {
 	}
 
 	private String getFolderName() {
-		return "Gares favories";
+		return "Gares favorites";
 	}
 
 	private ShortcutIconResource getFolderIcon() {

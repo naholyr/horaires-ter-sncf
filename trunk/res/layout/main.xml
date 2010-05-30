@@ -17,6 +17,6 @@
 		<Button android:id="@+id/ButtonMenu" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:gravity="center"
 			android:text="Plus d'options" android:drawableLeft="@android:drawable/ic_menu_more"
-			android:textSize="16dip" android:background="@android:drawable/menu_frame" />
+			android:textSize="16dip" android:background="@drawable/toolbar_button" />
 	</LinearLayout>
 </LinearLayout>
