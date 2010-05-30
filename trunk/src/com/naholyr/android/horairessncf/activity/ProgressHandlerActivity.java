@@ -14,6 +14,8 @@ public class ProgressHandlerActivity extends Activity {
 
 	SparseArray<ProgressDialog> dialogs = new SparseArray<ProgressDialog>();
 
+	protected boolean mDisableDialogs = false;
+
 	public static final int MSG_SHOW_DIALOG = 10;
 	public static final int MSG_DISMISS_DIALOG = 11;
 	public static final int MSG_SET_DIALOG_TITLE = 12;
@@ -58,6 +60,10 @@ public class ProgressHandlerActivity extends Activity {
 	}
 
 	protected ProgressDialog createProgressDialog(int id, String title, String message, int style, boolean cancelable, DialogInterface.OnCancelListener onCancel) {
+		if (mDisableDialogs) {
+			return null;
+		}
+
 		ProgressDialog dialog = new ProgressDialog(this);
 		dialog.setTitle(title);
 		dialog.setMessage(message);
@@ -118,51 +124,43 @@ public class ProgressHandlerActivity extends Activity {
 	protected void handleMessage(Message msg) {
 		switch (msg.what) {
 			case MSG_SHOW_DIALOG: {
-				int dialogId = msg.getData().getInt("value");
-				Dialog dialog = getDialog(dialogId);
-				if (dialog != null && !dialog.isShowing()) {
-					try {
+				if (!mDisableDialogs) {
+					int dialogId = msg.getData().getInt("value");
+					Dialog dialog = getDialog(dialogId);
+					if (dialog != null && !dialog.isShowing()) {
 						dialog.show();
-					} catch (BadTokenException e) {
-						// Activity not running : ignore
 					}
 				}
 				break;
 			}
 			case MSG_DISMISS_DIALOG: {
-				int dialogId = msg.getData().getInt("value");
-				Dialog dialog = getDialog(dialogId);
-				if (dialog != null && dialog.isShowing()) {
-					try {
+				if (!mDisableDialogs) {
+					int dialogId = msg.getData().getInt("value");
+					Dialog dialog = getDialog(dialogId);
+					if (!mDisableDialogs && dialog != null && dialog.isShowing()) {
 						dialog.dismiss();
-					} catch (BadTokenException e) {
-						// Activity not running : ignore
 					}
 				}
 				break;
 			}
 			case MSG_SET_DIALOG_TITLE: {
-				int dialogId = msg.getData().getInt("id");
-				String title = msg.getData().getString("value");
-				Dialog dialog = getDialog(dialogId);
-				if (dialog != null) {
-					try {
+				if (!mDisableDialogs) {
+					int dialogId = msg.getData().getInt("id");
+					String title = msg.getData().getString("value");
+					Dialog dialog = getDialog(dialogId);
+					if (dialog != null) {
 						dialog.setTitle(title);
-					} catch (BadTokenException e) {
-						// Activity not running : ignore
 					}
 				}
 				break;
 			}
 			case MSG_SET_DIALOG_MESSAGE: {
-				int dialogId = msg.getData().getInt("id");
-				String message = msg.getData().getString("value");
-				ProgressDialog dialog = getDialog(dialogId);
-				if (dialog != null) {
-					try {
+				if (!mDisableDialogs) {
+					int dialogId = msg.getData().getInt("id");
+					String message = msg.getData().getString("value");
+					ProgressDialog dialog = getDialog(dialogId);
+					if (dialog != null) {
 						dialog.setMessage(message);
-					} catch (BadTokenException e) {
-						// Activity not running : ignore
 					}
 				}
 				break;
@@ -178,6 +176,18 @@ public class ProgressHandlerActivity extends Activity {
 
 	public Handler getHandler() {
 		return handler;
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mDisableDialogs = true;
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mDisableDialogs = false;
 	}
 
 }

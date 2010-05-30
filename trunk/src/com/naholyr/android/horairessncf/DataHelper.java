@@ -125,8 +125,8 @@ public class DataHelper {
 			} catch (NullPointerException e) {
 				Log.e(getClass().getName(), "cursor.getString(6) == NULL", e);
 			}
-			cursor.close();
 		}
+		cursor.close();
 
 		return result;
 	}
@@ -146,8 +146,8 @@ public class DataHelper {
 			} catch (NullPointerException e) {
 				Log.e(getClass().getName(), "cursor.getString(6) == NULL", e);
 			}
-			cursor.close();
 		}
+		cursor.close();
 
 		return result;
 	}
@@ -162,8 +162,8 @@ public class DataHelper {
 			do {
 				result.add(cursor.getString(0));
 			} while (cursor.moveToNext());
-			cursor.close();
 		}
+		cursor.close();
 
 		return result;
 	}
@@ -175,8 +175,8 @@ public class DataHelper {
 			do {
 				codes.add(cursor.getString(0));
 			} while (cursor.moveToNext());
-			cursor.close();
 		}
+		cursor.close();
 
 		return codes;
 	}
@@ -214,8 +214,8 @@ public class DataHelper {
 			do {
 				noms.add(cursor.getString(0));
 			} while (cursor.moveToNext());
-			cursor.close();
 		}
+		cursor.close();
 
 		return noms;
 	}

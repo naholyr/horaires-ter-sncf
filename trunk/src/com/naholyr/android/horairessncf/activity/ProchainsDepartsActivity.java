@@ -273,23 +273,25 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 					noms[i] = options.valueAt(i);
 					ids[i] = options.keyAt(i);
 				}
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Confirmez la gare");
-				// builder.setMessage("La gare sélectionnée peut correspondre à plusieurs possibilités, confirmez votre choix SVP");
-				builder.setItems(noms, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int item) {
-						idGare = ids[item];
-						new RefreshThread(false).start();
-					}
-				});
-				builder.setCancelable(true);
-				builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-					public void onCancel(DialogInterface dialog) {
-						finish();
-					}
-				});
-				AlertDialog alert = builder.create();
-				alert.show();
+				if (!mDisableDialogs) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setTitle("Confirmez la gare");
+					// builder.setMessage("La gare sélectionnée peut correspondre à plusieurs possibilités, confirmez votre choix SVP");
+					builder.setItems(noms, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int item) {
+							idGare = ids[item];
+							new RefreshThread(false).start();
+						}
+					});
+					builder.setCancelable(true);
+					builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+						public void onCancel(DialogInterface dialog) {
+							finish();
+						}
+					});
+					AlertDialog alert = builder.create();
+					alert.show();
+				}
 				break;
 			}
 		}

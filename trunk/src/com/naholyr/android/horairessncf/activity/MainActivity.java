@@ -50,7 +50,6 @@ public class MainActivity extends ProgressHandlerActivity {
 	private String versionName;
 
 	public static final int DIALOG_SCREEN_PROGRESS = 0;
-	public static final int DIALOG_PROGRESS_DATA_INIT = 1;
 	public static final int DIALOG_WAIT_GARES_GEO = 2;
 	public static final int DIALOG_WAIT_GARES_SEARCH = 3;
 	public static final int DIALOG_WAIT_GARES_FAVORITES = 4;
@@ -79,19 +78,21 @@ public class MainActivity extends ProgressHandlerActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		// Window progress bar
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
 		// Preferences
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		prefs_data = getSharedPreferences(Util.PREFS_DATA, Context.MODE_PRIVATE);
 		prefs_favs = Util.getPreferencesGaresFavorites(this);
-
-		// Window progress bar
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
 		// Layout
 		setContentView(R.layout.main);
 
 		// Main thread
 		new Thread() {
+			protected boolean mDataInitialization;
+
 			public void run() {
 				// Data access helper
 				try {
@@ -103,11 +104,7 @@ public class MainActivity extends ProgressHandlerActivity {
 
 				// Progress dialogs
 				runOnUiThread(new Runnable() {
-					@Override
 					public void run() {
-						// Dialogs
-						createProgressDialog(DIALOG_PROGRESS_DATA_INIT, "Initialisation...",
-								"Initialisation des données (cette opération ne s'effectuera qu'une seule fois, au premier lancement)...", true);
 						createWaitDialog(DIALOG_WAIT_GARES_GEO, "Liste des gares...", "Calcul de votre position actuelle, et listing des gares autour de vous...", true,
 								new DialogInterface.OnCancelListener() {
 									public void onCancel(DialogInterface dialog) {
@@ -122,13 +119,16 @@ public class MainActivity extends ProgressHandlerActivity {
 							}
 						});
 						createProgressDialog(DIALOG_WAIT_GARES_FAVORITES, "Liste des gares...", "Récupération de la liste de vos gares favorites...", true);
+					}
+				});
 
-						// Check for data updates
-						ErrorReporter.getInstance().addCustomData("update_hash", dataHelper.getLastUpdateHash());
-						long lastUpdate = dataHelper.getLastUpdateTime();
-						final boolean dataInitialization;
-						if (lastUpdate == 0) {
-							// No data ! Initialize data now
+				// Check for data updates
+				ErrorReporter.getInstance().addCustomData("update_hash", dataHelper.getLastUpdateHash());
+				long lastUpdate = dataHelper.getLastUpdateTime();
+				if (lastUpdate == 0) {
+					// No data ! Initialize data now
+					runOnUiThread(new Runnable() {
+						public void run() {
 							new AlertDialog.Builder(MainActivity.this).setCancelable(true).setOnCancelListener(new DialogInterface.OnCancelListener() {
 								public void onCancel(DialogInterface dialog) {
 									Toast.makeText(MainActivity.this, "Initialisation annulée par l'utilisateur", Toast.LENGTH_LONG).show();
@@ -141,42 +141,42 @@ public class MainActivity extends ProgressHandlerActivity {
 								}
 							}).setTitle("Initialisation des données").setMessage("Aucune donnée n'a été trouvée. Validez pour télécharger les gares maintenant.").setIcon(
 									R.drawable.icon).create().show();
-							dataInitialization = true;
-						} else {
-							dataInitialization = false;
+							mDataInitialization = true;
 						}
+					});
+				} else {
+					mDataInitialization = false;
+				}
 
-						// Buttons
-						findViewById(R.id.ButtonMenu).setOnClickListener(new View.OnClickListener() {
-							public void onClick(View v) {
-								openOptionsMenu();
-							}
-						});
-
-						// Start home, eventually show about dialog if first
-						// time
-						try {
-							versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-						} catch (NameNotFoundException e) {
-							versionName = null;
-						}
-						if (versionName == null || !preferences.getString("app_version", "").equals(versionName)) {
-							// Show about dialog, if there is no initialization
-							// pending
-							if (!dataInitialization) {
-								showAbout();
-							}
-							if (versionName != null) {
-								preferences.edit().putString("app_version", versionName).commit();
-							}
-						}
-
-						// If no data initialization is pending, start home now
-						if (!dataInitialization) {
-							displayHome();
-						}
+				// Buttons
+				findViewById(R.id.ButtonMenu).setOnClickListener(new View.OnClickListener() {
+					public void onClick(View v) {
+						openOptionsMenu();
 					}
 				});
+
+				// Start home, eventually show about dialog if first
+				// time
+				try {
+					versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+				} catch (NameNotFoundException e) {
+					versionName = null;
+				}
+				if (versionName == null || !preferences.getString("app_version", "").equals(versionName)) {
+					// Show about dialog, if there is no initialization
+					// pending
+					if (!mDataInitialization) {
+						showAbout();
+					}
+					if (versionName != null) {
+						preferences.edit().putString("app_version", versionName).commit();
+					}
+				}
+
+				// If no data initialization is pending, start home now
+				if (!mDataInitialization) {
+					displayHome();
+				}
 
 				// Send pending error reports
 				ErrorReporter.getInstance().checkAndSendReports(MainActivity.this);
@@ -404,34 +404,38 @@ public class MainActivity extends ProgressHandlerActivity {
 
 		switch (msg.what) {
 			case MSG_UPDATE_LIST_DATA: {
-				((ListeGaresView) findViewById(R.id.ListeGares)).setData(gares, latitude, longitude);
-				int dialogId = msg.getData().getInt("value");
-				if (dialogId > 0) {
-					try {
-						getDialog(dialogId).dismiss();
-					} catch (BadTokenException e) {
-						// Activity not running : ignore
+				if (!mDisableDialogs) {
+					((ListeGaresView) findViewById(R.id.ListeGares)).setData(gares, latitude, longitude);
+					int dialogId = msg.getData().getInt("value");
+					if (dialogId > 0) {
+						try {
+							getDialog(dialogId).dismiss();
+						} catch (BadTokenException e) {
+							// Activity not running : ignore
+						}
 					}
 				}
 				break;
 			}
 			case MSG_SHOW_GEOLOCATION_ERROR: {
-				setProgressBarIndeterminateVisibility(false);
-				Dialog waitDialog = getDialog(DIALOG_WAIT_GARES_GEO);
-				if (waitDialog != null) {
-					try {
-						waitDialog.dismiss();
-					} catch (BadTokenException e) {
-						// Activity not running : ignore
+				if (!mDisableDialogs) {
+					setProgressBarIndeterminateVisibility(false);
+					Dialog waitDialog = getDialog(DIALOG_WAIT_GARES_GEO);
+					if (waitDialog != null) {
+						try {
+							waitDialog.dismiss();
+						} catch (BadTokenException e) {
+							// Activity not running : ignore
+						}
 					}
+					Util.showError(this,
+							"La géolocalisation a échoué, vérifiez que vous avez activé la localisation par le réseau et que vous êtes sous couverture de votre opérateur "
+									+ "avant de relancer l'application.", new Runnable() {
+								public void run() {
+									sendMessage(MSG_SEARCH);
+								}
+							});
 				}
-				Util.showError(this,
-						"La géolocalisation a échoué, vérifiez que vous avez activé la localisation par le réseau et que vous êtes sous couverture de votre opérateur "
-								+ "avant de relancer l'application.", new Runnable() {
-							public void run() {
-								sendMessage(MSG_SEARCH);
-							}
-						});
 				break;
 			}
 			case MSG_SEARCH: {

@@ -117,25 +117,28 @@ public class Util {
 		});
 	}
 
-	public static void showError(final Activity activity, String message, final Runnable onClose) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-		builder.setTitle("Woops !");
-		builder.setIcon(R.drawable.icon_error);
-		builder.setMessage(message);
-		builder.setCancelable(true);
-		builder.setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				onClose.run();
+	public static void showError(final Activity activity, final String message, final Runnable onClose) {
+		activity.runOnUiThread(new Runnable() {
+			public void run() {
+				AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+				builder.setTitle("Woops !");
+				builder.setIcon(R.drawable.icon_error);
+				builder.setMessage(message);
+				builder.setCancelable(true);
+				builder.setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						onClose.run();
+					}
+				});
+				builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+					public void onCancel(DialogInterface dialog) {
+						onClose.run();
+					}
+				});
+				AlertDialog alert = builder.create();
+				alert.show();
 			}
 		});
-		builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-			public void onCancel(DialogInterface dialog) {
-				onClose.run();
-			}
-		});
-		AlertDialog alert = builder.create();
-		alert.show();
-
 	}
 
 	public static int typeTrainFromLabel(String typeLabel) {

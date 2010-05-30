@@ -91,8 +91,8 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 		mMapView = (MapView) findViewById(R.id.mapview);
 		mOverlayManager = new OverlayManager(getApplication(), mMapView);
 
-		Toast.makeText(this, "Rappel : N'oubliez pas votre touche \"menu\" :) pour les options avancées", Toast.LENGTH_SHORT).show(); 
-		
+		Toast.makeText(this, "Rappel : N'oubliez pas votre touche \"menu\" :) pour les options avancées", Toast.LENGTH_SHORT).show();
+
 		new Thread() {
 			public void run() {
 				runOnUiThread(new Runnable() {
@@ -106,7 +106,6 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 	}
 
 	protected void initBehaviors() {
-
 		// Init overlay gares
 
 		Drawable markerDrawable = getResources().getDrawable(R.drawable.map_marker);
@@ -175,8 +174,8 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 							GeoPoint p = new GeoPoint((int) (cursor.getDouble(2) * 1000000), (int) (cursor.getDouble(3) * 1000000));
 							items.add(new ManagedOverlayItem(p, cursor.getString(0), cursor.getString(1)));
 						} while (cursor.moveToNext());
-						cursor.close();
 					}
+					cursor.close();
 				}
 				return items;
 			}
@@ -295,10 +294,20 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 										}
 									});
 								} else {
-									Toast.makeText(MapActivity.this, "Aucun résultat", Toast.LENGTH_SHORT).show();
+									runOnUiThread(new Runnable() {
+										@Override
+										public void run() {
+											Toast.makeText(MapActivity.this, "Aucun résultat", Toast.LENGTH_SHORT).show();
+										}
+									});
 								}
 							} catch (IOException e) {
-								Toast.makeText(MapActivity.this, "La recherche a échoué", Toast.LENGTH_SHORT).show();
+								runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										Toast.makeText(MapActivity.this, "La recherche a échoué", Toast.LENGTH_SHORT).show();
+									}
+								});
 							}
 							dialog.dismiss();
 						}
