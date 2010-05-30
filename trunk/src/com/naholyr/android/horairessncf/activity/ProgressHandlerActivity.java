@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.SparseArray;
-import android.view.WindowManager.BadTokenException;
 
 public class ProgressHandlerActivity extends Activity {
 
