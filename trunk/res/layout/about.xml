@@ -31,40 +31,29 @@
 				</TableRow>
 			</TableLayout>
 
-			<TextView android:text="L'application" style="@style/AboutTitle" />
-			<ImageView style="@style/AboutDivider" />
-			<TextView android:id="@+id/AboutDialog_TextObjectifs"
-				android:layout_width="wrap_content" android:layout_height="wrap_content" />
-
 			<TextView android:text="Rappel" style="@style/AboutTitle" />
 			<ImageView style="@style/AboutDivider" />
-			<TextView android:id="@+id/AboutDialog_TextRappel"
+			<TextView android:text="@string/text_rappel"
+				android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+			<TextView android:text="L'application" style="@style/AboutTitle" />
+			<ImageView style="@style/AboutDivider" />
+			<TextView android:text="@string/text_objectifs"
 				android:layout_width="wrap_content" android:layout_height="wrap_content" />
 
 			<TextView android:text="Nouveautés" style="@style/AboutTitle" />
 			<ImageView style="@style/AboutDivider" />
-			<TextView android:id="@+id/AboutDialog_TextChangelog"
+			<TextView android:text="@string/text_changelog"
 				android:layout_width="wrap_content" android:layout_height="wrap_content" />
 			<TextView android:text="Historique des versions :"
 				android:layout_width="wrap_content" android:layout_height="wrap_content" />
 			<TextView android:text="@string/url_changelog"
 				android:autoLink="web" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" />
-
-			<TextView android:text="Futures évolutions" style="@style/AboutTitle" />
-			<ImageView style="@style/AboutDivider" />
-			<TextView android:id="@+id/AboutDialog_TextEvolutions"
-				android:layout_width="wrap_content" android:layout_height="wrap_content" />
-
-			<TextView android:text="Avertissement" style="@style/AboutTitle" />
-			<ImageView style="@style/AboutDivider" />
-			<TextView android:id="@+id/AboutDialog_TextAvertissements"
-				android:layout_width="wrap_content" android:layout_height="wrap_content" />
-
 		</LinearLayout>
 	</ScrollView>
 	<Button android:id="@+id/AboutDialog_ButtonClose"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:layout_gravity="center" android:layout_marginTop="5dip"
-		android:textSize="16dip" android:text="Fermer" android:background="@drawable/toolbar_button" />
+		android:textSize="18dip" android:text="Fermer" android:background="@drawable/toolbar_button" />
 </LinearLayout>

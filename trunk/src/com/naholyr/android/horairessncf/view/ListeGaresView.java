@@ -1,6 +1,5 @@
 package com.naholyr.android.horairessncf.view;
 
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,6 +19,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.Util;
+import com.naholyr.android.horairessncf.activity.MapActivity;
 import com.naholyr.android.horairessncf.activity.ProchainsDepartsActivity;
 
 public class ListeGaresView extends ListView implements OnItemClickListener, OnItemLongClickListener {
@@ -69,9 +68,9 @@ public class ListeGaresView extends ListView implements OnItemClickListener, OnI
 	}
 
 	private void showGoogleMap(Gare gare) {
-		String sUri = "geo:" + gare.getLatitude() + "," + gare.getLongitude();
-		sUri += "?q=" + URLEncoder.encode(gare.getAdresse());
-		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(sUri));
+		Intent intent = new Intent(getContext(), MapActivity.class);
+		intent.putExtra(MapActivity.EXTRA_LATITUDE, gare.getLatitude());
+		intent.putExtra(MapActivity.EXTRA_LONGITUDE, gare.getLongitude());
 		getContext().startActivity(intent);
 	}
 

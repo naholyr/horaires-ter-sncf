@@ -5,12 +5,10 @@
     <string name="pref_nbtrains">nb_trains</string>
     <string name="pref_radiuskm">radius_km</string>
     <string name="pref_favsfirst">favs_first</string>
-    <string name="text_objectifs">\"Horaires TER SNCF\" se base sur les services mobiles offerts par la SNCF pour vous fournir de la manière la plus directe et conviviale possible les informations sur les prochains départs dans vos gares habituelles.\n * Gérez vos gares favories\n * Listez les gares autour de vous\n * Accédez aux horaires de prochains départs et soyez prévenus des retards !</string>
+    <string name="text_objectifs">\"Horaires TER SNCF\" se base sur les services mobiles offerts par la SNCF pour vous fournir de la manière la plus directe et conviviale possible les informations sur les prochains départs dans vos gares habituelles.\n * Gérez vos gares favorites\n * Listez les gares autour de vous\n * Accédez aux horaires de prochains départs et soyez prévenus des retards !</string>
     <string name="text_rappel">Utilisez les bouton \"menu\" ou \"recherche\" dans l\'écran principal ! Vous pourrez gérer vos préférences, voir les gares favories ou proches, rechercher une gare, etc...\n\nDepuis votre écran d\'accueil, un appui long et un clic sur \"Dossiers\" pour ajouter un dossier avec vos gares favories.</string>
-    <string name="text_avertissements">Note : L\'application étant basé sur le service \"termobile.fr\", l\'information du quai n\'est pas disponible.\nAfin de vous offrir des résultats personnalisés, l\'ensemble des 3081 gares de France (informations extraites du fichier public du Réseau Ferré de France) a été géolocalisée.\nDes erreurs ont pu s\'introduire dans le fichier de données fourni avec l\'application, et c\'est avec votre aide que je pourrai l\'améliorer, donc n\'hésitez pas à me faire part (par mail) des erreurs ou imprécisions rencontrées !</string>
     <string name="text_changelog">Version 2.4.0 :\n * Ajout de la carte de France des gares.</string>
     <string name="url_changelog">http://code.google.com/p/horaires-ter-sncf/wiki/Changelog</string>
-    <string name="text_evolutions">Evolutions prévues (roadmap) par ordre décroissant de priorité :\n1. Détails d\'un train (arrêts).\n2. Système de notifications pour les retards.</string>
     <string name="pref_home">home</string>
     <string name="folder_favorites">Gares favories</string>
     <string name="folder_geolocation">Gares proches</string>
