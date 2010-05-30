@@ -3,7 +3,7 @@
 	android:layout_width="fill_parent" android:layout_height="fill_parent">
 	<com.google.android.maps.MapView
 		android:layout_width="fill_parent" android:layout_height="fill_parent"
-		android:apiKey="@string/maps_api_key_debug" android:clickable="true"
+		android:apiKey="@string/maps_api_key_nchambrier" android:clickable="true"
 		android:id="@+id/mapview" />
 	<ImageView android:id="@+id/map_loading"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"

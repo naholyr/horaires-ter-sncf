@@ -16,5 +16,5 @@
     <string name="initdb_load">Chargement des données...</string>
     <string name="update_notification">Mise à jour des gares disponible !</string>
     <string name="maps_api_key_debug">0tldPTHct7USyVdAqenCUNIA3f4LB8EUr-IZ30w</string>
-    <string name="maps_api_key">0tldPTHct7USoabOhu7tVUpa9Cmfx7EWd_Xxqfg</string>
+    <string name="maps_api_key_nchambrier">0tldPTHct7UR57qcdH6keHOg6mneyWK6qXnRqfQ</string>
 </resources>
