@@ -94,9 +94,9 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 		Toast.makeText(this, "Rappel : N'oubliez pas votre touche \"menu\" :) pour les options avancées", Toast.LENGTH_SHORT).show();
 
 		new Thread() {
+			@Override
 			public void run() {
 				runOnUiThread(new Runnable() {
-					@Override
 					public void run() {
 						initBehaviors();
 					}
@@ -143,7 +143,6 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 		// Gares
 
 		mGaresOverlay.setLazyLoadCallback(new LazyLoadCallback() {
-			@Override
 			public List<ManagedOverlayItem> lazyload(GeoPoint topLeft, GeoPoint bottomRight, ManagedOverlay overlay) throws LazyLoadException {
 				List<ManagedOverlayItem> items = new ArrayList<ManagedOverlayItem>();
 				String latitudeMin = String.valueOf(((double) bottomRight.getLatitudeE6()) / 1000000);
@@ -164,7 +163,6 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 							i++;
 							if (i > MAX_MARKERS) {
 								runOnUiThread(new Runnable() {
-									@Override
 									public void run() {
 										Toast.makeText(MapActivity.this, "Trop de gares inclus dans la zone visible (+ de " + MAX_MARKERS + ")", Toast.LENGTH_LONG).show();
 									}
@@ -183,12 +181,10 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 
 		mGaresOverlay.setOnOverlayGestureListener(new ManagedOverlayGestureDetector.OnOverlayGestureListener() {
 
-			@Override
 			public boolean onZoom(ZoomEvent arg0, ManagedOverlay arg1) {
 				return false;
 			}
 
-			@Override
 			public boolean onSingleTap(MotionEvent arg0, ManagedOverlay arg1, GeoPoint arg2, ManagedOverlayItem item) {
 				if (item != null) {
 					mBoutonGare.setText(item.getTitle());
@@ -198,22 +194,18 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 				}
 			}
 
-			@Override
 			public boolean onScrolled(MotionEvent arg0, MotionEvent arg1, float arg2, float arg3, ManagedOverlay arg4) {
 				return false;
 			}
 
-			@Override
 			public void onLongPressFinished(MotionEvent event, ManagedOverlay overlay, GeoPoint point, ManagedOverlayItem item) {
 				// Non utilisé : buggé :(
 			}
 
-			@Override
 			public void onLongPress(MotionEvent event, ManagedOverlay overlay) {
 				// Non utilisé : buggé :(
 			}
 
-			@Override
 			public boolean onDoubleTap(MotionEvent event, ManagedOverlay overlay, GeoPoint point, ManagedOverlayItem item) {
 				mMapView.getController().animateTo(point);
 				mMapView.getController().zoomIn();
@@ -233,7 +225,6 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 
 		mBoutonGare.setClickable(true);
 		mBoutonGare.setOnClickListener(new View.OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				final CharSequence nom = mBoutonGare.getText();
 				if (nom == null || nom.toString().trim().length() == 0) {
@@ -266,7 +257,6 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 
 		final Geocoder geocoder = new Geocoder(this);
 		mBoutonRechercheGare.setOnClickListener(new View.OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				// Cacher le clavier :)
 				InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -278,6 +268,7 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 				} else {
 					final ProgressDialog dialog = ProgressDialog.show(MapActivity.this, "Recherche", "Veuillez patienter...", true);
 					new Thread() {
+						@Override
 						public void run() {
 							try {
 								List<Address> results = geocoder.getFromLocationName(adresse, 1);
@@ -285,7 +276,6 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 									Address result = results.get(0);
 									final GeoPoint p = new GeoPoint((int) (result.getLatitude() * 1000000), (int) (result.getLongitude() * 1000000));
 									runOnUiThread(new Runnable() {
-										@Override
 										public void run() {
 											mMapView.getController().animateTo(p);
 											mMapView.getController().setZoom(15);
@@ -295,7 +285,6 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 									});
 								} else {
 									runOnUiThread(new Runnable() {
-										@Override
 										public void run() {
 											Toast.makeText(MapActivity.this, "Aucun résultat", Toast.LENGTH_SHORT).show();
 										}
@@ -303,7 +292,6 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 								}
 							} catch (IOException e) {
 								runOnUiThread(new Runnable() {
-									@Override
 									public void run() {
 										Toast.makeText(MapActivity.this, "La recherche a échoué", Toast.LENGTH_SHORT).show();
 									}
@@ -338,7 +326,6 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 		mZoomControlHandler.sendEmptyMessage(View.GONE);
 
 		View.OnTouchListener fixAppearOnTouch = new View.OnTouchListener() {
-			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				mZoomControlHandler.removeMessages(View.GONE);
 				mZoomControlHandler.sendEmptyMessage(View.VISIBLE);
@@ -347,7 +334,6 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 		};
 
 		View.OnTouchListener tempAppearOnTouch = new View.OnTouchListener() {
-			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				mZoomControlHandler.removeMessages(View.GONE);
 				mZoomControlHandler.sendEmptyMessage(View.VISIBLE);
@@ -369,7 +355,6 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 		mMyLocationOverlay.enableMyLocation();
 		mMyLocationOverlay.enableCompass();
 		mMyLocationOverlay.runOnFirstFix(new Runnable() {
-			@Override
 			public void run() {
 				mMapView.getController().animateTo(mMyLocationOverlay.getMyLocation());
 				mMapView.getController().setZoom(14);

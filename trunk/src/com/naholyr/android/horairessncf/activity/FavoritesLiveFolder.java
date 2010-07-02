@@ -11,6 +11,7 @@ import com.naholyr.android.horairessncf.R;
 
 public class FavoritesLiveFolder extends Activity {
 
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 

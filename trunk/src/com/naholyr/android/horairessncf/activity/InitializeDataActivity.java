@@ -113,6 +113,7 @@ public class InitializeDataActivity extends Activity {
 	}
 
 	// Initialization
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -127,6 +128,7 @@ public class InitializeDataActivity extends Activity {
 		});
 
 		new Thread() {
+			@Override
 			public void run() {
 				// Cancel current notification
 				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -218,6 +220,7 @@ public class InitializeDataActivity extends Activity {
 			mHelper = helper;
 		}
 
+		@Override
 		public void run() {
 			mWorking = true;
 			try {
@@ -375,6 +378,7 @@ public class InitializeDataActivity extends Activity {
 		}
 	}
 
+	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 
@@ -403,6 +407,7 @@ public class InitializeDataActivity extends Activity {
 		}
 	}
 
+	@Override
 	public void finish() {
 		if (mainThread != null && mainThread.isWorking()) {
 			mainThread.cancel();
@@ -418,6 +423,7 @@ public class InitializeDataActivity extends Activity {
 			mContext = context;
 		}
 
+		@Override
 		public void run() {
 			// Do we need to check ?
 			SharedPreferences prefs = mContext.getSharedPreferences(Util.PREFS_DATA, Context.MODE_PRIVATE);

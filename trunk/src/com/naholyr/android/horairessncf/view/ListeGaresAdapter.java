@@ -64,6 +64,7 @@ public class ListeGaresAdapter extends SimpleAdapter {
 		return getData(gares, null, null);
 	}
 
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> item = (Map<String, Object>) getItem(position);

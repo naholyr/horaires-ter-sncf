@@ -168,6 +168,7 @@ public class ProgressHandlerActivity extends Activity {
 	}
 
 	private Handler handler = new Handler() {
+		@Override
 		public void handleMessage(Message msg) {
 			ProgressHandlerActivity.this.handleMessage(msg);
 		}

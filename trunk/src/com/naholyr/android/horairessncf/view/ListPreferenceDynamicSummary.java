@@ -14,6 +14,7 @@ public class ListPreferenceDynamicSummary extends ListPreference {
 		super(context);
 	}
 
+	@Override
 	public CharSequence getSummary() {
 		CharSequence summary = super.getSummary();
 		if (summary != null) {
@@ -27,6 +28,7 @@ public class ListPreferenceDynamicSummary extends ListPreference {
 		return summary;
 	}
 
+	@Override
 	protected void onDialogClosed(boolean positiveResult) {
 		super.onDialogClosed(positiveResult);
 

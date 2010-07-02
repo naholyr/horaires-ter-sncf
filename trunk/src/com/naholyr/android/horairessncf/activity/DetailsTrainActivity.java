@@ -26,6 +26,7 @@ public class DetailsTrainActivity extends Activity {
 
 	public static final String EXTRA_NUMERO = "numero";
 
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -55,6 +56,7 @@ public class DetailsTrainActivity extends Activity {
 					}
 				});
 			}
+			@Override
 			public void run() {
 				JSONWebServiceClient client = new JSONWebServiceClient();
 				Map<String, Object> params = new HashMap<String, Object>();

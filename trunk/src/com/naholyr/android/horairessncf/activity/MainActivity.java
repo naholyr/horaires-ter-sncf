@@ -75,6 +75,7 @@ public class MainActivity extends ProgressHandlerActivity {
 	private SharedPreferences prefs_data;
 	private SharedPreferences prefs_favs;
 
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -93,6 +94,7 @@ public class MainActivity extends ProgressHandlerActivity {
 		new Thread() {
 			protected boolean mDataInitialization;
 
+			@Override
 			public void run() {
 				// Data access helper
 				try {
@@ -184,6 +186,7 @@ public class MainActivity extends ProgressHandlerActivity {
 		}.start();
 	}
 
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (resultCode) {
 			case InitializeDataActivity.RESULT_CANCELED: {
@@ -207,6 +210,7 @@ public class MainActivity extends ProgressHandlerActivity {
 	}
 
 	private final class GeolocationThread extends Thread {
+		@Override
 		public void run() {
 			runOnUiThread(new Runnable() {
 				public void run() {
@@ -251,6 +255,7 @@ public class MainActivity extends ProgressHandlerActivity {
 						sendMessage(MSG_SET_DIALOG_MESSAGE, DIALOG_WAIT_GARES_GEO, geolocationStatus);
 
 						new Thread() {
+							@Override
 							public void run() {
 								Geocoder geocoder = new Geocoder(MainActivity.this);
 								List<Address> addresses;
@@ -302,6 +307,7 @@ public class MainActivity extends ProgressHandlerActivity {
 			longitude = location.getLongitude();
 		}
 
+		@Override
 		public void run() {
 			// Liste gares
 			sendMessage(MSG_SET_DIALOG_TITLE, DIALOG_WAIT_GARES_GEO, "Les gares autour de vous...");
@@ -327,6 +333,7 @@ public class MainActivity extends ProgressHandlerActivity {
 
 	private class FavorisThread extends Thread {
 
+		@Override
 		public void run() {
 			runOnUiThread(new Runnable() {
 				public void run() {
@@ -366,6 +373,7 @@ public class MainActivity extends ProgressHandlerActivity {
 			this.keywords = keywords;
 		}
 
+		@Override
 		public void run() {
 			runOnUiThread(new Runnable() {
 				public void run() {
@@ -399,6 +407,7 @@ public class MainActivity extends ProgressHandlerActivity {
 
 	}
 
+	@Override
 	protected void handleMessage(Message msg) {
 		super.handleMessage(msg);
 
@@ -445,12 +454,14 @@ public class MainActivity extends ProgressHandlerActivity {
 		}
 	}
 
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
 		return true;
 	}
 
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_main_geolocation: {
@@ -545,6 +556,7 @@ public class MainActivity extends ProgressHandlerActivity {
 		updateListeGares(0, dialogToDismiss);
 	}
 
+	@Override
 	public boolean onSearchRequested() {
 		showSearch();
 

@@ -54,6 +54,7 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 	/**
 	 * @see android.app.Activity#onCreate(Bundle)
 	 */
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -159,6 +160,7 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 	}
 
 	private final class SearchThread extends Thread {
+		@Override
 		public void run() {
 			sendMessage(MSG_SHOW_DIALOG, DIALOG_WAIT);
 			sendMessage(MSG_SET_DIALOG_MESSAGE, DIALOG_WAIT, "Recherche de la gare...");
@@ -223,6 +225,7 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 			mRefresh = refresh;
 		}
 
+		@Override
 		public void run() {
 			sendMessage(MSG_HIDE_WARNING_NORESULT);
 			sendMessage(MSG_SHOW_DIALOG, DIALOG_WAIT);
@@ -250,6 +253,7 @@ public class ProchainsDepartsActivity extends ProgressHandlerActivity {
 
 	}
 
+	@Override
 	protected void handleMessage(Message msg) {
 		super.handleMessage(msg);
 
