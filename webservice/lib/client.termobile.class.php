@@ -107,18 +107,30 @@ class client_termobile implements client_interface
     }
 
     // RÃ©solution du nom de la gare
+    if (DEBUG) var_dump("avant=".$nom_gare);
     if (is_null($id_gare)) {
       return $gares;
     } elseif (!in_array($id_gare, $gares)) {
       erreur('ID invalide', 350, array('gares' => $gares, 'nom' => $nom_gare, 'id' => $id_gare));
     } else {
       $nom_gare = array_search($id_gare, $gares, true);
+      if (DEBUG) var_dump("apres=".$nom_gare);
       if ($nom_gare === false) {
         erreur('ID invalide (bis)', 351, array('gares' => $gares, 'nom' => $nom_gare, 'id' => $id_gare));
       } else {
+        if (DEBUG) $this->fixNomGare($nom_gare);
+        if (DEBUG) var_dump("fix=".$nom_gare);
         $this->ids[$nom_gare] = $id_gare;
         return array($nom_gare => $id_gare);
       }
+    }
+  }
+
+  // FIX 14/07/2010 : termobile.fr ajoute maintenant le nom de la commune à la fin, format = gare - commune
+  protected function fixNomGare(&$nom_gare)
+  {
+    if (preg_match('#^ *(.+?) - .{1,24}$#', $nom_gare, $match)) {
+      $nom_gare = $match[1];
     }
   }
 

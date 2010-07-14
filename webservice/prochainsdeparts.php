@@ -2,14 +2,14 @@
 
 if (isset($_GET['source']) && $_GET['source'] == 1) { highlight_file(__FILE__); exit(0); }
 
+// Libraries
+require_once 'lib/common.inc.php';
+
 // Configuration
 $nb_max_departs = 20;
 $nb_min_departs = 4;
 $cache_timeout = 300;
-$cache_enabled = true;
-
-// Libraries
-require_once 'lib/common.inc.php';
+$cache_enabled = !DEBUG;
 
 // Paramètre "gare"
 if (!isset($_GET['gare'])) {
@@ -31,7 +31,7 @@ if (isset($_GET['nb'])) {
 $nb_departs = min(20, max(5, $nb_departs));
 
 // Test cache
-$key = 'gare-'.str_replace(array("/", "\\", " ", "'"), array('', '', '', ''), $nom_gare) . '-ID-' . $id_gare;
+$key = 'gare-'.$nb_departs.'-'.str_replace(array("/", "\\", " ", "'"), array('', '', '', ''), $nom_gare) . '-ID-' . $id_gare;
 if ($cache_enabled) {
   cache($key, $cache_timeout);
 }

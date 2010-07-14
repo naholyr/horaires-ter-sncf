@@ -18,19 +18,23 @@ class client_termobile_plus_gem implements client_interface
 
   public function cherche_gare(&$nom_gare, $id_gare)
   {
+    if (DEBUG) var_dump($nom_gare);
     $sources = array();
     try {
       $result = $this->client_termobile->cherche_gare($nom_gare, $id_gare);
+      if (DEBUG) var_dump($nom_gare, $result);
       $sources[] = 'termobile';
       try {
         $this->client_gem->cherche_gare($nom_gare, null);
         $sources[] = 'gem';
       } catch (ClientError $e) {
+        if (DEBUG) var_dump($e->getMessage());
         // skip
       }
     } catch (ClientError $e1) {
       try {
         $result = $this->client_gem->cherche_gare($nom_gare, $id_gare);
+        if (DEBUG) var_dump($result);
         $sources[] = 'gem';
       } catch (ClientError $e2) {
         throw $e1;

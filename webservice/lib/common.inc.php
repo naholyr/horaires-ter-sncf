@@ -1,5 +1,7 @@
 <?php
 
+define('DEBUG', isset($_GET) && isset($_GET['debug']));
+
 // Compat
 if (!function_exists('json_encode')) {
   require dirname(__FILE__) . '/JSON.php';
@@ -26,7 +28,7 @@ function erreur($message, $code, $additional_info = null)
 }
 function exception_handler($exception)
 {
-  header('Content-type: application/json');
+  header('Content-type: ' . (DEBUG ? 'text/plain' : 'application/json'));
   echo $exception->getMessage();
   exit(0);
 }
@@ -35,7 +37,7 @@ set_exception_handler('exception_handler');
 // Retour succès
 function retour($data, $code = 200)
 {
-  header('Content-type: application/json');
+  header('Content-type: ' . (DEBUG ? 'text/plain' : 'application/json'));
   echo $contents = json_encode(array('code' => $code, 'success' => $data));
   if (isset($GLOBALS['cache.key'])) {
     do_cache($GLOBALS['cache.key'], $contents);
@@ -50,7 +52,7 @@ function cache($key, $cache_timeout)
   if (file_exists($file)) {
     if (time() - filemtime($file) < $cache_timeout) { // cached ?
       header("HTTP/1.0 200 CACHE OK");
-      header('Content-type: application/json');
+      header('Content-type: ' . (DEBUG ? 'text/plain' : 'application/json'));
       echo file_get_contents($file);
       exit(0);
     } else {

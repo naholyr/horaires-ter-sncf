@@ -197,7 +197,9 @@ class client_gare_en_mouvement implements client_interface
     $departs = array();
     $id = $this->id_gare($nom_gare);
     $url = 'http://www.gares-en-mouvement.com/include/tvs.php?nom_gare=&tab=dep&TVS=http://www.gares-en-mouvement.com/tvs/TVS?wsdl&tab_summary_dep=&caption=&type=T&numero=N&num=N&heure=H&dest=D&origine=P&situation=S&voie=V&color=bleu&heur=h&h=h&minut=min&m=min&arriv=A&retard=RETARD&code_tvs=' . rawurlencode($id);
+    if (DEBUG) var_dump($url);
     $html = file_get_contents($url);
+    if (DEBUG) var_dump($html);
     if (preg_match('#<tbody>(.*?)</tbody>#si', $html, $tbody)) {
       $tbody = $tbody[1];
       preg_match_all('#<tr.*?>(.*?)</tr>#si', $tbody, $rows, PREG_SET_ORDER);
@@ -240,6 +242,7 @@ class client_gare_en_mouvement implements client_interface
 
   public function id_gare($nom_gare)
   {
+    $nom_gare = nom_gare($nom_gare);
     $nom_gare = strtr(utf8_decode($nom_gare), utf8_decode(
       'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðòóôõöùúûüýÿ'),
       'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
