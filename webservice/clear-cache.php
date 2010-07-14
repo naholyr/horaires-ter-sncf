@@ -1,6 +1,8 @@
 <?php
 
-if ($_SERVER['HTTP_X_FORWARDED_FOR'] != '88.175.133.75') {
+$ips = file('.htallowedips');
+$ip = @$_SERVER['HTTP_X_FORWARDED_FOR'] ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR']; 
+if (!in_array($ip, $ips)) {
     exit('Accès interdit');
 }
 
@@ -28,7 +30,7 @@ $do_type = isset($_GET['type']) ? $_GET['type'] : null;
     <li><strong><?php echo count($info['files']) ?></strong> fichier(s) de cache pour "<?php echo $info['title'] ?>"</li>
     <?php endforeach ?>
 </ul>
-<p>[<a href="?do=list">Lister les fichiers</a>]<?php if ($do == 'list'): ?>[<a href="?do=clear">Vider le cache</a>]<?php endif ?></p>
+<p>[<a href="?do=list">Lister les fichiers</a>]<?php if ($do == 'list'): ?>[<a href="?do=clear" onclick="return confirm('Confirmer le vidage de tous les caches')">Vider le cache</a>]<?php endif ?></p>
 
 <?php if ($do == 'list' || $do == 'clear'): ?>
 
@@ -54,7 +56,7 @@ $do_type = isset($_GET['type']) ? $_GET['type'] : null;
     $size  = round($size/1024, 2);
     ?>
     <h1><?php echo $info['title'] ?></h1>
-    <?php if ($do == 'list' || ($do == 'clear' && $do_type != $type)): ?><p><a href="?do=clear&type=<?php echo $type ?>">Vider ce cache (<?php echo $size ?> ko)</a>.</p><?php endif ?>
+    <?php if ($do == 'list' || ($do == 'clear' && $do_type != $type)): ?><p><a href="?do=clear&type=<?php echo $type ?>" onclick="return confirm('Confirmer le vidage de ce cache')">Vider ce cache (<?php echo $size ?> ko)</a>.</p><?php endif ?>
     <p id="l<?php echo $type ?>"><a href="#" onclick="document.getElementById('l<?php echo $type ?>').style.display='none';document.getElementById('t<?php echo $type ?>').style.display='';return false;">Afficher la liste</a></p>
     <table id="t<?php echo $type ?>" style="display:none">
         <thead>
