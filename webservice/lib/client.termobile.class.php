@@ -118,7 +118,7 @@ class client_termobile implements client_interface
       if ($nom_gare === false) {
         erreur('ID invalide (bis)', 351, array('gares' => $gares, 'nom' => $nom_gare, 'id' => $id_gare));
       } else {
-        if (DEBUG) $this->fixNomGare($nom_gare);
+        $this->fixNomGare($nom_gare);
         if (DEBUG) var_dump("fix=".$nom_gare);
         $this->ids[$nom_gare] = $id_gare;
         return array($nom_gare => $id_gare);
@@ -126,7 +126,7 @@ class client_termobile implements client_interface
     }
   }
 
-  // FIX 14/07/2010 : termobile.fr ajoute maintenant le nom de la commune à la fin, format = gare - commune
+  // FIX 14/07/2010 : termobile.fr ajoute maintenant le nom de la commune ï¿½ la fin, format = gare - commune
   protected function fixNomGare(&$nom_gare)
   {
     if (preg_match('#^ *(.+?) - .{1,24}$#', $nom_gare, $match)) {
