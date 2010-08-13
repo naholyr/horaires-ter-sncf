@@ -34,7 +34,7 @@ class client_termobile implements client_interface
 
     // Cookie de session
     curl_setopt($this->s, CURLOPT_HEADER, true);
-    curl_setopt($this->s, CURLOPT_NO_BODY, true);
+    curl_setopt($this->s, CURLOPT_NOBODY, true);
     curl_setopt($this->s, CURLOPT_URL, $url);
     $header_string = curl_exec($this->s);
     if (!$header_string) {
@@ -54,7 +54,7 @@ class client_termobile implements client_interface
     curl_setopt($this->s, CURLOPT_URL, $url);
     curl_setopt($this->s, CURLOPT_POST, true);
     curl_setopt($this->s, CURLOPT_HEADER, false);
-    curl_setopt($this->s, CURLOPT_NO_BODY, false);
+    curl_setopt($this->s, CURLOPT_NOBODY, false);
     curl_setopt($this->s, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($this->s, CURLOPT_POSTFIELDS, $post);
 
