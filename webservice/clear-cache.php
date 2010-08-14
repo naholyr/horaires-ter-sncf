@@ -1,9 +1,9 @@
 <?php
 
-$ips = file('.htallowedips');
+$ips = array_filter(array_map('trim', file('.htallowedips')));
 $ip = @$_SERVER['HTTP_X_FORWARDED_FOR'] ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR']; 
 if (!in_array($ip, $ips)) {
-    exit('Accès interdit');
+    exit('Accès interdit (votre IP : '.$ip.')');
 }
 
 header('Content-type: text/html; charset=utf-8');
