@@ -13,18 +13,17 @@ import android.provider.BaseColumns;
 
 import com.naholyr.android.horairessncf.providers.GaresContentProvider;
 
-public class Gare {
+public class Gare implements BaseColumns {
 
 	public static final String CONTENT_TYPE = "vnd.android.cursor.item/vnd.horairessncf.gare";
 
-	public static final String ID = "_id";
 	public static final String NOM = "nom";
 	public static final String REGION = "region";
 	public static final String ADRESSE = "adresse";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 
-	public static final class Gares implements BaseColumns {
+	public static final class Gares {
 		public static final Uri CONTENT_URI = Uri.parse("content://" + GaresContentProvider.AUTHORITY + "/gares");
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.horairessncf.gare";
 	}
@@ -68,7 +67,7 @@ public class Gare {
 
 	public static ContentValues values(String nom, String region, String adresse, double latitude, double longitude) {
 		ContentValues v = new ContentValues();
-		v.put(ID, (Integer) null);
+		v.put(_ID, (Integer) null);
 		v.put(NOM, nom);
 		v.put(REGION, region);
 		v.put(ADRESSE, adresse);
@@ -88,7 +87,7 @@ public class Gare {
 	}
 
 	public static String getNom(Context context, long id) {
-		Cursor c = context.getContentResolver().query(Uri.withAppendedPath(Gares.CONTENT_URI, "/" + id), null, null, null, null);
+		Cursor c = context.getContentResolver().query(Uri.withAppendedPath(Gares.CONTENT_URI, String.valueOf(id)), null, null, null, null);
 		if (c.moveToFirst()) {
 			return c.getString(c.getColumnIndex(NOM));
 		}

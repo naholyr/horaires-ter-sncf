@@ -35,7 +35,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/#", GARE_PAR_ID);
 		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/*", GARE_PAR_NOM);
 		sProjectionMap = new HashMap<String, String>();
-		sProjectionMap.put(Gare.ID, Gare.ID);
+		sProjectionMap.put(Gare._ID, Gare._ID);
 		sProjectionMap.put(Gare.NOM, Gare.NOM);
 		sProjectionMap.put(Gare.REGION, Gare.REGION);
 		sProjectionMap.put(Gare.ADRESSE, Gare.ADRESSE);
@@ -83,7 +83,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 			}
 			case GARE_PAR_ID: {
 				long idGare = Long.valueOf(uri.getPathSegments().get(1));
-				String selection = Gare.ID + " = " + idGare;
+				String selection = Gare._ID + " = " + idGare;
 				if (!TextUtils.isEmpty(where)) {
 					selection += " AND (" + where + ")";
 				}
@@ -103,9 +103,9 @@ public class GaresContentProvider extends android.content.ContentProvider {
 						if (!c.isFirst()) {
 							ids += ",";
 						}
-						ids += c.getLong(c.getColumnIndex(Gare.ID));
+						ids += c.getLong(c.getColumnIndex(Gare._ID));
 					} while (c.moveToNext());
-					count = db.delete(DatabaseHelper.TABLE_GARES, Gare.ID + " IN (" + ids + ")", null);
+					count = db.delete(DatabaseHelper.TABLE_GARES, Gare._ID + " IN (" + ids + ")", null);
 				} else {
 					count = 0;
 				}
@@ -141,7 +141,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 
 		switch (sUriMatcher.match(uri)) {
 			case GARE_PAR_ID:
-				sqlBuilder.appendWhere(Gare.ID + " = " + Long.valueOf(uri.getPathSegments().get(1)));
+				sqlBuilder.appendWhere(Gare._ID + " = " + Long.valueOf(uri.getPathSegments().get(1)));
 				break;
 			case GARE_PAR_NOM:
 				sqlBuilder.appendWhere(Gare.NOM + " = '" + uri.getPathSegments().get(1).replaceAll("'", "''") + "'");
@@ -181,7 +181,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 			}
 			case GARE_PAR_ID: {
 				long idGare = Long.valueOf(uri.getPathSegments().get(1));
-				String selection = Gare.ID + " = " + idGare;
+				String selection = Gare._ID + " = " + idGare;
 				if (!TextUtils.isEmpty(where)) {
 					selection += " AND (" + where + ")";
 				}

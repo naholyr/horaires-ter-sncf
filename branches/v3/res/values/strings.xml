@@ -1,5 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
-    <string name="hello">Hello World, MainActivity!</string>
+    
     <string name="app_name">Horaires TER SNCF</string>
+<string name="action_itineraire_to">Aller à cette gare</string>
+    <string name="action_prochains_departs">Voir les prochains départs</string>
+    <string name="action_remove_favorite">Retirer des favoris</string>
+    <string name="action_add_favorite">Ajouter aux favoris</string>
+    <string name="action_gmap">Voir sur une carte</string>
+    <string name="action_itineraire_from">Partir de cette gare</string>
 </resources>

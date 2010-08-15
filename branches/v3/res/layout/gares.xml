@@ -14,4 +14,7 @@
 			android:layout_width="match_parent" android:layout_height="match_parent"
 			android:text="No data" />
 	</LinearLayout>
+	<TextView android:id="@+id/loading" android:layout_width="match_parent"
+		android:layout_height="match_parent" android:text="Recherche en cours..."
+		android:gravity="center" />
 </LinearLayout>
