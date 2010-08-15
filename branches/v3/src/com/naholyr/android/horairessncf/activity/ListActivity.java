@@ -12,6 +12,7 @@ abstract public class ListActivity extends android.app.ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeatures();
 		setContentView(getLayout());
 		findViewById(android.R.id.empty).setVisibility(View.GONE);
 		findViewById(R.id.loading).setVisibility(View.VISIBLE);
