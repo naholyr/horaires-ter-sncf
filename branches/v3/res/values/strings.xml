@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
-    
-    <string name="app_name">Horaires TER SNCF</string>
-<string name="action_itineraire_to">Aller à cette gare</string>
-    <string name="action_prochains_departs">Voir les prochains départs</string>
-    <string name="action_remove_favorite">Retirer des favoris</string>
-    <string name="action_add_favorite">Ajouter aux favoris</string>
-    <string name="action_gmap">Voir sur une carte</string>
-    <string name="action_itineraire_from">Partir de cette gare</string>
-<string name="no_data">Aucune donnée n\'est disponible.\n\nCliquez sur ce bouton pour initialiser la base de données des gares</string>
-    <string name="update_notification">Mise à jour disponible</string>
+  <string name="app_name">Horaires TER SNCF</string>
+  <string name="action_itineraire_to">Aller à cette gare</string>
+  <string name="action_prochains_departs">Voir les prochains départs</string>
+  <string name="action_remove_favorite">Retirer des favoris</string>
+  <string name="action_add_favorite">Ajouter aux favoris</string>
+  <string name="action_gmap">Voir sur une carte</string>
+  <string name="action_itineraire_from">Partir de cette gare</string>
+  <string name="no_data">Aucune donnée n\'est disponible.\n\nCliquez sur ce bouton pour initialiser la base de données des gares</string>
+  <string name="update_notification">Mise à jour disponible</string>
+  <string name="crash_notif_ticker_text">Une erreur s\'est produite, svp envoyez un rapport...</string>
+  <string name="crash_notif_title">Horaires TER SNCF a crashé...</string>
+  <string name="crash_notif_text">Merci de cliquer ici pour m\'aider à corriger ce problème.</string>
+  <string name="crash_dialog_title">Woops !</string>
+  <string name="crash_dialog_text">Une erreur s\'est produite qui a causé la fermeture forcée de l\'application "Horaires TER SNCF". Aidez-moi à corriger ce problème en m\'envoyant un rapport d\'erreur : tout ce que vous avez à faire est cliquer sur "OK".</string>
+  <string name="crash_dialog_comment_prompt">Vous pouvez ajouter un commentaire ci-dessous :</string>
+  <string name="crash_dialog_ok_toast">Merci !</string>
 </resources>
