@@ -2,8 +2,11 @@ package com.naholyr.android.horairessncf.view;
 
 import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -110,7 +113,35 @@ public class QuickActionWindow extends PopupWindow {
 	}
 
 	public void show(View anchor) {
-		showAsDropDown(anchor, 0, -30);
+		super.showAtLocation(anchor, Gravity.NO_GRAVITY, 0, 0);
+
+		// http://github.com/ruqqq/WorldHeritageSite/blob/master/src/sg/ruqqq/WHSFinder/QuickActionWindow.java
+		Log.d("showing", String.valueOf(isShowing()));
+		if (isShowing()) {
+			int mergeZoneHeight = 30;
+			int yoff;
+			// int windowAnimation;
+			this.getContentView().measure(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			final int blockHeight = this.getContentView().getMeasuredHeight();
+			Log.d("blockHeight", String.valueOf(blockHeight));
+			int[] anchorLocation = new int[2];
+			anchor.getLocationOnScreen(anchorLocation);
+			Log.d("anchorLocation", String.valueOf(anchorLocation[0]) + "," + String.valueOf(anchorLocation[1]));
+			if (anchorLocation[1] > blockHeight) {
+				// showArrow(R.id.arrow_down, requestedX);
+				yoff = -anchor.getMeasuredHeight() - blockHeight + mergeZoneHeight;
+				// windowAnimations = R.style.QuickActionAboveAnimation;
+
+			} else {
+				// showArrow(R.id.arrow_up, requestedX);
+				yoff = -mergeZoneHeight;
+				// windowAnimations = R.style.QuickActionBelowAnimation;
+			}
+			// setAnimationStyle(windowAnimations);
+			// mTrack.startAnimation(mTrackAnim);
+			Log.d("y", String.valueOf(yoff));
+			this.update(anchor, 0, yoff, -1, -1);
+		}
 	}
 
 	public Action addAction(String label, int iconResId, View.OnClickListener callback) {
