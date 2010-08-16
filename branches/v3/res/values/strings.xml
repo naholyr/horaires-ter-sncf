@@ -8,4 +8,6 @@
     <string name="action_add_favorite">Ajouter aux favoris</string>
     <string name="action_gmap">Voir sur une carte</string>
     <string name="action_itineraire_from">Partir de cette gare</string>
+<string name="no_data">Aucune donnée n\'est disponible.\n\nCliquez sur ce bouton pour initialiser la base de données des gares</string>
+    <string name="update_notification">Mise à jour disponible</string>
 </resources>

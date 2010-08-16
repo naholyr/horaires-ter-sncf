@@ -18,6 +18,8 @@ import com.naholyr.android.horairessncf.view.QuickActionWindow;
 
 public class GaresActivity extends ListActivity {
 
+	public static final int REQUEST_UPDATE_STATUS = 0;
+
 	@Override
 	protected ListAdapter getAdapter(Cursor c) {
 		return new ListeGaresAdapter(this, c);
@@ -47,6 +49,12 @@ public class GaresActivity extends ListActivity {
 		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 				showPopup(view);
+			}
+		});
+		// Data initialization
+		findViewById(android.R.id.empty).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				showUpdate();
 			}
 		});
 	}
@@ -93,6 +101,7 @@ public class GaresActivity extends ListActivity {
 
 	private void showItineraire(long id, boolean from) {
 		Toast.makeText(this, "Fonctionnalité indisponible pour le moment", Toast.LENGTH_LONG).show();
+		showUpdate();
 	}
 
 	private void showProchainsDeparts(long id) {
@@ -110,8 +119,37 @@ public class GaresActivity extends ListActivity {
 			intent.putExtra(MapActivity.EXTRA_LATITUDE, latitude);
 			intent.putExtra(MapActivity.EXTRA_LONGITUDE, longitude);
 			startActivity(intent);
+			c.close();
 		} else {
 			Toast.makeText(this, "Impossible de récupérer les informations de la gare sélectionnée", Toast.LENGTH_LONG).show();
+		}
+	}
+
+	private void showUpdate() {
+		Intent intent = new Intent(this, UpdateActivity.class);
+		startActivityForResult(intent, REQUEST_UPDATE_STATUS);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case REQUEST_UPDATE_STATUS:
+				switch (resultCode) {
+					case UpdateActivity.RESULT_OK:
+						Toast.makeText(this, "Mise à jour terminée avec succès", Toast.LENGTH_SHORT).show();
+						getCursor().requery();
+						break;
+					case UpdateActivity.RESULT_CANCELED:
+						Toast.makeText(this, "Mise à jour annulée par l'utilisateur", Toast.LENGTH_SHORT).show();
+						break;
+					case UpdateActivity.RESULT_ERROR:
+						Toast.makeText(this, "Echec de la mise à jour", Toast.LENGTH_LONG).show();
+						break;
+					case UpdateActivity.RESULT_NO_UPDATE:
+						Toast.makeText(this, "Aucune mise à jour à effectuer", Toast.LENGTH_LONG).show();
+						break;
+				}
+				break;
 		}
 	}
 

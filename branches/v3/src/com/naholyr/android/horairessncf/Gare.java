@@ -77,6 +77,13 @@ public class Gare implements BaseColumns {
 		return v;
 	}
 
+	public static ContentValues values(int id, String nom, String region, String adresse, double latitude, double longitude) {
+		ContentValues v = values(nom, region, adresse, latitude, longitude);
+		v.put(_ID, id);
+
+		return v;
+	}
+
 	private static Favorites favorites = null;
 
 	public static Favorites getFavorites(Context context) {
@@ -89,7 +96,10 @@ public class Gare implements BaseColumns {
 	public static String getNom(Context context, long id) {
 		Cursor c = context.getContentResolver().query(Uri.withAppendedPath(Gares.CONTENT_URI, String.valueOf(id)), null, null, null, null);
 		if (c.moveToFirst()) {
-			return c.getString(c.getColumnIndex(NOM));
+			String nom = c.getString(c.getColumnIndex(NOM));
+			c.close();
+
+			return nom;
 		}
 		return null;
 	}

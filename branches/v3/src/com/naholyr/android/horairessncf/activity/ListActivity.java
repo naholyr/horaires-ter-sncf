@@ -9,6 +9,8 @@ import com.naholyr.android.horairessncf.R;
 
 abstract public class ListActivity extends android.app.ListActivity {
 
+	private Cursor mCursor;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -18,13 +20,13 @@ abstract public class ListActivity extends android.app.ListActivity {
 		findViewById(R.id.loading).setVisibility(View.VISIBLE);
 		new Thread(new Runnable() {
 			public void run() {
-				final Cursor c = queryCursor();
-				if (c != null) {
+				mCursor = queryCursor();
+				if (mCursor != null) {
 					runOnUiThread(new Runnable() {
 						public void run() {
 							findViewById(R.id.loading).setVisibility(View.GONE);
-							startManagingCursor(c);
-							ListAdapter adapter = getAdapter(c);
+							startManagingCursor(mCursor);
+							ListAdapter adapter = getAdapter(mCursor);
 							setListAdapter(adapter);
 						}
 					});
@@ -33,6 +35,10 @@ abstract public class ListActivity extends android.app.ListActivity {
 				}
 			}
 		}).start();
+	}
+
+	protected Cursor getCursor() {
+		return mCursor;
 	}
 
 	protected void requestWindowFeatures() {
