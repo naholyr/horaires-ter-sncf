@@ -1,9 +1,11 @@
 package com.naholyr.android.horairessncf.activity;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.SearchRecentSuggestions;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.Gare.Gares;
+import com.naholyr.android.horairessncf.providers.GaresSearchSuggestionsProvider;
 import com.naholyr.android.horairessncf.view.ListeGaresAdapter;
 import com.naholyr.android.horairessncf.view.QuickActionWindow;
 
@@ -20,12 +23,13 @@ public class GaresActivity extends ListActivity {
 
 	public static final int REQUEST_UPDATE_STATUS = 0;
 
-	public static final int DISPLAY_MODE_GEOLOCATION = 0;
-	public static final int DISPLAY_MODE_FAVORITES = 1;
+	public static final String ACTION_GEOLOCATION = "geolocation";
+	public static final String ACTION_FAVORITES = "favorites";
+	public static final String ACTION_SEARCH = Intent.ACTION_SEARCH;
 
 	public static final String EXTRA_DISPLAY_MODE = "mode";
 
-	private int mDisplayMode;
+	private String mAction;
 
 	@Override
 	protected ListAdapter getAdapter(Cursor c) {
@@ -39,14 +43,45 @@ public class GaresActivity extends ListActivity {
 
 	@Override
 	protected Cursor queryCursor() {
+		// Build content provider URI
 		Uri uri = Gare.Gares.CONTENT_URI;
-		if (mDisplayMode == DISPLAY_MODE_FAVORITES) {
+		if (ACTION_FAVORITES.equals(mAction)) {
 			uri = Uri.withAppendedPath(uri, "favorites");
-		} else if (mDisplayMode == DISPLAY_MODE_GEOLOCATION) {
-			// FIXME Geolocation
-			// FIXME Ajoute la position à l'URI
+		} else if (ACTION_GEOLOCATION.equals(mAction)) {
+			// FIXME Geolocalisation
+			double latitude = 0;
+			double longitude = 0;
+			int rayon = 15;
+			uri = Uri.withAppendedPath(uri, "/latitude/" + latitude + "/longitude/" + longitude + "/rayon/" + rayon);
+		} else if (ACTION_SEARCH.equals(mAction)) {
+			String keywords = getIntent().getStringExtra(SearchManager.QUERY);
+			uri = Uri.withAppendedPath(uri, "recherche/" + Uri.encode(keywords));
 		}
-		return this.getContentResolver().query(uri, null, null, null, null);
+		// Run query
+		Cursor c = this.getContentResolver().query(uri, null, null, null, null);
+		// Special case SEARCH_ACTION : store user's query
+		if (ACTION_SEARCH.equals(getIntent().getAction())) {
+			String query = getIntent().getStringExtra(SearchManager.QUERY);
+			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this, GaresSearchSuggestionsProvider.AUTHORITY, GaresSearchSuggestionsProvider.MODE);
+			int count = c.getCount();
+			String line2 = null;
+			// 2 lines : line 2 is hint about search result
+			if (count == 0) {
+				line2 = getString(R.string.nb_results_0);
+			} else if (count == 1) {
+				c.moveToFirst();
+				line2 = c.getString(c.getColumnIndex(Gare.NOM));
+			} else {
+				line2 = getString(R.string.nb_results_more).replace("%d", String.valueOf(count));
+			}
+			suggestions.saveRecentQuery(query, line2);
+		}
+		// FIXME Add way for user to clear history
+		// SearchRecentSuggestions suggestions = new
+		// SearchRecentSuggestions(this, HelloSuggestionProvider.AUTHORITY,
+		// HelloSuggestionProvider.MODE);
+		// suggestions.clearHistory();
+		return c;
 	}
 
 	@Override
@@ -58,26 +93,31 @@ public class GaresActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// Display mode
-		mDisplayMode = getIntent().getIntExtra(EXTRA_DISPLAY_MODE, DISPLAY_MODE_GEOLOCATION);
+		final Intent queryIntent = getIntent();
+		mAction = queryIntent.getAction();
 		// Action Bar
-		if (mDisplayMode == DISPLAY_MODE_FAVORITES) {
+		if (ACTION_FAVORITES.equals(mAction)) {
 			findViewById(R.id.action_bar_favorites).setVisibility(View.GONE);
 			findViewById(R.id.action_bar_geolocation).setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
-					showGares(DISPLAY_MODE_GEOLOCATION);
+					showGares(ACTION_GEOLOCATION);
 					finish();
 				}
 			});
-		} else if (mDisplayMode == DISPLAY_MODE_GEOLOCATION) {
+		} else if (ACTION_GEOLOCATION.equals(mAction)) {
 			findViewById(R.id.action_bar_geolocation).setVisibility(View.GONE);
 			findViewById(R.id.action_bar_favorites).setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
-					showGares(DISPLAY_MODE_FAVORITES);
+					showGares(ACTION_FAVORITES);
 					finish();
 				}
 			});
 		}
+		findViewById(R.id.action_bar_search).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				startSearch(null, false, null, false);
+			}
+		});
 		// Quick actions
 		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
@@ -158,9 +198,9 @@ public class GaresActivity extends ListActivity {
 		}
 	}
 
-	private void showGares(int displayMode) {
+	private void showGares(String action) {
 		Intent intent = new Intent(GaresActivity.this, GaresActivity.class);
-		intent.putExtra(EXTRA_DISPLAY_MODE, displayMode);
+		intent.setAction(action);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(intent);
 	}

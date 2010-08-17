@@ -16,4 +16,8 @@
   <string name="crash_dialog_text">Une erreur s\'est produite qui a causé la fermeture forcée de l\'application "Horaires TER SNCF". Aidez-moi à corriger ce problème en m\'envoyant un rapport d\'erreur : tout ce que vous avez à faire est cliquer sur "OK".</string>
   <string name="crash_dialog_comment_prompt">Vous pouvez ajouter un commentaire ci-dessous :</string>
   <string name="crash_dialog_ok_toast">Merci !</string>
+  <string name="search_label">Rechercher une gare</string>
+  <string name="search_hint">Partie du nom</string>
+  <string name="nb_results_0">Aucun résultat</string>
+  <string name="nb_results_more">%d gares trouvées</string>
 </resources>

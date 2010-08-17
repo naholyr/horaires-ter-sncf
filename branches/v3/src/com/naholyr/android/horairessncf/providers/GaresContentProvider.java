@@ -142,9 +142,16 @@ public class GaresContentProvider extends android.content.ContentProvider {
 			case GARES_PAR_GEO:
 				// FIXME Recherche géolocalisée
 				break;
-			case GARES_PAR_NOM:
-				// FIXME Recherche par nom
+			case GARES_PAR_NOM: {
+				String[] keywords = uri.getPathSegments().get(2).split(" +");
+				sqlBuilder.appendWhere("1 = 1");
+				for (String keyword : keywords) {
+					String like = "%" + keyword + "%";
+					sqlBuilder.appendWhere(" AND " + Gare.NOM + " LIKE ");
+					sqlBuilder.appendWhereEscapeString(like);
+				}
 				break;
+			}
 		}
 
 		if (TextUtils.isEmpty(sortOrder)) {
