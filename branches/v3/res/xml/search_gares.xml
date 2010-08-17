@@ -3,4 +3,4 @@
 	android:label="@string/search_label" android:hint="@string/search_hint"
 	android:voiceSearchMode="showVoiceSearchButton|launchRecognizer"
 	android:searchSuggestAuthority="naholyr.horairessncf.providers.GaresSearchSuggestionsProvider"
-	android:searchSuggestSelection=" ?" />
+	android:searchSuggestSelection=" ?" android:includeInGlobalSearch="true" />
