@@ -20,6 +20,13 @@ public class GaresActivity extends ListActivity {
 
 	public static final int REQUEST_UPDATE_STATUS = 0;
 
+	public static final int DISPLAY_MODE_GEOLOCATION = 0;
+	public static final int DISPLAY_MODE_FAVORITES = 1;
+
+	public static final String EXTRA_DISPLAY_MODE = "mode";
+
+	private int mDisplayMode;
+
 	@Override
 	protected ListAdapter getAdapter(Cursor c) {
 		return new ListeGaresAdapter(this, c);
@@ -33,6 +40,12 @@ public class GaresActivity extends ListActivity {
 	@Override
 	protected Cursor queryCursor() {
 		Uri uri = Gare.Gares.CONTENT_URI;
+		if (mDisplayMode == DISPLAY_MODE_FAVORITES) {
+			uri = Uri.withAppendedPath(uri, "favorites");
+		} else if (mDisplayMode == DISPLAY_MODE_GEOLOCATION) {
+			// FIXME Geolocation
+			// FIXME Ajoute la position à l'URI
+		}
 		return this.getContentResolver().query(uri, null, null, null, null);
 	}
 
@@ -45,6 +58,26 @@ public class GaresActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// Display mode
+		mDisplayMode = getIntent().getIntExtra(EXTRA_DISPLAY_MODE, DISPLAY_MODE_GEOLOCATION);
+		// Action Bar
+		if (mDisplayMode == DISPLAY_MODE_FAVORITES) {
+			findViewById(R.id.action_bar_favorites).setVisibility(View.GONE);
+			findViewById(R.id.action_bar_geolocation).setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					showGares(DISPLAY_MODE_GEOLOCATION);
+					finish();
+				}
+			});
+		} else if (mDisplayMode == DISPLAY_MODE_GEOLOCATION) {
+			findViewById(R.id.action_bar_geolocation).setVisibility(View.GONE);
+			findViewById(R.id.action_bar_favorites).setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					showGares(DISPLAY_MODE_FAVORITES);
+					finish();
+				}
+			});
+		}
 		// Quick actions
 		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
@@ -123,6 +156,13 @@ public class GaresActivity extends ListActivity {
 		} else {
 			Toast.makeText(this, "Impossible de récupérer les informations de la gare sélectionnée", Toast.LENGTH_LONG).show();
 		}
+	}
+
+	private void showGares(int displayMode) {
+		Intent intent = new Intent(GaresActivity.this, GaresActivity.class);
+		intent.putExtra(EXTRA_DISPLAY_MODE, displayMode);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent);
 	}
 
 	private void showUpdate() {

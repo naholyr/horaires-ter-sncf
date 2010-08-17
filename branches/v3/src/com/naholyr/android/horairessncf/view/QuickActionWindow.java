@@ -117,30 +117,28 @@ public class QuickActionWindow extends PopupWindow {
 
 		// http://github.com/ruqqq/WorldHeritageSite/blob/master/src/sg/ruqqq/WHSFinder/QuickActionWindow.java
 		Log.d("showing", String.valueOf(isShowing()));
+		// ((Activity)
+		// anchor.getContext()).getWindowManager().getDefaultDisplay().getHeight();
 		if (isShowing()) {
-			int mergeZoneHeight = 30;
 			int yoff;
-			// int windowAnimation;
-			this.getContentView().measure(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-			final int blockHeight = this.getContentView().getMeasuredHeight();
-			Log.d("blockHeight", String.valueOf(blockHeight));
-			int[] anchorLocation = new int[2];
-			anchor.getLocationOnScreen(anchorLocation);
-			Log.d("anchorLocation", String.valueOf(anchorLocation[0]) + "," + String.valueOf(anchorLocation[1]));
+			final View contentView = getContentView();
+			contentView.measure(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			final int blockHeight = contentView.getMeasuredHeight();
+			final int blockWidth = contentView.getMeasuredWidth();
+			final int[] anchorLocation = new int[2];
 			if (anchorLocation[1] > blockHeight) {
 				// showArrow(R.id.arrow_down, requestedX);
-				yoff = -anchor.getMeasuredHeight() - blockHeight + mergeZoneHeight;
+				yoff = -anchor.getMeasuredHeight() - blockHeight + 30;
 				// windowAnimations = R.style.QuickActionAboveAnimation;
 
 			} else {
 				// showArrow(R.id.arrow_up, requestedX);
-				yoff = -mergeZoneHeight;
+				yoff = -30;
 				// windowAnimations = R.style.QuickActionBelowAnimation;
 			}
 			// setAnimationStyle(windowAnimations);
 			// mTrack.startAnimation(mTrackAnim);
-			Log.d("y", String.valueOf(yoff));
-			this.update(anchor, 0, yoff, -1, -1);
+			this.update(anchor, 0, yoff, blockWidth, blockHeight);
 		}
 	}
 

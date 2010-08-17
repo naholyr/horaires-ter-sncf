@@ -24,6 +24,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 	private static final int GARE_PAR_ID = 3;
 	private static final int GARES_PAR_GEO = 4;
 	private static final int GARES_PAR_NOM = 5;
+	private static final int GARES_FAVORITES = 6;
 
 	private static final UriMatcher sUriMatcher;
 	private static final HashMap<String, String> sProjectionMap;
@@ -32,6 +33,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES, GARES);
 		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/recherche/*", GARES_PAR_NOM);
 		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/latitude/#/longitude/#/rayon/#", GARES_PAR_GEO);
+		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/favorites", GARES_FAVORITES);
 		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/#", GARE_PAR_ID);
 		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/*", GARE_PAR_NOM);
 		sProjectionMap = new HashMap<String, String>();
@@ -57,6 +59,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 			case GARES:
 			case GARES_PAR_NOM:
 			case GARES_PAR_GEO:
+			case GARES_FAVORITES:
 				return Gare.Gares.CONTENT_TYPE;
 			case GARE_PAR_ID:
 			case GARE_PAR_NOM:
@@ -94,22 +97,6 @@ public class GaresContentProvider extends android.content.ContentProvider {
 				count = db.delete(DatabaseHelper.TABLE_GARES, where, whereArgs);
 				break;
 			}
-			case GARES_PAR_GEO:
-			case GARES_PAR_NOM: {
-				Cursor c = query(uri, null, where, whereArgs, null);
-				if (c.moveToFirst()) {
-					String ids = "";
-					do {
-						if (!c.isFirst()) {
-							ids += ",";
-						}
-						ids += c.getLong(c.getColumnIndex(Gare._ID));
-					} while (c.moveToNext());
-					count = db.delete(DatabaseHelper.TABLE_GARES, Gare._ID + " IN (" + ids + ")", null);
-				} else {
-					count = 0;
-				}
-			}
 			case UriMatcher.NO_MATCH:
 			default:
 				throw new IllegalArgumentException("Unsupported URI for delete: " + uri);
@@ -140,15 +127,23 @@ public class GaresContentProvider extends android.content.ContentProvider {
 		sqlBuilder.setProjectionMap(sProjectionMap);
 
 		switch (sUriMatcher.match(uri)) {
+			case GARES:
+				// Nothing
+				break;
 			case GARE_PAR_ID:
 				sqlBuilder.appendWhere(Gare._ID + " = " + Long.valueOf(uri.getPathSegments().get(1)));
 				break;
 			case GARE_PAR_NOM:
 				sqlBuilder.appendWhere(Gare.NOM + " = '" + uri.getPathSegments().get(1).replaceAll("'", "''") + "'");
 				break;
+			case GARES_FAVORITES:
+				// FIXME Filtrage par favorites
+				break;
 			case GARES_PAR_GEO:
+				// FIXME Recherche géolocalisée
 				break;
 			case GARES_PAR_NOM:
+				// FIXME Recherche par nom
 				break;
 		}
 

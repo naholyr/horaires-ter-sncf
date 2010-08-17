@@ -1,20 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="match_parent"
-	android:layout_height="match_parent">
-	<ImageView android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:src="@drawable/titre" />
+	android:layout_height="match_parent" android:background="@drawable/header_background">
+	<LinearLayout android:layout_width="match_parent"
+		android:layout_height="wrap_content" android:orientation="horizontal"
+		android:layout_marginBottom="10dip">
+		<LinearLayout android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:orientation="vertical"
+			android:layout_marginTop="10dip" android:layout_weight="1">
+			<ImageView android:layout_width="wrap_content"
+				android:layout_marginLeft="10dip" android:layout_height="wrap_content"
+				android:src="@drawable/les_gares" />
+			<ImageView android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:src="@drawable/pres_de_chez_vous"
+				android:layout_gravity="center" />
+		</LinearLayout>
+		<LinearLayout android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:orientation="horizontal"
+			android:background="@drawable/action_bar_background">
+			<ImageButton android:id="@+id/action_bar_geolocation"
+				android:src="@drawable/action_bar_geolocation" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:background="@drawable/action_bar_item_background" />
+			<ImageButton android:id="@+id/action_bar_favorites"
+				android:src="@drawable/action_bar_favorites" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:background="@drawable/action_bar_item_background" />
+			<ImageButton android:id="@+id/action_bar_search"
+				android:src="@drawable/action_bar_search" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:background="@drawable/action_bar_item_background" />
+		</LinearLayout>
+	</LinearLayout>
 	<LinearLayout android:orientation="vertical"
 		android:layout_width="match_parent" android:layout_height="match_parent"
-		android:background="@drawable/background_main" android:gravity="center">
-		<ListView android:id="@id/android:list" android:layout_width="match_parent"
-			android:layout_height="match_parent" android:divider="#FFFFFF"
-			android:drawSelectorOnTop="false" />
+		android:background="@drawable/list_background" android:gravity="center">
+		<TextView android:id="@+id/loading" android:layout_width="match_parent"
+			android:layout_height="match_parent" android:textColor="@android:color/secondary_text_light"
+			android:text="Recherche en cours..." android:gravity="center" />
 		<Button android:id="@id/android:empty" android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:text="@string/no_data"
 			android:layout_margin="20dip" />
+		<ListView android:id="@id/android:list" android:layout_width="match_parent"
+			android:layout_height="match_parent" android:divider="#FFFFFF"
+			android:drawSelectorOnTop="false" />
 	</LinearLayout>
-	<TextView android:id="@+id/loading" android:layout_width="match_parent"
-		android:layout_height="match_parent" android:text="Recherche en cours..."
-		android:gravity="center" />
 </LinearLayout>
