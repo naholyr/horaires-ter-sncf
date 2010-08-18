@@ -1,12 +1,9 @@
 package com.naholyr.android.horairessncf;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -22,6 +19,7 @@ public class Gare implements BaseColumns {
 	public static final String ADRESSE = "adresse";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
+	public static final String FAVORITE = "favorite";
 
 	public static final class Gares {
 		public static final Uri CONTENT_URI = Uri.parse("content://" + GaresContentProvider.AUTHORITY + "/gares");
@@ -29,39 +27,59 @@ public class Gare implements BaseColumns {
 	}
 
 	public static final class Favorites {
-		private SharedPreferences preferences;
+		private Context mContext;
 
 		protected Favorites(Context context) {
-			preferences = context.getSharedPreferences("favorites", Context.MODE_PRIVATE);
+			mContext = context;
 		}
 
-		public boolean add(String nom) {
-			if (!has(nom)) {
-				return preferences.edit().putBoolean(nom, true).commit();
+		public boolean add(long id) {
+			if (!has(id)) {
+				Uri uri = Uri.withAppendedPath(Gares.CONTENT_URI, String.valueOf(id));
+				ContentValues values = new ContentValues();
+				values.put(FAVORITE, 1);
+				mContext.getContentResolver().update(uri, values, null, null);
+				return true;
 			}
 			return false;
 		}
 
-		public boolean has(String nom) {
-			return preferences.contains(nom);
+		public boolean has(long id) {
+			Uri uri = Uri.withAppendedPath(Gares.CONTENT_URI, String.valueOf(id));
+			Cursor c = mContext.getContentResolver().query(uri, new String[] { FAVORITE }, null, null, null);
+			if (!c.moveToFirst()) {
+				return false;
+			}
+			boolean isFavorite = c.getInt(c.getColumnIndex(FAVORITE)) > 0;
+			c.close();
+			return isFavorite;
 		}
 
-		public boolean remove(String nom) {
-			if (has(nom)) {
-				return preferences.edit().remove(nom).commit();
+		public boolean remove(long id) {
+			if (!has(id)) {
+				Uri uri = Uri.withAppendedPath(Gares.CONTENT_URI, String.valueOf(id));
+				ContentValues values = new ContentValues();
+				values.put(FAVORITE, 0);
+				mContext.getContentResolver().update(uri, values, null, null);
+				return true;
 			}
 			return false;
 		}
 
-		public List<String> getAll() {
-			Map<String, ?> data = preferences.getAll();
-			List<String> noms = new ArrayList<String>();
-			for (Map.Entry<String, ?> item : data.entrySet()) {
-				if ((Boolean) item.getValue()) {
-					noms.add(item.getKey());
+		public long[] getAll() {
+			Uri uri = Uri.withAppendedPath(Gares.CONTENT_URI, "favorites");
+			Cursor c = mContext.getContentResolver().query(uri, new String[] { _ID }, null, null, null);
+			ArrayList<Long> result = new ArrayList<Long>();
+			if (c != null) {
+				while (c.moveToNext()) {
+					result.add(c.getLong(c.getColumnIndex(_ID)));
 				}
 			}
-			return noms;
+			long[] result_as_array = new long[result.size()];
+			for (int i = 0; i < result_as_array.length; i++) {
+				result_as_array[i] = result.get(i);
+			}
+			return result_as_array;
 		}
 	}
 

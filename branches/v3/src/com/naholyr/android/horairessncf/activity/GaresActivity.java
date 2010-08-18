@@ -60,7 +60,7 @@ public class GaresActivity extends ListActivity {
 		}
 		// Run query
 		Cursor c = this.getContentResolver().query(uri, null, null, null, null);
-		// Special case SEARCH_ACTION : store user's query
+		// Special case ACTION_SEARCH : store user's query
 		if (ACTION_SEARCH.equals(getIntent().getAction())) {
 			String query = getIntent().getStringExtra(SearchManager.QUERY);
 			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this, GaresSearchSuggestionsProvider.AUTHORITY, GaresSearchSuggestionsProvider.MODE);
@@ -77,12 +77,34 @@ public class GaresActivity extends ListActivity {
 			}
 			suggestions.saveRecentQuery(query, line2);
 		}
+		// Special case ACTION_FAVORITES : data can be empty but no need for
+		// initialization
+		if (ACTION_FAVORITES.equals(getIntent().getAction()) && c.getCount() == 0) {
+			fixEmptyFavorites();
+		}
 		// FIXME Add way for user to clear history
 		// SearchRecentSuggestions suggestions = new
 		// SearchRecentSuggestions(this, HelloSuggestionProvider.AUTHORITY,
 		// HelloSuggestionProvider.MODE);
 		// suggestions.clearHistory();
 		return c;
+	}
+
+	private void fixEmptyFavorites() {
+		Cursor cAll = getContentResolver().query(Gare.Gares.CONTENT_URI, null, null, null, null);
+		int count = 0;
+		if (cAll != null) {
+			count = cAll.getCount();
+		}
+		if (count != 0) {
+			// We have data, just no favorite
+			findViewById(R.id.txt_add_favorite).setVisibility(View.VISIBLE);
+			findViewById(R.id.button_init_data).setVisibility(View.GONE);
+		} else {
+			// We really have no data
+			findViewById(R.id.txt_add_favorite).setVisibility(View.GONE);
+			findViewById(R.id.button_init_data).setVisibility(View.VISIBLE);
+		}
 	}
 
 	@Override
@@ -129,7 +151,7 @@ public class GaresActivity extends ListActivity {
 			}
 		});
 		// Data initialization
-		findViewById(android.R.id.empty).setOnClickListener(new View.OnClickListener() {
+		findViewById(R.id.button_init_data).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				showUpdate();
 			}
@@ -146,7 +168,7 @@ public class GaresActivity extends ListActivity {
 
 		// Embedded action : favorite
 		int favStringId, favIconId;
-		if (Gare.getFavorites(this).has(Gare.getNom(this, id))) {
+		if (Gare.getFavorites(this).has(id)) {
 			favStringId = R.string.action_remove_favorite;
 			favIconId = R.drawable.quick_action_remove_favorite;
 		} else {
@@ -166,32 +188,6 @@ public class GaresActivity extends ListActivity {
 		w.addActionsForIntent(this, pluginIntent);
 
 		w.show(anchor);
-	}
-
-	private void showItineraire(long id, boolean from) {
-		Toast.makeText(this, "Fonctionnalité indisponible pour le moment", Toast.LENGTH_LONG).show();
-		showUpdate();
-	}
-
-	private void showProchainsDeparts(long id) {
-		Intent intent = new Intent(this, DepartsActivity.class);
-		intent.putExtra(DepartsActivity.EXTRA_ID, id);
-		startActivity(intent);
-	}
-
-	private void showGoogleMap(long id) {
-		Cursor c = getContentResolver().query(Uri.withAppendedPath(Gares.CONTENT_URI, "/" + id), null, null, null, null);
-		if (c.moveToFirst()) {
-			double latitude = c.getDouble(c.getColumnIndex(Gare.LATITUDE));
-			double longitude = c.getDouble(c.getColumnIndex(Gare.LONGITUDE));
-			Intent intent = new Intent(this, MapActivity.class);
-			intent.putExtra(MapActivity.EXTRA_LATITUDE, latitude);
-			intent.putExtra(MapActivity.EXTRA_LONGITUDE, longitude);
-			startActivity(intent);
-			c.close();
-		} else {
-			Toast.makeText(this, "Impossible de récupérer les informations de la gare sélectionnée", Toast.LENGTH_LONG).show();
-		}
 	}
 
 	private void showGares(String action) {
@@ -214,6 +210,8 @@ public class GaresActivity extends ListActivity {
 					case UpdateActivity.RESULT_OK:
 						Toast.makeText(this, "Mise à jour terminée avec succès", Toast.LENGTH_SHORT).show();
 						getCursor().requery();
+						// FIXME put that in a content observer ?
+						fixEmptyFavorites();
 						break;
 					case UpdateActivity.RESULT_CANCELED:
 						Toast.makeText(this, "Mise à jour annulée par l'utilisateur", Toast.LENGTH_SHORT).show();

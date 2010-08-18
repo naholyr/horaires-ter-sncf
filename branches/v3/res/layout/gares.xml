@@ -35,9 +35,20 @@
 		<TextView android:id="@+id/loading" android:layout_width="match_parent"
 			android:layout_height="match_parent" android:textColor="@android:color/secondary_text_light"
 			android:text="Recherche en cours..." android:gravity="center" />
-		<Button android:id="@id/android:empty" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="@string/no_data"
-			android:layout_margin="20dip" />
+		<LinearLayout android:orientation="vertical"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:id="@id/android:empty" android:layout_margin="20dip">
+			<Button android:id="@+id/button_init_data"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:text="@string/no_data" />
+			<TextView android:id="@+id/txt_add_favorite"
+				android:layout_width="match_parent" android:layout_height="match_parent"
+				android:textColor="@android:color/primary_text_light"
+				android:text="Aucune gare dans vos favoris.
+
+Effectuez une recherche ou listez les gares autour de vous (boutons en haut de l'application) pour en ajouter."
+				android:gravity="center" android:visibility="gone" />
+		</LinearLayout>
 		<ListView android:id="@id/android:list" android:layout_width="match_parent"
 			android:layout_height="match_parent" android:divider="#FFFFFF"
 			android:drawSelectorOnTop="false" />

@@ -43,6 +43,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 		sProjectionMap.put(Gare.ADRESSE, Gare.ADRESSE);
 		sProjectionMap.put(Gare.LATITUDE, Gare.LATITUDE);
 		sProjectionMap.put(Gare.LONGITUDE, Gare.LONGITUDE);
+		sProjectionMap.put(Gare.FAVORITE, Gare.FAVORITE);
 	}
 
 	protected static DatabaseHelper mDbHelper = null;
@@ -137,7 +138,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 				sqlBuilder.appendWhere(Gare.NOM + " = '" + uri.getPathSegments().get(1).replaceAll("'", "''") + "'");
 				break;
 			case GARES_FAVORITES:
-				// FIXME Filtrage par favorites
+				sqlBuilder.appendWhere(Gare.FAVORITE + " = 1");
 				break;
 			case GARES_PAR_GEO:
 				// FIXME Recherche géolocalisée

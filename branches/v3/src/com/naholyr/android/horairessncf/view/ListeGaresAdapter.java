@@ -97,27 +97,19 @@ public class ListeGaresAdapter extends SimpleCursorAdapter {
 		}
 
 		public static Drawable getIcon(Context context, long id) {
-			String nom = Gare.getNom(context, id);
+			int favoriIcon = getFavorites(context).has(id) ? R.drawable.star_on : R.drawable.star_off;
 
-			return getIcon(context, nom);
-		}
-
-		public static Drawable getIcon(Context context, String nom) {
-			int favoriIcon = getFavorites(context).has(nom) ? R.drawable.star_on : R.drawable.star_off;
-			Drawable icon = context.getResources().getDrawable(favoriIcon);
-
-			return icon;
+			return context.getResources().getDrawable(favoriIcon);
 		}
 
 		public void onClick(View v) {
 			Favorites favs = getFavorites(mContext);
-			String nom = Gare.getNom(mContext, mId);
-			if (favs.has(nom)) {
-				favs.remove(nom);
+			if (favs.has(mId)) {
+				favs.remove(mId);
 			} else {
-				favs.add(nom);
+				favs.add(mId);
 			}
-			((ImageView) v).setImageDrawable(getIcon(mContext, nom));
+			((ImageView) v).setImageDrawable(getIcon(mContext, mId));
 		}
 
 	}
