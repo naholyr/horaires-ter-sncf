@@ -2,6 +2,7 @@ package com.naholyr.android.horairessncf.service;
 
 import org.acra.ErrorReporter;
 
+import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +16,7 @@ public class UpdateServiceManager extends BroadcastReceiver {
 
 	public static void initialize(Context context) {
 		if (!initialized(context)) {
-			UpdateServiceAlarmReceiver.scheduleNext(context, 20000);
+			UpdateServiceAlarmReceiver.scheduleNext(context, AlarmManager.INTERVAL_FIFTEEN_MINUTES);
 			markAsInitialized(context);
 		}
 	}

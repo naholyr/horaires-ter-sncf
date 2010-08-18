@@ -16,6 +16,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -51,50 +52,54 @@ public class UpdateServiceAlarmReceiver extends BroadcastReceiver {
 		if (ACTION.equals(intent.getAction())) {
 			// Check latest update
 			String updateDate = null;
-			SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-			Cursor c = db.query("db_updates", new String[] { "MAX(updated_at)" }, "categorie=\"" + DatabaseHelper.TABLE_GARES + "\"", null, null, null, null);
-			if (c.moveToFirst()) {
-				String s = c.getString(0);
-				if (s != null) {
-					updateDate = s;
-				}
-			}
-			c.close();
-			db.close();
-			if (updateDate == null) {
-				// No data, force update
-				sendUpdateNotification(context);
-			} else {
-				// Retrieve update file
-				InputStream stream = null;
-				try {
-					String path = "/data/gares.php" + (updateDate != null ? "?last_update=" + URLEncoder.encode(updateDate) : "");
-					URL url = new URL("http", "horaires-ter-sncf.naholyr.fr", 80, path);
-					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-					stream = connection.getInputStream();
-				} catch (IOException e) {
-					Log.e(TAG, "Error retrieving update file", e);
-				}
-				BufferedReader reader = new BufferedReader(new InputStreamReader(stream), 512);
-				// Read first line = number of stations
-				try {
-					String line = reader.readLine();
-					if (line != null) {
-						try {
-							if (Integer.parseInt(line.trim()) > 0) {
-								sendUpdateNotification(context);
-							} else {
-								Log.i(TAG, "No update available");
-							}
-						} catch (NumberFormatException e) {
-							Log.e(TAG, "Invalid number in update file : " + line, e);
-						}
-					} else {
-						Log.e(TAG, "No data in update file");
+			try {
+				SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+				Cursor c = db.query("db_updates", new String[] { "MAX(updated_at)" }, "categorie=\"" + DatabaseHelper.TABLE_GARES + "\"", null, null, null, null);
+				if (c.moveToFirst()) {
+					String s = c.getString(0);
+					if (s != null) {
+						updateDate = s;
 					}
-				} catch (IOException e) {
-					Log.e(TAG, "Cannot read update file", e);
 				}
+				c.close();
+				db.close();
+				if (updateDate == null) {
+					// No data, force update
+					sendUpdateNotification(context);
+				} else {
+					// Retrieve update file
+					InputStream stream = null;
+					try {
+						String path = "/data/gares.php" + (updateDate != null ? "?last_update=" + URLEncoder.encode(updateDate) : "");
+						URL url = new URL("http", "horaires-ter-sncf.naholyr.fr", 80, path);
+						HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+						stream = connection.getInputStream();
+					} catch (IOException e) {
+						Log.e(TAG, "Error retrieving update file", e);
+					}
+					BufferedReader reader = new BufferedReader(new InputStreamReader(stream), 512);
+					// Read first line = number of stations
+					try {
+						String line = reader.readLine();
+						if (line != null) {
+							try {
+								if (Integer.parseInt(line.trim()) > 0) {
+									sendUpdateNotification(context);
+								} else {
+									Log.i(TAG, "No update available");
+								}
+							} catch (NumberFormatException e) {
+								Log.e(TAG, "Invalid number in update file : " + line, e);
+							}
+						} else {
+							Log.e(TAG, "No data in update file");
+						}
+					} catch (IOException e) {
+						Log.e(TAG, "Cannot read update file", e);
+					}
+				}
+			} catch (SQLException e) {
+				Log.e(TAG, "Database already in use ?");
 			}
 
 			// Schedule next check
