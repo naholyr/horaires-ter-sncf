@@ -13,9 +13,10 @@ import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import com.naholyr.android.horairessncf.Gare;
-import com.naholyr.android.horairessncf.Gare.Gares;
 import com.naholyr.android.horairessncf.R;
+import com.naholyr.android.horairessncf.Gare.Gares;
 import com.naholyr.android.horairessncf.providers.GaresSearchSuggestionsProvider;
+import com.naholyr.android.horairessncf.service.UpdateServiceManager;
 import com.naholyr.android.horairessncf.view.ListeGaresAdapter;
 import com.naholyr.android.horairessncf.view.QuickActionWindow;
 
@@ -62,8 +63,7 @@ public class GaresActivity extends ListActivity {
 		// Special case SEARCH_ACTION : store user's query
 		if (ACTION_SEARCH.equals(getIntent().getAction())) {
 			String query = getIntent().getStringExtra(SearchManager.QUERY);
-			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
-					GaresSearchSuggestionsProvider.AUTHORITY, GaresSearchSuggestionsProvider.MODE);
+			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this, GaresSearchSuggestionsProvider.AUTHORITY, GaresSearchSuggestionsProvider.MODE);
 			int count = c.getCount();
 			String line2 = null;
 			// 2 lines : line 2 is hint about search result
@@ -97,7 +97,7 @@ public class GaresActivity extends ListActivity {
 		final Intent queryIntent = getIntent();
 		mAction = queryIntent.getAction();
 		if (!ACTION_FAVORITES.equals(mAction) && !ACTION_GEOLOCATION.equals(mAction) && !ACTION_SEARCH.equals(mAction)) {
-			mAction = ACTION_GEOLOCATION;
+			mAction = ACTION_FAVORITES;
 		}
 		// Action Bar
 		if (ACTION_FAVORITES.equals(mAction)) {
@@ -134,6 +134,8 @@ public class GaresActivity extends ListActivity {
 				showUpdate();
 			}
 		});
+		// Start BOOT service (if user has not rebooted since installation)
+		UpdateServiceManager.initialize(this);
 	}
 
 	private void showPopup(final View anchor) {
@@ -141,7 +143,7 @@ public class GaresActivity extends ListActivity {
 		final long id = getListView().getItemIdAtPosition(position);
 
 		QuickActionWindow w = QuickActionWindow.getWindow(this);
-		
+
 		// Embedded action : favorite
 		int favStringId, favIconId;
 		if (Gare.getFavorites(this).has(Gare.getNom(this, id))) {
@@ -188,8 +190,7 @@ public class GaresActivity extends ListActivity {
 			startActivity(intent);
 			c.close();
 		} else {
-			Toast.makeText(this, "Impossible de récupérer les informations de la gare sélectionnée", Toast.LENGTH_LONG)
-					.show();
+			Toast.makeText(this, "Impossible de récupérer les informations de la gare sélectionnée", Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -208,23 +209,23 @@ public class GaresActivity extends ListActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
-		case REQUEST_UPDATE_STATUS:
-			switch (resultCode) {
-			case UpdateActivity.RESULT_OK:
-				Toast.makeText(this, "Mise à jour terminée avec succès", Toast.LENGTH_SHORT).show();
-				getCursor().requery();
+			case REQUEST_UPDATE_STATUS:
+				switch (resultCode) {
+					case UpdateActivity.RESULT_OK:
+						Toast.makeText(this, "Mise à jour terminée avec succès", Toast.LENGTH_SHORT).show();
+						getCursor().requery();
+						break;
+					case UpdateActivity.RESULT_CANCELED:
+						Toast.makeText(this, "Mise à jour annulée par l'utilisateur", Toast.LENGTH_SHORT).show();
+						break;
+					case UpdateActivity.RESULT_ERROR:
+						Toast.makeText(this, "Echec de la mise à jour", Toast.LENGTH_LONG).show();
+						break;
+					case UpdateActivity.RESULT_NO_UPDATE:
+						Toast.makeText(this, "Aucune mise à jour à effectuer", Toast.LENGTH_LONG).show();
+						break;
+				}
 				break;
-			case UpdateActivity.RESULT_CANCELED:
-				Toast.makeText(this, "Mise à jour annulée par l'utilisateur", Toast.LENGTH_SHORT).show();
-				break;
-			case UpdateActivity.RESULT_ERROR:
-				Toast.makeText(this, "Echec de la mise à jour", Toast.LENGTH_LONG).show();
-				break;
-			case UpdateActivity.RESULT_NO_UPDATE:
-				Toast.makeText(this, "Aucune mise à jour à effectuer", Toast.LENGTH_LONG).show();
-				break;
-			}
-			break;
 		}
 	}
 

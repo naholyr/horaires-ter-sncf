@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,7 +32,7 @@ import com.naholyr.android.horairessncf.providers.DatabaseHelper;
 public class UpdateActivity extends Activity {
 
 	// Notification
-	private static final int NOTIFICATION_ID = R.string.update_notification;
+	public static final int NOTIFICATION_ID = R.string.update_notification;
 
 	// Progress dialog
 	static final int PROGRESS_DIALOG = 0;
@@ -235,7 +236,7 @@ public class UpdateActivity extends Activity {
 						// Enregistrer la progression
 						if (mState == STATE_RUNNING) {
 							progress++;
-							if (progress % (total / 50) == 0) {
+							if (total <= 50 || progress % (total / 50) == 0) {
 								mHandler.sendMessage(mHandler.obtainMessage(MSG_PROGRESS, progress, 0));
 							}
 						}
@@ -259,6 +260,10 @@ public class UpdateActivity extends Activity {
 					db.endTransaction();
 				}
 				db.close();
+				// On a modifié les données directement dans la BDD, il faut
+				// notifier le content provider que son contenu a changé
+				// cela permet d'avertir les ListActivity de se mettre à jour
+				getContentResolver().notifyChange(Gare.Gares.CONTENT_URI, null);
 			}
 			if (stream != null) {
 				try {
