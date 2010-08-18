@@ -8,11 +8,12 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.naholyr.android.horairessncf.Depart;
+import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
 
 public class DepartsActivity extends ListActivity {
 
-	public static final String EXTRA_ID = "id";
+	public static final String EXTRA_ID = Gare._ID;
 
 	@Override
 	protected ListAdapter getAdapter(Cursor c) {
@@ -28,7 +29,11 @@ public class DepartsActivity extends ListActivity {
 	protected Cursor queryCursor() {
 		long id = getIntent().getLongExtra(EXTRA_ID, 0);
 		if (id == 0) {
-			Toast.makeText(this, "Erreur : paramètres insuffisants", Toast.LENGTH_LONG).show();
+			runOnUiThread(new Runnable() {
+				public void run() {
+					Toast.makeText(DepartsActivity.this, "Erreur : paramètres insuffisants", Toast.LENGTH_LONG).show();
+				}
+			});
 			return null;
 		} else {
 			Uri uri = Uri.withAppendedPath(Depart.Departs.CONTENT_URI, String.valueOf(id));

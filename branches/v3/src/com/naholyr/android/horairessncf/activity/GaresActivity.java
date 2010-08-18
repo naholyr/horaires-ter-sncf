@@ -13,8 +13,8 @@ import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import com.naholyr.android.horairessncf.Gare;
-import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.Gare.Gares;
+import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.providers.GaresSearchSuggestionsProvider;
 import com.naholyr.android.horairessncf.view.ListeGaresAdapter;
 import com.naholyr.android.horairessncf.view.QuickActionWindow;
@@ -62,7 +62,8 @@ public class GaresActivity extends ListActivity {
 		// Special case SEARCH_ACTION : store user's query
 		if (ACTION_SEARCH.equals(getIntent().getAction())) {
 			String query = getIntent().getStringExtra(SearchManager.QUERY);
-			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this, GaresSearchSuggestionsProvider.AUTHORITY, GaresSearchSuggestionsProvider.MODE);
+			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
+					GaresSearchSuggestionsProvider.AUTHORITY, GaresSearchSuggestionsProvider.MODE);
 			int count = c.getCount();
 			String line2 = null;
 			// 2 lines : line 2 is hint about search result
@@ -95,6 +96,9 @@ public class GaresActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		final Intent queryIntent = getIntent();
 		mAction = queryIntent.getAction();
+		if (!ACTION_FAVORITES.equals(mAction) && !ACTION_GEOLOCATION.equals(mAction) && !ACTION_SEARCH.equals(mAction)) {
+			mAction = ACTION_GEOLOCATION;
+		}
 		// Action Bar
 		if (ACTION_FAVORITES.equals(mAction)) {
 			findViewById(R.id.action_bar_favorites).setVisibility(View.GONE);
@@ -135,12 +139,10 @@ public class GaresActivity extends ListActivity {
 	private void showPopup(final View anchor) {
 		int position = getListView().getPositionForView(anchor);
 		final long id = getListView().getItemIdAtPosition(position);
-		QuickActionWindow.Action[] actions = new QuickActionWindow.Action[5];
-		actions[0] = new QuickActionWindow.Action(getString(R.string.action_prochains_departs), R.drawable.quick_action_prochains_departs, new View.OnClickListener() {
-			public void onClick(View v) {
-				showProchainsDeparts(id);
-			}
-		});
+
+		QuickActionWindow w = QuickActionWindow.getWindow(this);
+		
+		// Embedded action : favorite
 		int favStringId, favIconId;
 		if (Gare.getFavorites(this).has(Gare.getNom(this, id))) {
 			favStringId = R.string.action_remove_favorite;
@@ -149,27 +151,19 @@ public class GaresActivity extends ListActivity {
 			favStringId = R.string.action_add_favorite;
 			favIconId = R.drawable.quick_action_add_favorite;
 		}
-		actions[1] = new QuickActionWindow.Action(getString(favStringId), favIconId, new View.OnClickListener() {
+		w.addAction(getString(favStringId), getResources().getDrawable(favIconId), new View.OnClickListener() {
 			public void onClick(View v) {
 				anchor.findViewById(R.id.favicon).performClick();
 			}
 		});
-		actions[2] = new QuickActionWindow.Action(getString(R.string.action_gmap), R.drawable.quick_action_gmap, new View.OnClickListener() {
-			public void onClick(View v) {
-				showGoogleMap(id);
-			}
-		});
-		actions[3] = new QuickActionWindow.Action(getString(R.string.action_itineraire_from), R.drawable.quick_action_itineraire_from, new View.OnClickListener() {
-			public void onClick(View v) {
-				showItineraire(id, true);
-			}
-		});
-		actions[4] = new QuickActionWindow.Action(getString(R.string.action_itineraire_to), R.drawable.quick_action_itineraire_to, new View.OnClickListener() {
-			public void onClick(View v) {
-				showItineraire(id, false);
-			}
-		});
-		QuickActionWindow.showActions(this, actions, anchor);
+
+		// Other actions : all activities handling the content type
+		final Intent pluginIntent = new Intent(Intent.ACTION_VIEW);
+		pluginIntent.setType(Gare.CONTENT_TYPE);
+		pluginIntent.putExtra(Gare._ID, id);
+		w.addActionsForIntent(this, pluginIntent);
+
+		w.show(anchor);
 	}
 
 	private void showItineraire(long id, boolean from) {
@@ -194,7 +188,8 @@ public class GaresActivity extends ListActivity {
 			startActivity(intent);
 			c.close();
 		} else {
-			Toast.makeText(this, "Impossible de récupérer les informations de la gare sélectionnée", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "Impossible de récupérer les informations de la gare sélectionnée", Toast.LENGTH_LONG)
+					.show();
 		}
 	}
 
@@ -213,23 +208,23 @@ public class GaresActivity extends ListActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
-			case REQUEST_UPDATE_STATUS:
-				switch (resultCode) {
-					case UpdateActivity.RESULT_OK:
-						Toast.makeText(this, "Mise à jour terminée avec succès", Toast.LENGTH_SHORT).show();
-						getCursor().requery();
-						break;
-					case UpdateActivity.RESULT_CANCELED:
-						Toast.makeText(this, "Mise à jour annulée par l'utilisateur", Toast.LENGTH_SHORT).show();
-						break;
-					case UpdateActivity.RESULT_ERROR:
-						Toast.makeText(this, "Echec de la mise à jour", Toast.LENGTH_LONG).show();
-						break;
-					case UpdateActivity.RESULT_NO_UPDATE:
-						Toast.makeText(this, "Aucune mise à jour à effectuer", Toast.LENGTH_LONG).show();
-						break;
-				}
+		case REQUEST_UPDATE_STATUS:
+			switch (resultCode) {
+			case UpdateActivity.RESULT_OK:
+				Toast.makeText(this, "Mise à jour terminée avec succès", Toast.LENGTH_SHORT).show();
+				getCursor().requery();
 				break;
+			case UpdateActivity.RESULT_CANCELED:
+				Toast.makeText(this, "Mise à jour annulée par l'utilisateur", Toast.LENGTH_SHORT).show();
+				break;
+			case UpdateActivity.RESULT_ERROR:
+				Toast.makeText(this, "Echec de la mise à jour", Toast.LENGTH_LONG).show();
+				break;
+			case UpdateActivity.RESULT_NO_UPDATE:
+				Toast.makeText(this, "Aucune mise à jour à effectuer", Toast.LENGTH_LONG).show();
+				break;
+			}
+			break;
 		}
 	}
 

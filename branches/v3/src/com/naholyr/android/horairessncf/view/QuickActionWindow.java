@@ -1,12 +1,17 @@
 package com.naholyr.android.horairessncf.view;
 
+import java.util.List;
+
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -18,12 +23,18 @@ public class QuickActionWindow extends PopupWindow {
 
 	public static final class Action {
 		private String mLabel;
-		private int mIconResId;
+		private Drawable mIcon;
 		private View.OnClickListener mCallback;
 
-		public Action(String label, int drawableResId, View.OnClickListener callback) {
+		public Action(Context context, String label, int iconResId, View.OnClickListener callback) {
 			mLabel = label;
-			mIconResId = drawableResId;
+			mIcon = context.getResources().getDrawable(iconResId);
+			mCallback = callback;
+		}
+
+		public Action(String label, Drawable icon, View.OnClickListener callback) {
+			mLabel = label;
+			mIcon = icon;
 			mCallback = callback;
 		}
 
@@ -54,7 +65,7 @@ public class QuickActionWindow extends PopupWindow {
 		public View getView(final View convertView, int iconResId, int labelResId) {
 			ImageView iv = (ImageView) convertView.findViewById(iconResId);
 			if (iv != null) {
-				iv.setImageResource(mIconResId);
+				iv.setImageDrawable(mIcon);
 			}
 			TextView tv = (TextView) convertView.findViewById(labelResId);
 			if (tv != null) {
@@ -88,6 +99,10 @@ public class QuickActionWindow extends PopupWindow {
 		return new QuickActionWindow(inflater, contentView, actions);
 	}
 
+	public static QuickActionWindow getWindow(Activity activity) {
+		return getWindow(activity, new Action[] {});
+	}
+
 	private QuickActionWindow(LayoutInflater inflater, View contentView, Action[] actions) {
 		super(contentView, ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT, false);
 		mInflater = inflater;
@@ -116,7 +131,6 @@ public class QuickActionWindow extends PopupWindow {
 		super.showAtLocation(anchor, Gravity.NO_GRAVITY, 0, 0);
 
 		// http://github.com/ruqqq/WorldHeritageSite/blob/master/src/sg/ruqqq/WHSFinder/QuickActionWindow.java
-		Log.d("showing", String.valueOf(isShowing()));
 		// ((Activity)
 		// anchor.getContext()).getWindowManager().getDefaultDisplay().getHeight();
 		if (isShowing()) {
@@ -124,7 +138,6 @@ public class QuickActionWindow extends PopupWindow {
 			final View contentView = getContentView();
 			contentView.measure(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 			final int blockHeight = contentView.getMeasuredHeight();
-			final int blockWidth = contentView.getMeasuredWidth();
 			final int[] anchorLocation = new int[2];
 			if (anchorLocation[1] > blockHeight) {
 				// showArrow(R.id.arrow_down, requestedX);
@@ -138,15 +151,19 @@ public class QuickActionWindow extends PopupWindow {
 			}
 			// setAnimationStyle(windowAnimations);
 			// mTrack.startAnimation(mTrackAnim);
-			this.update(anchor, 0, yoff, blockWidth, blockHeight);
+			this.update(anchor, 0, yoff, -1, blockHeight);
 		}
 	}
 
-	public Action addAction(String label, int iconResId, View.OnClickListener callback) {
-		Action action = new Action(label, iconResId, callback);
+	public Action addAction(String label, Drawable icon, View.OnClickListener callback) {
+		Action action = new Action(label, icon, callback);
 		addActionView(action);
 
 		return action;
+	}
+
+	public Action addAction(Context context, String label, int iconResId, View.OnClickListener callback) {
+		return addAction(label, context.getResources().getDrawable(iconResId), callback);
 	}
 
 	protected void addActionView(Action action) {
@@ -164,6 +181,27 @@ public class QuickActionWindow extends PopupWindow {
 	protected void addView(View v) {
 		ViewGroup container = (ViewGroup) getContentView().findViewById(R.id.quick_actions);
 		container.addView(v);
+	}
+
+	public void addActionsForIntent(Context context, Intent queryIntent) {
+		PackageManager pm = context.getPackageManager();
+		List<ResolveInfo> results = pm.queryIntentActivities(queryIntent,
+				PackageManager.GET_RESOLVED_FILTER);
+		for (ResolveInfo result : results) {
+			String label = result.loadLabel(pm).toString();
+			Drawable icon = result.loadIcon(pm);
+			final Intent intent = new Intent(queryIntent);
+			intent.setClassName(result.activityInfo.packageName, result.activityInfo.name);
+			addActionForIntent(context, label, icon, intent);
+		}		
+	}
+
+	public void addActionForIntent(final Context context, String label, Drawable icon, final Intent intent) {
+		addAction(label, icon, new View.OnClickListener() {
+			public void onClick(View v) {
+				context.startActivity(intent);
+			}
+		});
 	}
 
 }
