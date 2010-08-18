@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
-import com.naholyr.android.horairessncf.Gare.Gares;
 import com.naholyr.android.horairessncf.providers.GaresSearchSuggestionsProvider;
 import com.naholyr.android.horairessncf.service.UpdateServiceManager;
 import com.naholyr.android.horairessncf.view.ListeGaresAdapter;
@@ -27,6 +26,7 @@ public class GaresActivity extends ListActivity {
 	public static final String ACTION_GEOLOCATION = "geolocation";
 	public static final String ACTION_FAVORITES = "favorites";
 	public static final String ACTION_SEARCH = Intent.ACTION_SEARCH;
+	private static final String DEFAULT_ACTION = ACTION_GEOLOCATION;
 
 	public static final String EXTRA_DISPLAY_MODE = "mode";
 
@@ -104,6 +104,7 @@ public class GaresActivity extends ListActivity {
 			// We really have no data
 			findViewById(R.id.txt_add_favorite).setVisibility(View.GONE);
 			findViewById(R.id.button_init_data).setVisibility(View.VISIBLE);
+			findViewById(R.id.button_init_data).setEnabled(true);
 		}
 	}
 
@@ -119,7 +120,7 @@ public class GaresActivity extends ListActivity {
 		final Intent queryIntent = getIntent();
 		mAction = queryIntent.getAction();
 		if (!ACTION_FAVORITES.equals(mAction) && !ACTION_GEOLOCATION.equals(mAction) && !ACTION_SEARCH.equals(mAction)) {
-			mAction = ACTION_FAVORITES;
+			mAction = DEFAULT_ACTION;
 		}
 		// Action Bar
 		if (ACTION_FAVORITES.equals(mAction)) {
@@ -154,6 +155,7 @@ public class GaresActivity extends ListActivity {
 		findViewById(R.id.button_init_data).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				showUpdate();
+				v.setEnabled(false);
 			}
 		});
 		// Start BOOT service (if user has not rebooted since installation)
@@ -215,9 +217,13 @@ public class GaresActivity extends ListActivity {
 						break;
 					case UpdateActivity.RESULT_CANCELED:
 						Toast.makeText(this, "Mise à jour annulée par l'utilisateur", Toast.LENGTH_SHORT).show();
+						// Re-enable button
+						findViewById(R.id.button_init_data).setEnabled(true);
 						break;
 					case UpdateActivity.RESULT_ERROR:
 						Toast.makeText(this, "Echec de la mise à jour", Toast.LENGTH_LONG).show();
+						// Re-enable button
+						findViewById(R.id.button_init_data).setEnabled(true);
 						break;
 					case UpdateActivity.RESULT_NO_UPDATE:
 						Toast.makeText(this, "Aucune mise à jour à effectuer", Toast.LENGTH_LONG).show();
