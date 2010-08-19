@@ -2,13 +2,17 @@ package com.naholyr.android.horairessncf.view;
 
 import java.util.List;
 
+import org.acra.ErrorReporter;
+
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +20,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.naholyr.android.horairessncf.R;
 
 public class QuickActionWindow extends PopupWindow {
 
 	public static final class Action {
+
 		private String mLabel;
 		private Drawable mIcon;
 		private View.OnClickListener mCallback;
@@ -83,24 +89,40 @@ public class QuickActionWindow extends PopupWindow {
 
 	}
 
+	public static final class AdvertisementAction {
+
+		public String name;
+		public Drawable icon;
+		public String label;
+		public String packageName;
+
+		public AdvertisementAction(String name, Drawable icon, String label, String packageName) {
+			this.name = name;
+			this.icon = icon;
+			this.label = label;
+			this.packageName = packageName;
+		}
+
+	}
+
 	private LayoutInflater mInflater;
 
-	public static QuickActionWindow showActions(Activity activity, Action[] actions, View anchor) {
-		QuickActionWindow w = getWindow(activity, actions);
+	public static QuickActionWindow showActions(Activity activity, int layout, Action[] actions, View anchor) {
+		QuickActionWindow w = getWindow(activity, layout, actions);
 		w.show(anchor);
 
 		return w;
 	}
 
-	public static QuickActionWindow getWindow(Activity activity, Action[] actions) {
+	public static QuickActionWindow getWindow(Activity activity, int layout, Action[] actions) {
 		LayoutInflater inflater = activity.getLayoutInflater();
-		View contentView = inflater.inflate(R.layout.quick_action_window, null);
+		View contentView = inflater.inflate(layout, null);
 
 		return new QuickActionWindow(inflater, contentView, actions);
 	}
 
-	public static QuickActionWindow getWindow(Activity activity) {
-		return getWindow(activity, new Action[] {});
+	public static QuickActionWindow getWindow(Activity activity, int layout) {
+		return getWindow(activity, layout, new Action[] {});
 	}
 
 	private QuickActionWindow(LayoutInflater inflater, View contentView, Action[] actions) {
@@ -128,29 +150,30 @@ public class QuickActionWindow extends PopupWindow {
 	}
 
 	public void show(View anchor) {
+		show(anchor, 0, 0);
+	}
+
+	public void show(View anchor, int backgroundIfAbove, int additionalOffset) {
 		super.showAtLocation(anchor, Gravity.NO_GRAVITY, 0, 0);
 
 		// http://github.com/ruqqq/WorldHeritageSite/blob/master/src/sg/ruqqq/WHSFinder/QuickActionWindow.java
-		// ((Activity)
-		// anchor.getContext()).getWindowManager().getDefaultDisplay().getHeight();
 		if (isShowing()) {
 			int yoff;
 			final View contentView = getContentView();
 			contentView.measure(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 			final int blockHeight = contentView.getMeasuredHeight();
 			final int[] anchorLocation = new int[2];
+			anchor.getLocationOnScreen(anchorLocation);
 			if (anchorLocation[1] > blockHeight) {
-				// showArrow(R.id.arrow_down, requestedX);
-				yoff = -anchor.getMeasuredHeight() - blockHeight + 30;
-				// windowAnimations = R.style.QuickActionAboveAnimation;
-
+				// Display above anchor
+				yoff = -anchor.getMeasuredHeight() - blockHeight + additionalOffset;
+				if (backgroundIfAbove != 0) {
+					contentView.setBackgroundResource(backgroundIfAbove);
+				}
 			} else {
-				// showArrow(R.id.arrow_up, requestedX);
-				yoff = -30;
-				// windowAnimations = R.style.QuickActionBelowAnimation;
+				// Display below anchor
+				yoff = -additionalOffset;
 			}
-			// setAnimationStyle(windowAnimations);
-			// mTrack.startAnimation(mTrackAnim);
 			this.update(anchor, 0, yoff, -1, blockHeight);
 		}
 	}
@@ -184,22 +207,50 @@ public class QuickActionWindow extends PopupWindow {
 	}
 
 	public void addActionsForIntent(Context context, Intent queryIntent) {
+		addActionsForIntent(context, queryIntent, null);
+	}
+
+	public void addActionsForIntent(Context context, Intent queryIntent, AdvertisementAction[] ads) {
+		// List activities handling request intent
 		PackageManager pm = context.getPackageManager();
-		List<ResolveInfo> results = pm.queryIntentActivities(queryIntent,
-				PackageManager.GET_RESOLVED_FILTER);
-		for (ResolveInfo result : results) {
+		List<ResolveInfo> results = pm.queryIntentActivities(queryIntent, PackageManager.GET_RESOLVED_FILTER);
+		String[] names = new String[results.size()];
+		for (int i = 0; i < names.length; i++) {
+			// Generate associated action, and store name for later use
+			ResolveInfo result = results.get(i);
+			names[i] = result.activityInfo.name;
 			String label = result.loadLabel(pm).toString();
 			Drawable icon = result.loadIcon(pm);
 			final Intent intent = new Intent(queryIntent);
 			intent.setClassName(result.activityInfo.packageName, result.activityInfo.name);
-			addActionForIntent(context, label, icon, intent);
-		}		
+			addActivityAction(context, label, icon, intent);
+		}
+		// Check found names, and eventually add advertisement actions
+		if (ads != null) {
+			for (AdvertisementAction ad : ads) {
+				boolean found = false;
+				for (int i = 0; i < names.length; i++) {
+					if (names[i].equals(ad.name)) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					addActivityAction(context, ad.label, ad.icon, new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + ad.packageName)));
+				}
+			}
+		}
 	}
 
-	public void addActionForIntent(final Context context, String label, Drawable icon, final Intent intent) {
+	public void addActivityAction(final Context context, String label, Drawable icon, final Intent intent) {
 		addAction(label, icon, new View.OnClickListener() {
 			public void onClick(View v) {
-				context.startActivity(intent);
+				try {
+					context.startActivity(intent);
+				} catch (ActivityNotFoundException e) {
+					Toast.makeText(context, "Erreur : Application introuvable", Toast.LENGTH_LONG).show();
+					ErrorReporter.getInstance().handleSilentException(e);
+				}
 			}
 		});
 	}

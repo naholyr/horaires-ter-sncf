@@ -38,7 +38,7 @@ public class GaresActivity extends ListActivity {
 	private String mAction;
 
 	private SharedPreferences mPreferences;
-	
+
 	@Override
 	protected ListAdapter getAdapter(Cursor c) {
 		return new ListeGaresAdapter(this, c);
@@ -172,12 +172,12 @@ public class GaresActivity extends ListActivity {
 			}).start();
 		}
 	}
-	
+
 	private void showPopup(final View anchor) {
 		int position = getListView().getPositionForView(anchor);
 		final long id = getListView().getItemIdAtPosition(position);
 
-		QuickActionWindow w = QuickActionWindow.getWindow(this);
+		QuickActionWindow w = QuickActionWindow.getWindow(this, R.layout.quick_action_window);
 
 		// Embedded action : favorite
 		int favStringId, favIconId;
@@ -194,13 +194,22 @@ public class GaresActivity extends ListActivity {
 			}
 		});
 
+		// Advertisements for other activities : GMap & itineraires
+		QuickActionWindow.AdvertisementAction[] ads = new QuickActionWindow.AdvertisementAction[] {
+				new QuickActionWindow.AdvertisementAction("com.naholyr.android.horairessncf.plugins.gmap.activity.MapActivity", getResources().getDrawable(
+						R.drawable.quick_action_gmap), "Voir sur une carte", "com.naholyr.android.horairessncf.plugins.gmap"),
+				new QuickActionWindow.AdvertisementAction("com.naholyr.android.horairessncf.plugins.itineraire.activity.ItineraireFromActivity", getResources().getDrawable(
+						R.drawable.quick_action_itineraire_from), "Partir de...", "com.naholyr.android.horairessncf.plugins.itineraire"),
+				new QuickActionWindow.AdvertisementAction("com.naholyr.android.horairessncf.plugins.itineraire.activity.ItineraireToActivity", getResources().getDrawable(
+						R.drawable.quick_action_itineraire_to), "Aller vers...", "com.naholyr.android.horairessncf.plugins.itineraire"), };
+
 		// Other actions : all activities handling the content type
 		final Intent pluginIntent = new Intent(Intent.ACTION_VIEW);
 		pluginIntent.setType(Gare.CONTENT_TYPE);
 		pluginIntent.putExtra(Gare._ID, id);
-		w.addActionsForIntent(this, pluginIntent);
+		w.addActionsForIntent(this, pluginIntent, ads);
 
-		w.show(anchor);
+		w.show(anchor, R.drawable.quick_actions_background_above, 30);
 	}
 
 	private void showGares(String action) {

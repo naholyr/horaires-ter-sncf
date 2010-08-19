@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent" android:layout_height="wrap_content"
-  android:background="@drawable/quick_actions_background">
+  android:background="@drawable/quick_actions_background_below">
   <HorizontalScrollView android:layout_width="fill_parent"
     android:layout_height="wrap_content" android:fadingEdgeLength="15dip"
     android:fadeScrollbars="true">
