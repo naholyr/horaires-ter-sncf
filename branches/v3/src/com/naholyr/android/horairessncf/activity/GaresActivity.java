@@ -158,8 +158,12 @@ public class GaresActivity extends ListActivity {
 				v.setEnabled(false);
 			}
 		});
-		// Start BOOT service (if user has not rebooted since installation)
-		UpdateServiceManager.initialize(this);
+		// Check updates now
+		new Thread(new Runnable() {
+			public void run() {
+				UpdateServiceManager.start(getApplicationContext());
+			}
+		}).start();
 	}
 
 	private void showPopup(final View anchor) {

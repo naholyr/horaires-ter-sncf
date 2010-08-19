@@ -215,8 +215,12 @@ public class UpdateActivity extends Activity {
 								if (parts[2].startsWith("DELETED ")) {
 									db.delete(DatabaseHelper.TABLE_GARES, Gare._ID + "=" + parts[0], null);
 								} else {
-									db.replace(DatabaseHelper.TABLE_GARES, null, Gare.values(Integer.parseInt(parts[0]), parts[2], parts[1], parts[3], Double.valueOf(parts[4]),
-											Double.valueOf(parts[5])));
+									ContentValues row = Gare.values(Integer.parseInt(parts[0]), parts[2], parts[1], parts[3], Double.valueOf(parts[4]), Double.valueOf(parts[5]));
+									try {
+										db.insertOrThrow(DatabaseHelper.TABLE_GARES, null, row);
+									} catch (SQLException e) {
+										db.update(DatabaseHelper.TABLE_GARES, row, Gare._ID + " = " + row.getAsLong(Gare._ID), null);
+									}
 								}
 							} catch (NumberFormatException e) {
 								Log.e(getClass().getName(), line, e);
