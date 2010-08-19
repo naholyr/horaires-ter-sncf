@@ -15,53 +15,34 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
+import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.activity.UpdateActivity;
 import com.naholyr.android.horairessncf.providers.DatabaseHelper;
 
-public class UpdateServiceAlarmReceiver extends BroadcastReceiver {
+public class UpdateService extends BroadcastReceiver {
 
-	public static final String TAG = UpdateServiceAlarmReceiver.class.getName();
+	public static final String TAG = UpdateService.class.getName();
 
-	public static final String ACTION = "com.naholyr.android.horairessncf.service.UPDATE_GARES";
-
-	public static PendingIntent getPendingIntent(Context context) {
-		Intent i = new Intent(context, UpdateServiceAlarmReceiver.class);
-		i.setAction(ACTION);
-		return PendingIntent.getBroadcast(context, 0, i, 0);
-	}
-
-	public static void scheduleNext(Context context, long interval) {
-		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		long time = System.currentTimeMillis() + interval;
-		PendingIntent intent = getPendingIntent(context);
-		alarmManager.cancel(intent);
-		alarmManager.set(AlarmManager.RTC_WAKEUP, time, intent);
-		Log.d(TAG, "Scheduled alarm to " + DateFormat.format("dd/MM/dd/yy h:mm", time));
-	}
+	public static final String ALARM_ACTION = "com.naholyr.android.horairessncf.service.UPDATE_GARES";
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.d(TAG, "Received alarm " + intent.getAction());
-		if (ACTION.equals(intent.getAction())) {
+		if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
+			scheduleNext(context, AlarmManager.INTERVAL_FIFTEEN_MINUTES);
+		} else if (ALARM_ACTION.equals(intent.getAction())) {
 			// Check latest update
-			String updateDate = null;
 			try {
 				SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-				Cursor c = db.query("db_updates", new String[] { "MAX(updated_at)" }, "categorie=\"" + DatabaseHelper.TABLE_GARES + "\"", null, null, null, null);
-				if (c.moveToFirst()) {
-					String s = c.getString(0);
-					if (s != null) {
-						updateDate = s;
-					}
-				}
-				c.close();
+				String updateDate = DatabaseHelper.getLastUpdate(db);
 				db.close();
 				if (updateDate == null) {
 					// No data, force update
@@ -116,4 +97,55 @@ public class UpdateServiceAlarmReceiver extends BroadcastReceiver {
 		notification.setLatestEventInfo(context, "Mise à jour des gares", "Cliquez pour mettre à jour vos données", pendingIntent);
 		mNotificationManager.notify(UpdateActivity.NOTIFICATION_ID, notification);
 	}
+
+	public static PendingIntent getPendingIntent(Context context) {
+		Intent i = new Intent(context, UpdateService.class);
+		i.setAction(UpdateService.ALARM_ACTION);
+		return PendingIntent.getBroadcast(context, 0, i, 0);
+	}
+
+	public static void scheduleNext(Context context, long interval) {
+		scheduleNext(context, interval, false);
+	}
+	
+	public static void scheduleNext(Context context, long interval, boolean toast) {
+		// Schedule automatic updates
+		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		long time = System.currentTimeMillis() + interval;
+		PendingIntent intent = getPendingIntent(context);
+		alarmManager.set(AlarmManager.RTC_WAKEUP, time, intent);
+		// Log & toast
+		Log.d(TAG, "Scheduled alarm to " + DateFormat.format("dd/MM/dd/yy h:mm", time));
+		if (toast) {
+			Toast.makeText(context, "Prochaine vérification planifiée pour " + DateFormat.format("h:mm", time), Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	public static void scheduleNow(Context context) {
+		scheduleNow(context, false);
+	}
+
+	public static void scheduleNow(Context context, boolean toast) {
+		scheduleNext(context, 100, false);
+		// Log & toast
+		if (toast) {
+			Toast.makeText(context, "Vérification des mises à jour démarrée...", Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	public static void unschedule(Context context) {
+		unschedule(context, false);
+	}
+
+	public static void unschedule(Context context, boolean toast) {
+		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		PendingIntent intent = getPendingIntent(context);
+		alarmManager.cancel(intent);
+		// Log & toast
+		Log.d(TAG, "Cancelled alarm");
+		if (toast) {
+			Toast.makeText(context, "Vérifications de mise à jour désactivées", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
 }

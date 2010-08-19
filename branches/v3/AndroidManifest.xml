@@ -25,6 +25,7 @@
 				android:resource="@xml/search_gares" />
 		</activity>
 		<!-- Autres activités -->
+    <activity android:name=".activity.PreferencesActivity" />
 		<activity android:name=".activity.MapActivity" android:label="Voir sur une carte"
 			android:icon="@drawable/quick_action_gmap">
 			<intent-filter>
@@ -57,16 +58,13 @@
 		<meta-data android:name="android.app.default_searchable"
 			android:value=".activity.GaresActivity" />
 		<!-- Event listeners -->
-		<receiver android:name=".service.UpdateServiceManager"
-			android:enabled="true" android:exported="false" android:label="UpdateServiceAlarmManager">
-			<intent-filter>
-				<action android:name="android.intent.action.BOOT_COMPLETED" />
-			</intent-filter>
-		</receiver>
-		<receiver android:name=".service.UpdateServiceAlarmReceiver">
+		<receiver android:name=".service.UpdateService">
 			<intent-filter>
 				<action android:name="com.naholyr.android.horairessncf.service.UPDATE_GARES" />
 			</intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+      </intent-filter>
 		</receiver>
 	</application>
 	<!-- Compatibilité Android 1.5 Cupcake -->

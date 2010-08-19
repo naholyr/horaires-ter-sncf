@@ -20,4 +20,13 @@
   <string name="search_hint">Partie du nom</string>
   <string name="nb_results_0">Aucun résultat</string>
   <string name="nb_results_more">%d gares trouvées</string>
+  <string name="pref_nbgares">nb_gares</string>
+  <string name="pref_nbtrains">nb_trains</string>
+  <string name="pref_radiuskm">radius_km</string>
+  <string name="pref_favsfirst">favs_first</string>
+  <string name="pref_crash_report">acra.disable</string>
+  <string name="pref_disable_auto_update">disable_auto_update</string>
+  <string name="pref_home">home</string>
+  <string name="pref_disable_search_history">disable_search_history</string>
+  <string name="pref_clear_search_history">clear_search_history</string>
 </resources>

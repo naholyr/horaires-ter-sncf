@@ -15,7 +15,6 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -141,14 +140,7 @@ public class UpdateActivity extends Activity {
 			SQLiteDatabase db = null;
 			if (mState == STATE_RUNNING) {
 				db = new DatabaseHelper(getApplicationContext()).getWritableDatabase();
-				Cursor c = db.query("db_updates", new String[] { "MAX(updated_at)" }, "categorie=\"" + DatabaseHelper.TABLE_GARES + "\"", null, null, null, null);
-				if (c.moveToFirst()) {
-					String s = c.getString(0);
-					if (s != null) {
-						updateDate = s;
-					}
-				}
-				c.close();
+				updateDate = DatabaseHelper.getLastUpdate(db);
 			}
 
 			// Récupérer les données

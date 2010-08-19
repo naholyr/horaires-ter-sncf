@@ -2,10 +2,15 @@ package com.naholyr.android.horairessncf.activity;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -15,7 +20,7 @@ import android.widget.Toast;
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.providers.GaresSearchSuggestionsProvider;
-import com.naholyr.android.horairessncf.service.UpdateServiceManager;
+import com.naholyr.android.horairessncf.service.UpdateService;
 import com.naholyr.android.horairessncf.view.ListeGaresAdapter;
 import com.naholyr.android.horairessncf.view.QuickActionWindow;
 
@@ -32,6 +37,8 @@ public class GaresActivity extends ListActivity {
 
 	private String mAction;
 
+	private SharedPreferences mPreferences;
+	
 	@Override
 	protected ListAdapter getAdapter(Cursor c) {
 		return new ListeGaresAdapter(this, c);
@@ -82,11 +89,6 @@ public class GaresActivity extends ListActivity {
 		if (ACTION_FAVORITES.equals(getIntent().getAction()) && c.getCount() == 0) {
 			fixEmptyFavorites();
 		}
-		// FIXME Add way for user to clear history
-		// SearchRecentSuggestions suggestions = new
-		// SearchRecentSuggestions(this, HelloSuggestionProvider.AUTHORITY,
-		// HelloSuggestionProvider.MODE);
-		// suggestions.clearHistory();
 		return c;
 	}
 
@@ -117,6 +119,9 @@ public class GaresActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// Preferences
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		// Intent action
 		final Intent queryIntent = getIntent();
 		mAction = queryIntent.getAction();
 		if (!ACTION_FAVORITES.equals(mAction) && !ACTION_GEOLOCATION.equals(mAction) && !ACTION_SEARCH.equals(mAction)) {
@@ -159,13 +164,15 @@ public class GaresActivity extends ListActivity {
 			}
 		});
 		// Check updates now
-		new Thread(new Runnable() {
-			public void run() {
-				UpdateServiceManager.start(getApplicationContext());
-			}
-		}).start();
+		if (!mPreferences.getBoolean(getString(R.string.pref_disable_auto_update), false)) {
+			new Thread(new Runnable() {
+				public void run() {
+					UpdateService.scheduleNow(getApplicationContext());
+				}
+			}).start();
+		}
 	}
-
+	
 	private void showPopup(final View anchor) {
 		int position = getListView().getPositionForView(anchor);
 		final long id = getListView().getItemIdAtPosition(position);
@@ -234,6 +241,40 @@ public class GaresActivity extends ListActivity {
 						break;
 				}
 				break;
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.gares, menu);
+		if (mPreferences.getBoolean(getString(R.string.pref_disable_auto_update), false)) {
+			MenuItem item = menu.findItem(R.id.menu_update);
+			if (item != null) {
+				item.setVisible(true);
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.menu_about: {
+				// FIXME
+				Toast.makeText(this, "Pas encore implémenté", Toast.LENGTH_LONG).show();
+				return true;
+			}
+			case R.id.menu_preferences: {
+				Intent intent = new Intent(this, PreferencesActivity.class);
+				startActivity(intent);
+				return true;
+			}
+			case R.id.menu_update: {
+				showUpdate();
+			}
+			default:
+				return false;
 		}
 	}
 
