@@ -130,21 +130,21 @@ public class GaresActivity extends ListActivity {
 		// Action Bar
 		if (ACTION_FAVORITES.equals(mAction)) {
 			findViewById(R.id.action_bar_favorites).setVisibility(View.GONE);
-			findViewById(R.id.action_bar_geolocation).setOnClickListener(new View.OnClickListener() {
-				public void onClick(View v) {
-					showGares(ACTION_GEOLOCATION);
-					finish();
-				}
-			});
 		} else if (ACTION_GEOLOCATION.equals(mAction)) {
 			findViewById(R.id.action_bar_geolocation).setVisibility(View.GONE);
-			findViewById(R.id.action_bar_favorites).setOnClickListener(new View.OnClickListener() {
-				public void onClick(View v) {
-					showGares(ACTION_FAVORITES);
-					finish();
-				}
-			});
 		}
+		findViewById(R.id.action_bar_geolocation).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				showGares(ACTION_GEOLOCATION);
+				finish();
+			}
+		});
+		findViewById(R.id.action_bar_favorites).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				showGares(ACTION_FAVORITES);
+				finish();
+			}
+		});
 		findViewById(R.id.action_bar_search).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				startSearch(null, false, null, false);
@@ -153,7 +153,7 @@ public class GaresActivity extends ListActivity {
 		// Quick actions
 		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-				showPopup(view);
+				showQuickActions(view);
 			}
 		});
 		// Data initialization
@@ -173,7 +173,7 @@ public class GaresActivity extends ListActivity {
 		}
 	}
 
-	private void showPopup(final View anchor) {
+	private void showQuickActions(final View anchor) {
 		int position = getListView().getPositionForView(anchor);
 		final long id = getListView().getItemIdAtPosition(position);
 
