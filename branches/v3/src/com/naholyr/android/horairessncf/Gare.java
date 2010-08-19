@@ -56,7 +56,7 @@ public class Gare implements BaseColumns {
 		}
 
 		public boolean remove(long id) {
-			if (!has(id)) {
+			if (has(id)) {
 				Uri uri = Uri.withAppendedPath(Gares.CONTENT_URI, String.valueOf(id));
 				ContentValues values = new ContentValues();
 				values.put(FAVORITE, 0);
