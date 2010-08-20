@@ -1,0 +1,5 @@
+<?php
+
+$dsn = 'mysql:host=localhost;dbname=db';
+$user = 'user';
+$pass = 'pass';
