@@ -8,7 +8,7 @@ $pass = 'CdBFcEaGj9jJJdJV';
 
 $sql_select = 'SELECT id, nom, region, adresse, latitude, longitude, updated_at FROM gares';
 $sql_drop = 'DROP TABLE IF EXISTS gares';
-$sql_create = 'CREATE TABLE gares (id INTEGER PRIMARY KEY AUTO_INCREMENT, nom VARCHAR(64) UNIQUE, region VARCHAR(32) NOT NULL, adresse VARCHAR(255) NOT NULL, latitude DOUBLE NOT NULL, longitude DOUBLE NOT NULL, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP())';
+$sql_create = 'CREATE TABLE gares (id INTEGER PRIMARY KEY AUTO_INCREMENT, nom VARCHAR(64) NOT NULL UNIQUE, region VARCHAR(32) NOT NULL, adresse VARCHAR(255) NOT NULL, latitude DOUBLE NOT NULL, longitude DOUBLE NOT NULL, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP())';
 $sql_insert = 'INSERT INTO gares (nom, region, adresse, latitude, longitude) VALUES (:nom, :region, :adresse, :latitude, :longitude)';
 $sql_where = '';
 
