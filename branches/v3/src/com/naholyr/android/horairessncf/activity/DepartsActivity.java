@@ -30,6 +30,7 @@ public class DepartsActivity extends ListActivity {
 		long id = getIntent().getLongExtra(EXTRA_ID, 0);
 		if (id == 0) {
 			runOnUiThread(new Runnable() {
+				@Override
 				public void run() {
 					Toast.makeText(DepartsActivity.this, "Erreur : paramètres insuffisants", Toast.LENGTH_LONG).show();
 				}

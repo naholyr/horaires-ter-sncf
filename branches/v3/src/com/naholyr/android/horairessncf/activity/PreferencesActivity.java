@@ -24,6 +24,7 @@ public class PreferencesActivity extends android.preference.PreferenceActivity {
 
 		findPreference(getString(R.string.pref_disable_auto_update)).setOnPreferenceChangeListener(
 				new Preference.OnPreferenceChangeListener() {
+					@Override
 					public boolean onPreferenceChange(Preference preference, Object newValue) {
 						if ((Boolean) newValue) {
 							UpdateService.unschedule(getApplicationContext());
@@ -35,6 +36,7 @@ public class PreferencesActivity extends android.preference.PreferenceActivity {
 				});
 		findPreference(getString(R.string.pref_disable_search_history)).setOnPreferenceChangeListener(
 				new Preference.OnPreferenceChangeListener() {
+					@Override
 					public boolean onPreferenceChange(Preference preference, Object newValue) {
 						if ((Boolean) newValue) {
 							showDialog(DIALOG_CLEAR_HISTORY);
@@ -44,6 +46,7 @@ public class PreferencesActivity extends android.preference.PreferenceActivity {
 				});
 		findPreference(getString(R.string.pref_clear_search_history)).setOnPreferenceClickListener(
 				new Preference.OnPreferenceClickListener() {
+					@Override
 					public boolean onPreferenceClick(Preference preference) {
 						showDialog(DIALOG_CLEAR_HISTORY);
 						return true;
@@ -58,6 +61,7 @@ public class PreferencesActivity extends android.preference.PreferenceActivity {
 			return new AlertDialog.Builder(this).setCancelable(true).setTitle("Historique de recherche")
 					.setMessage("Vider votre historique de recherche maintenant ?").setIcon(R.drawable.icon)
 					.setNegativeButton("Non", null).setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							SearchRecentSuggestions suggestions = new SearchRecentSuggestions(getApplicationContext(),
 									GaresSearchSuggestionsProvider.AUTHORITY, GaresSearchSuggestionsProvider.MODE);

@@ -50,6 +50,7 @@ public class UpdateActivity extends Activity {
 	/**
 	 * Initialization : show progress dialog
 	 */
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		showDialog(PROGRESS_DIALOG);
@@ -58,6 +59,7 @@ public class UpdateActivity extends Activity {
 	/**
 	 * Progress dialog
 	 */
+	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 			case PROGRESS_DIALOG:
@@ -67,6 +69,7 @@ public class UpdateActivity extends Activity {
 				progressDialog.setTitle("Mise à jour des gares");
 				progressDialog.setCancelable(true);
 				progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+					@Override
 					public void onCancel(DialogInterface dialog) {
 						if (progressThread != null) {
 							if (progressThread.isAlive()) {
@@ -90,6 +93,7 @@ public class UpdateActivity extends Activity {
 	 * Handle communication between thread and progress bar
 	 */
 	final Handler handler = new Handler() {
+		@Override
 		public void handleMessage(Message msg) {
 			if (msg.what == MSG_PROGRESS) {
 				progressDialog.setProgress(msg.arg1);
@@ -119,6 +123,7 @@ public class UpdateActivity extends Activity {
 			mHandler = h;
 		}
 
+		@Override
 		public void run() {
 			mState = STATE_RUNNING;
 

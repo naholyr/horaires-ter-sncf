@@ -102,6 +102,7 @@ public class ListeGaresAdapter extends SimpleCursorAdapter {
 			return context.getResources().getDrawable(favoriIcon);
 		}
 
+		@Override
 		public void onClick(View v) {
 			Favorites favs = getFavorites(mContext);
 			if (favs.has(mId)) {

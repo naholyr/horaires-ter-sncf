@@ -134,30 +134,35 @@ public class GaresActivity extends ListActivity {
 			findViewById(R.id.action_bar_geolocation).setVisibility(View.GONE);
 		}
 		findViewById(R.id.action_bar_geolocation).setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				showGares(ACTION_GEOLOCATION);
 				finish();
 			}
 		});
 		findViewById(R.id.action_bar_favorites).setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				showGares(ACTION_FAVORITES);
 				finish();
 			}
 		});
 		findViewById(R.id.action_bar_search).setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				startSearch(null, false, null, false);
 			}
 		});
 		// Quick actions
 		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 				showQuickActions(view);
 			}
 		});
 		// Data initialization
 		findViewById(R.id.button_init_data).setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				showUpdate();
 				v.setEnabled(false);
@@ -166,6 +171,7 @@ public class GaresActivity extends ListActivity {
 		// Check updates now
 		if (!mPreferences.getBoolean(getString(R.string.pref_disable_auto_update), false)) {
 			new Thread(new Runnable() {
+				@Override
 				public void run() {
 					UpdateService.scheduleNow(getApplicationContext());
 				}
@@ -189,6 +195,7 @@ public class GaresActivity extends ListActivity {
 			favIconId = R.drawable.quick_action_add_favorite;
 		}
 		w.addAction(getString(favStringId), getResources().getDrawable(favIconId), new View.OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				anchor.findViewById(R.id.favicon).performClick();
 			}

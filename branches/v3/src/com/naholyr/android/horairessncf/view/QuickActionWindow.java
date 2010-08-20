@@ -79,6 +79,7 @@ public class QuickActionWindow extends PopupWindow {
 			}
 			convertView.setClickable(true);
 			convertView.setOnClickListener(new View.OnClickListener() {
+				@Override
 				public void onClick(View v) {
 					mCallback.onClick(v);
 				}
@@ -141,6 +142,7 @@ public class QuickActionWindow extends PopupWindow {
 		// Root view goes to bottom on the screen : handle click outside the
 		// main view
 		contentView.setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				dismiss();
 			}
@@ -193,6 +195,7 @@ public class QuickActionWindow extends PopupWindow {
 		final View.OnClickListener listener = action.getCallback();
 		View v = action.getView(mInflater);
 		v.setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				listener.onClick(v);
 				dismiss();
@@ -244,6 +247,7 @@ public class QuickActionWindow extends PopupWindow {
 
 	public void addActivityAction(final Context context, String label, Drawable icon, final Intent intent) {
 		addAction(label, icon, new View.OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				try {
 					context.startActivity(intent);

@@ -19,10 +19,12 @@ abstract public class ListActivity extends android.app.ListActivity {
 		findViewById(android.R.id.empty).setVisibility(View.GONE);
 		findViewById(R.id.loading).setVisibility(View.VISIBLE);
 		new Thread(new Runnable() {
+			@Override
 			public void run() {
 				mCursor = queryCursor();
 				if (mCursor != null) {
 					runOnUiThread(new Runnable() {
+						@Override
 						public void run() {
 							findViewById(R.id.loading).setVisibility(View.GONE);
 							startManagingCursor(mCursor);
