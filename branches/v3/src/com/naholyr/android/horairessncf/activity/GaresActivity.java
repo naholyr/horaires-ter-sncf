@@ -1,6 +1,10 @@
 package com.naholyr.android.horairessncf.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -21,12 +25,13 @@ import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.providers.GaresSearchSuggestionsProvider;
 import com.naholyr.android.horairessncf.service.UpdateService;
+import com.naholyr.android.horairessncf.view.AboutDialog;
 import com.naholyr.android.horairessncf.view.ListeGaresAdapter;
 import com.naholyr.android.horairessncf.view.QuickActionWindow;
 
 public class GaresActivity extends ListActivity {
 
-	public static final int REQUEST_UPDATE_STATUS = 0;
+	public static final int REQUEST_UPDATE_STATUS = 1;
 
 	public static final String ACTION_GEOLOCATION = "geolocation";
 	public static final String ACTION_FAVORITES = "favorites";
@@ -34,6 +39,9 @@ public class GaresActivity extends ListActivity {
 	private static final String DEFAULT_ACTION = ACTION_GEOLOCATION;
 
 	public static final String EXTRA_DISPLAY_MODE = "mode";
+
+	public static final int DIALOG_ABOUT = 1;
+	public static final int DIALOG_PAYPAL = 2;
 
 	private String mAction;
 
@@ -234,7 +242,7 @@ public class GaresActivity extends ListActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
-			case REQUEST_UPDATE_STATUS:
+			case REQUEST_UPDATE_STATUS: {
 				switch (resultCode) {
 					case UpdateActivity.RESULT_OK:
 						Toast.makeText(this, "Mise à jour terminée avec succès", Toast.LENGTH_SHORT).show();
@@ -257,6 +265,7 @@ public class GaresActivity extends ListActivity {
 						break;
 				}
 				break;
+			}
 		}
 	}
 
@@ -277,8 +286,7 @@ public class GaresActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_about: {
-				// FIXME
-				Toast.makeText(this, "Pas encore implémenté", Toast.LENGTH_LONG).show();
+				showDialog(DIALOG_ABOUT);
 				return true;
 			}
 			case R.id.menu_preferences: {
@@ -289,9 +297,59 @@ public class GaresActivity extends ListActivity {
 			case R.id.menu_update: {
 				showUpdate();
 			}
+			case R.id.menu_paypal: {
+				showDialog(DIALOG_PAYPAL);
+			}
 			default:
 				return false;
 		}
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+			case DIALOG_ABOUT: {
+				return AboutDialog.create(this);
+			}
+			case DIALOG_PAYPAL: {
+				return new AlertDialog.Builder(this)
+						.setTitle("Faire un don")
+						.setIcon(R.drawable.icon)
+						.setMessage(
+								"Vous allez être redirigé vers le site PayPal...\n\nNotez que pour supporter le développement, vous pouvez aussi télécharger les plugins payants (et utiles !) sur l'Android Market :)")
+						.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.cancel();
+							}
+						}).setCancelable(true).setOnCancelListener(new DialogInterface.OnCancelListener() {
+							@Override
+							public void onCancel(DialogInterface dialog) {
+								Toast.makeText(getApplicationContext(), "Tant pis, une prochaine fois :)", Toast.LENGTH_LONG).show();
+							}
+						}).setNeutralButton("Voir les plugins", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								Uri uri = Uri.parse("market://search?q=Plugin+Horaires+TER+SNCF");
+								try {
+									startActivity(new Intent(Intent.ACTION_VIEW, uri));
+								} catch (ActivityNotFoundException e) {
+									Toast.makeText(getApplicationContext(), "L'Android Market n'a pas pu être démarré. Vérifiez qu'il est bien inclus dans votre système !",
+											Toast.LENGTH_LONG).show();
+								}
+							}
+						}).setPositiveButton("Continuer", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								Toast.makeText(getApplicationContext(), "Merci d'avance de m'aider à continuer !", Toast.LENGTH_LONG).show();
+								Uri uri = Uri
+										.parse("https://www.paypal.com/fr/cgi-bin/webscr?cmd=_xclick&business=naholyr%40yahoo.fr&item_name=Nicolas+Chambrier+pour+Horaires+TER+SNCF&currency_code=EUR");
+								startActivity(new Intent(Intent.ACTION_VIEW, uri));
+							}
+						}).create();
+			}
+		}
+		return super.onCreateDialog(id);
 	}
 
 }

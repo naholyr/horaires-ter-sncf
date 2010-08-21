@@ -64,9 +64,8 @@
 	<supports-screens android:smallScreens="true"
 		android:normalScreens="true" android:largeScreens="true" />
 	<!-- Permissions requises -->
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.ACCESS_GPS" />
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
-	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	<uses-permission android:name="android.permission.INTERNET" /> <!-- Pour webservice -->
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Pour géolocalisation par le réseau -->
+	<uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Pendant les mises à jour -->
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- Service de détection des mises à jour -->
 </manifest> 
