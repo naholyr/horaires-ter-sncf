@@ -1,4 +1,4 @@
-package com.naholyr.android.horairessncf.view;
+package com.naholyr.android.horairessncf.ui;
 
 import android.content.Context;
 import android.preference.ListPreference;

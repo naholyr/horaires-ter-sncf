@@ -1,4 +1,4 @@
-package com.naholyr.android.horairessncf.view;
+package com.naholyr.android.horairessncf.ui;
 
 import java.util.List;
 

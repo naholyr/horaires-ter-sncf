@@ -39,19 +39,19 @@
 			android:theme="@android:style/Theme.Dialog" android:launchMode="singleInstance" />
 		<!-- Content providers -->
 		<provider android:authorities="naholyr.horairessncf.providers.GaresContentProvider"
-			android:name=".providers.GaresContentProvider" />
+			android:name=".data.GaresContentProvider" />
 		<provider android:authorities="naholyr.horairessncf.providers.DepartsContentProvider"
-			android:name=".providers.DepartsContentProvider" />
+			android:name=".data.DepartsContentProvider" />
 		<provider
 			android:authorities="naholyr.horairessncf.providers.GaresSearchSuggestionsProvider"
-			android:name=".providers.GaresSearchSuggestionsProvider" />
+			android:name=".data.GaresSearchSuggestionsProvider" />
 		<!-- Activation globale de la recherche -->
 		<meta-data android:name="android.app.default_searchable"
 			android:value=".activity.GaresActivity" />
 		<!-- Event listeners -->
-		<receiver android:name=".service.UpdateService">
+		<receiver android:name=".data.UpdateService">
 			<intent-filter>
-				<action android:name="com.naholyr.android.horairessncf.service.UPDATE_GARES" />
+				<action android:name="com.naholyr.android.horairessncf.action.UPDATE_GARES" />
 			</intent-filter>
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />

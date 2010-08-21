@@ -8,7 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import com.naholyr.android.horairessncf.providers.GaresContentProvider;
+import com.naholyr.android.horairessncf.data.GaresContentProvider;
 
 public class Gare implements BaseColumns {
 

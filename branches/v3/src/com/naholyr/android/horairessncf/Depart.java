@@ -3,7 +3,7 @@ package com.naholyr.android.horairessncf;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import com.naholyr.android.horairessncf.providers.DepartsContentProvider;
+import com.naholyr.android.horairessncf.data.DepartsContentProvider;
 
 public class Depart implements BaseColumns {
 

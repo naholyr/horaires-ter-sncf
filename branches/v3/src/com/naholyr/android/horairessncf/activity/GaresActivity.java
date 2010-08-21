@@ -23,11 +23,11 @@ import android.widget.Toast;
 
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
-import com.naholyr.android.horairessncf.providers.GaresSearchSuggestionsProvider;
-import com.naholyr.android.horairessncf.service.UpdateService;
-import com.naholyr.android.horairessncf.view.AboutDialog;
-import com.naholyr.android.horairessncf.view.ListeGaresAdapter;
-import com.naholyr.android.horairessncf.view.QuickActionWindow;
+import com.naholyr.android.horairessncf.data.GaresSearchSuggestionsProvider;
+import com.naholyr.android.horairessncf.data.UpdateService;
+import com.naholyr.android.horairessncf.ui.AboutDialog;
+import com.naholyr.android.horairessncf.ui.ListeGaresAdapter;
+import com.naholyr.android.horairessncf.ui.QuickActionWindow;
 
 public class GaresActivity extends ListActivity {
 

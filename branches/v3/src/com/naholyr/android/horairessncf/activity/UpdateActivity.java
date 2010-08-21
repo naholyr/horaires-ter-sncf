@@ -25,7 +25,7 @@ import android.util.Log;
 
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
-import com.naholyr.android.horairessncf.providers.DatabaseHelper;
+import com.naholyr.android.horairessncf.data.DatabaseHelper;
 
 public class UpdateActivity extends Activity {
 

@@ -1,4 +1,4 @@
-package com.naholyr.android.horairessncf.providers;
+package com.naholyr.android.horairessncf.data;
 
 import android.content.SearchRecentSuggestionsProvider;
 

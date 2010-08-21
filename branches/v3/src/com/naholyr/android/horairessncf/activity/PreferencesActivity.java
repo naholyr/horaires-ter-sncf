@@ -9,8 +9,8 @@ import android.provider.SearchRecentSuggestions;
 import android.widget.Toast;
 
 import com.naholyr.android.horairessncf.R;
-import com.naholyr.android.horairessncf.providers.GaresSearchSuggestionsProvider;
-import com.naholyr.android.horairessncf.service.UpdateService;
+import com.naholyr.android.horairessncf.data.GaresSearchSuggestionsProvider;
+import com.naholyr.android.horairessncf.data.UpdateService;
 
 public class PreferencesActivity extends android.preference.PreferenceActivity {
 

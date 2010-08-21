@@ -1,4 +1,4 @@
-package com.naholyr.android.horairessncf.service;
+package com.naholyr.android.horairessncf.data;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,13 +23,12 @@ import android.widget.Toast;
 
 import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.activity.UpdateActivity;
-import com.naholyr.android.horairessncf.providers.DatabaseHelper;
 
 public class UpdateService extends BroadcastReceiver {
 
 	public static final String TAG = UpdateService.class.getName();
 
-	public static final String ALARM_ACTION = "com.naholyr.android.horairessncf.service.UPDATE_GARES";
+	public static final String ALARM_ACTION = "com.naholyr.android.horairessncf.action.UPDATE_GARES";
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
