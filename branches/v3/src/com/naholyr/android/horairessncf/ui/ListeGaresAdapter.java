@@ -25,6 +25,8 @@ public class ListeGaresAdapter extends SimpleCursorAdapter {
 	private static final String[] FROM = new String[] { Gare.NOM, Gare.ADRESSE };
 	private static final int[] TO = new int[] { R.id.nom, R.id.adresse };
 
+	public static final double EARTH_RADIUS_KM = 6365d;
+
 	private Context mContext;
 
 	private Double mCenterLatitude, mCenterLongitude;
@@ -74,7 +76,13 @@ public class ListeGaresAdapter extends SimpleCursorAdapter {
 	}
 
 	private double getDistance(double latitude, double longitude) {
-		return 13;
+		if (mCenterLatitude == null || mCenterLongitude == null) {
+			return -1;
+		}
+		return EARTH_RADIUS_KM
+				* 2
+				* Math.asin(Math.sqrt(Math.pow(Math.sin((latitude - mCenterLatitude) * Math.PI / 180 / 2), 2) + Math.cos(latitude * Math.PI / 180)
+						* Math.cos(mCenterLatitude * Math.PI / 180) * Math.pow(Math.sin((longitude - mCenterLongitude) * Math.PI / 180 / 2), 2)));
 	}
 
 	private static final class OnFavoriClickListener implements View.OnClickListener {

@@ -3,11 +3,19 @@
 	android:layout_width="match_parent" android:layout_height="wrap_content"
 	android:orientation="vertical" android:padding="5dip"
 	android:hapticFeedbackEnabled="true" android:clickable="false">
-	<TextView android:layout_width="match_parent"
-		android:layout_height="wrap_content" android:id="@+id/nom"
-		android:textColor="@android:color/white" android:textSize="14dip"
-		android:textStyle="bold" android:background="@drawable/item_titre_background"
-		android:text="NOM DE LA GARE" />
+	<LinearLayout android:layout_width="match_parent"
+		android:layout_height="wrap_content" android:orientation="horizontal"
+		android:background="@drawable/item_titre_background">
+		<TextView android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:id="@+id/nom"
+			android:textColor="@android:color/white" android:textSize="14dip"
+			android:textStyle="bold" android:text="NOM DE LA GARE"
+			android:layout_weight="1" />
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/distance"
+			android:textColor="@android:color/secondary_text_dark"
+			android:textSize="11dip" android:textStyle="normal" android:text="13 km" />
+	</LinearLayout>
 	<LinearLayout android:layout_width="match_parent"
 		android:layout_height="wrap_content" android:orientation="horizontal"
 		android:background="@drawable/item_content_background"
@@ -16,18 +24,10 @@
 			android:layout_height="wrap_content" android:src="@drawable/star_disabled"
 			android:padding="1mm" android:layout_marginRight="1mm"
 			android:clickable="true" />
-		<LinearLayout android:layout_width="match_parent"
-			android:layout_height="wrap_content" android:orientation="vertical"
-			android:gravity="left">
-			<TextView android:layout_width="match_parent"
-				android:layout_height="wrap_content" android:id="@+id/adresse"
-				android:textColor="@android:color/secondary_text_light"
-				android:textSize="12dip" android:textStyle="normal"
-				android:text="Adresse de la gare, rue du chemin, France" />
-			<TextView android:layout_width="match_parent"
-				android:layout_height="wrap_content" android:id="@+id/distance"
-				android:textColor="@android:color/secondary_text_dark"
-				android:textSize="11dip" android:textStyle="normal" android:text="13 km" />
-		</LinearLayout>
+		<TextView android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:id="@+id/adresse"
+			android:textColor="@android:color/secondary_text_light"
+			android:textSize="12dip" android:textStyle="normal"
+			android:text="Adresse de la gare, rue du chemin, France" />
 	</LinearLayout>
 </LinearLayout>

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	android:versionCode="300" android:versionName="3.0 (refonte)"
-	package="com.naholyr.android.horairessncf">
-	<!-- Application, options Froyo incluses -->
+	package="com.naholyr.android.horairessncf">	<!-- Application, options Froyo incluses -->
 	<application android:allowBackup="true"
 		android:restoreAnyVersion="false" android:allowClearUserData="true"
 		android:icon="@drawable/icon" android:label="@string/app_name"
-		android:name="MyApplication" android:theme="@android:style/Theme.Light">
+		android:name="MyApplication">
 		<!-- Activité principale : liste des gares -->
 		<activity android:name=".activity.GaresActivity"
 			android:label="@string/app_name">
@@ -21,7 +20,7 @@
 			</intent-filter>
 			<meta-data android:name="android.app.searchable"
 				android:resource="@xml/search_gares" />
-		</activity>
+		</activity>	
 		<!-- Autres activités -->
 		<activity android:name=".activity.PreferencesActivity"
 			android:label="Horaires TER SNCF - Paramètres" />
@@ -37,8 +36,7 @@
 			android:theme="@android:style/Theme.Translucent.NoTitleBar"
 			android:label="Mise à jour" android:launchMode="singleTop" />
 		<activity android:name="org.acra.CrashReportDialog"
-			android:theme="@android:style/Theme.Dialog" android:launchMode="singleInstance" />
-		<!-- Content providers -->
+			android:theme="@android:style/Theme.Dialog" android:launchMode="singleInstance" />		<!-- Content providers -->
 		<provider android:authorities="naholyr.horairessncf.providers.GaresContentProvider"
 			android:name=".data.GaresContentProvider" />
 		<provider android:authorities="naholyr.horairessncf.providers.DepartsContentProvider"
@@ -55,7 +53,7 @@
 				<action android:name="com.naholyr.android.horairessncf.action.UPDATE_GARES" />
 			</intent-filter>
 			<intent-filter>
-				<action android:name="android.intent.action.BOOT_COMPLETED" />
+				<action android:name="android.intent.action.BOOT_COMPLETsED" />
 			</intent-filter>
 		</receiver>
 	</application>
@@ -63,10 +61,9 @@
 	<uses-sdk android:minSdkVersion="3" />
 	<!-- Support multi-écran : toutes résolutions -->
 	<supports-screens android:smallScreens="true"
-		android:normalScreens="true" android:largeScreens="true" />
-	<!-- Permissions requises -->
+		android:normalScreens="true" android:largeScreens="true" />	<!-- Permissions requises -->
 	<uses-permission android:name="android.permission.INTERNET" /> <!-- Pour webservice -->
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Pour géolocalisation par le réseau -->
 	<uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Pendant les mises à jour -->
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- Service de détection des mises à jour -->
-</manifest> 
+</manifest>

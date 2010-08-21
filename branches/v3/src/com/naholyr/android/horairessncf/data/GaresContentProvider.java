@@ -1,6 +1,9 @@
 package com.naholyr.android.horairessncf.data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -12,7 +15,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.google.android.maps.GeoPoint;
 import com.naholyr.android.horairessncf.Gare;
 
 public class GaresContentProvider extends android.content.ContentProvider {
@@ -28,6 +30,9 @@ public class GaresContentProvider extends android.content.ContentProvider {
 
 	private static final UriMatcher sUriMatcher;
 	private static final HashMap<String, String> sProjectionMap;
+
+	private static final double ONE_DEGREE_LAT_KM = 111d;
+
 	static {
 		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES, GARES);
@@ -127,6 +132,8 @@ public class GaresContentProvider extends android.content.ContentProvider {
 		sqlBuilder.setTables(DatabaseHelper.TABLE_GARES);
 		sqlBuilder.setProjectionMap(sProjectionMap);
 
+		Double latitude = null, longitude = null;
+
 		switch (sUriMatcher.match(uri)) {
 			case GARES:
 				// Nothing
@@ -141,7 +148,25 @@ public class GaresContentProvider extends android.content.ContentProvider {
 				sqlBuilder.appendWhere(Gare.FAVORITE + " = 1");
 				break;
 			case GARES_PAR_GEO:
-				// FIXME Recherche géolocalisée
+				int latE6 = Integer.valueOf(uri.getPathSegments().get(2));
+				int longE6 = Integer.valueOf(uri.getPathSegments().get(4));
+				latitude = ((double) latE6) / 1000000;
+				longitude = ((double) longE6) / 1000000;
+				double radius_km = Double.valueOf(uri.getPathSegments().get(6));
+				double latitude_radians = latitude * (Math.PI / 180);
+				double latitude_delta = radius_km / ONE_DEGREE_LAT_KM;
+				double longitude_delta = radius_km / Math.abs(Math.cos(latitude_radians) * ONE_DEGREE_LAT_KM);
+				double latitude_min = latitude - latitude_delta;
+				double latitude_max = latitude + latitude_delta;
+				double longitude_min = longitude - longitude_delta;
+				double longitude_max = longitude + longitude_delta;
+				List<String> selectionArgsList = new ArrayList<String>(Arrays.asList(selectionArgs == null ? new String[0] : selectionArgs));
+				sqlBuilder.appendWhere("latitude between ? and ? and longitude between ? and ?");
+				selectionArgsList.add(String.valueOf(latitude_min));
+				selectionArgsList.add(String.valueOf(latitude_max));
+				selectionArgsList.add(String.valueOf(longitude_min));
+				selectionArgsList.add(String.valueOf(longitude_max));
+				selectionArgs = selectionArgsList.toArray(new String[0]);
 				break;
 			case GARES_PAR_NOM: {
 				String[] keywords = uri.getPathSegments().get(2).split(" +");
@@ -153,10 +178,13 @@ public class GaresContentProvider extends android.content.ContentProvider {
 				}
 				break;
 			}
+			case UriMatcher.NO_MATCH:
+			default:
+				throw new IllegalArgumentException("Unsupported URI for query: " + uri);
 		}
 
 		if (TextUtils.isEmpty(sortOrder)) {
-			sortOrder = getDefaultOrderBy(null);
+			sortOrder = getDefaultOrderBy(latitude, longitude);
 		}
 
 		SQLiteDatabase db = mDbHelper.getReadableDatabase();
@@ -210,12 +238,15 @@ public class GaresContentProvider extends android.content.ContentProvider {
 		return count;
 	}
 
-	public static String getDefaultOrderBy(GeoPoint p) {
-		if (p == null) {
+	public static String getDefaultOrderBy(Double latitude, Double longitude) {
+		if (latitude == null || longitude == null) {
 			return Gare.NOM + " ASC";
 		} else {
 			// (a-a')² + (b-b')²
-			return String.valueOf(p.getLatitudeE6()) + " ASC";
+			// a² + a'² - 2aa' + b² + b'² - 2bb'
+			// a² + b² - 2(aa'+bb')
+			return Gare.LATITUDE + "*" + Gare.LATITUDE + "+" + Gare.LONGITUDE + "*" + Gare.LONGITUDE + "-2*(" + latitude + "*" + Gare.LATITUDE + "+" + longitude + "*"
+					+ Gare.LONGITUDE + ") ASC";
 		}
 	}
 

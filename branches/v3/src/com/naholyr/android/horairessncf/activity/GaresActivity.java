@@ -1,5 +1,7 @@
 package com.naholyr.android.horairessncf.activity;
 
+import org.acra.ErrorReporter;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -8,6 +10,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -31,7 +35,7 @@ import com.naholyr.android.horairessncf.ui.QuickActionWindow;
 
 public class GaresActivity extends ListActivity {
 
-	public static final int REQUEST_UPDATE_STATUS = 1;
+	private static final int REQUEST_UPDATE_STATUS = 1;
 
 	public static final String ACTION_GEOLOCATION = "geolocation";
 	public static final String ACTION_FAVORITES = "favorites";
@@ -40,10 +44,16 @@ public class GaresActivity extends ListActivity {
 
 	public static final String EXTRA_DISPLAY_MODE = "mode";
 
-	public static final int DIALOG_ABOUT = 1;
-	public static final int DIALOG_PAYPAL = 2;
+	private static final int DIALOG_ABOUT = 1;
+	private static final int DIALOG_PAYPAL = 2;
+	private static final int DIALOG_GEOLOCATION_FAILED = 3;
 
 	private static final String PREF_LAST_HOME = "last_home";
+
+	private static final boolean DEBUG = true;
+
+	private double mLatitude = 0;
+	private double mLongitude = 0;
 
 	private String mAction;
 
@@ -51,7 +61,11 @@ public class GaresActivity extends ListActivity {
 
 	@Override
 	protected ListAdapter getAdapter(Cursor c) {
-		return new ListeGaresAdapter(this, c);
+		if (mLatitude != 0 && mLongitude != 0) {
+			return new ListeGaresAdapter(this, c, mLatitude, mLongitude);
+		} else {
+			return new ListeGaresAdapter(this, c, mLatitude, mLongitude);
+		}
 	}
 
 	@Override
@@ -60,28 +74,42 @@ public class GaresActivity extends ListActivity {
 	}
 
 	@Override
-	protected Cursor queryCursor() {
+	protected Cursor queryCursor() throws LocationException {
+		// All cases : retrieve current location (very fast, last known location
+		// by network)
+		// Special case : in geolocation mode, we rethrow the exception, to show
+		// dialog
+		// Other cases simply won't show distance
+		try {
+			getNetworkLocation();
+		} catch (LocationException e) {
+			if (ACTION_GEOLOCATION.equals(mAction)) {
+				throw e;
+			}
+		}
 		// Build content provider URI
 		Uri uri = Gare.Gares.CONTENT_URI;
 		if (ACTION_FAVORITES.equals(mAction)) {
+			// Favorites
 			uri = Uri.withAppendedPath(uri, "favorites");
 		} else if (ACTION_GEOLOCATION.equals(mAction)) {
-			// FIXME Geolocalisation
-			double latitude = 0;
-			double longitude = 0;
+			// Try geolocation, then build URI with location information
 			int rayon = Integer.parseInt(mPreferences.getString(getString(R.string.pref_radiuskm), getString(R.string.default_radiuskm)));
 			String limit = mPreferences.getString(getString(R.string.pref_nbgares), getString(R.string.default_nbgares));
-			uri = Uri.withAppendedPath(uri, "/latitude/" + latitude + "/longitude/" + longitude + "/rayon/" + rayon);
+			int latE6 = (int) (mLatitude * 1000000);
+			int longE6 = (int) (mLongitude * 1000000);
+			uri = Uri.withAppendedPath(uri, "latitude/" + latE6 + "/longitude/" + longE6 + "/rayon/" + rayon);
 			uri = uri.buildUpon().appendQueryParameter("limit", limit).build();
 			if (mPreferences.getBoolean(getString(R.string.pref_favsfirst), true)) {
 				uri = uri.buildUpon().appendQueryParameter("favs_first", "true").build();
 			}
 		} else if (ACTION_SEARCH.equals(mAction)) {
+			// Search
 			String keywords = getIntent().getStringExtra(SearchManager.QUERY);
 			uri = Uri.withAppendedPath(uri, "recherche/" + Uri.encode(keywords));
 		}
 		// Run query
-		Cursor c = this.getContentResolver().query(uri, null, null, null, null);
+		Cursor c = getContentResolver().query(uri, null, null, null, null);
 		// Special case ACTION_SEARCH : store user's query
 		if (ACTION_SEARCH.equals(mAction)) {
 			String query = getIntent().getStringExtra(SearchManager.QUERY);
@@ -105,6 +133,18 @@ public class GaresActivity extends ListActivity {
 			fixEmptyFavorites();
 		}
 		return c;
+	}
+
+	@Override
+	protected void onQueryFailure(Throwable e) {
+		e.printStackTrace();
+		if (e instanceof LocationException) {
+			showDialog(DIALOG_GEOLOCATION_FAILED);
+		} else {
+			Toast.makeText(this, "La recherche a échoué de manière inattendue !", Toast.LENGTH_LONG);
+			ErrorReporter.getInstance().handleException(e);
+			finish();
+		}
 	}
 
 	private void fixEmptyFavorites() {
@@ -326,44 +366,102 @@ public class GaresActivity extends ListActivity {
 				return AboutDialog.create(this);
 			}
 			case DIALOG_PAYPAL: {
-				return new AlertDialog.Builder(this)
+				AlertDialog.Builder builder = new AlertDialog.Builder(this)
 						.setTitle("Faire un don")
 						.setIcon(R.drawable.icon)
 						.setMessage(
-								"Vous allez être redirigé vers le site PayPal...\n\nNotez que pour supporter le développement, vous pouvez aussi télécharger les plugins payants (et utiles !) sur l'Android Market :)")
-						.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.cancel();
-							}
-						}).setCancelable(true).setOnCancelListener(new DialogInterface.OnCancelListener() {
-							@Override
-							public void onCancel(DialogInterface dialog) {
-								Toast.makeText(getApplicationContext(), "Tant pis, une prochaine fois :)", Toast.LENGTH_LONG).show();
-							}
-						}).setNeutralButton("Voir les plugins", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								Uri uri = Uri.parse("market://search?q=Plugin+Horaires+TER+SNCF");
-								try {
-									startActivity(new Intent(Intent.ACTION_VIEW, uri));
-								} catch (ActivityNotFoundException e) {
-									Toast.makeText(getApplicationContext(), "L'Android Market n'a pas pu être démarré. Vérifiez qu'il est bien inclus dans votre système !",
-											Toast.LENGTH_LONG).show();
-								}
-							}
-						}).setPositiveButton("Continuer", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								Toast.makeText(getApplicationContext(), "Merci d'avance de m'aider à continuer !", Toast.LENGTH_LONG).show();
-								Uri uri = Uri
-										.parse("https://www.paypal.com/fr/cgi-bin/webscr?cmd=_xclick&business=naholyr%40yahoo.fr&item_name=Nicolas+Chambrier+pour+Horaires+TER+SNCF&currency_code=EUR");
-								startActivity(new Intent(Intent.ACTION_VIEW, uri));
-							}
-						}).create();
+								"Vous allez être redirigé vers le site PayPal...\n\nNotez que pour supporter le développement, vous pouvez aussi télécharger les plugins payants (et utiles !) sur l'Android Market :)");
+				builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
+				builder.setCancelable(true).setOnCancelListener(new DialogInterface.OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						Toast.makeText(getApplicationContext(), "Tant pis, une prochaine fois :)", Toast.LENGTH_LONG).show();
+					}
+				});
+				builder.setNeutralButton("Voir les plugins", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Uri uri = Uri.parse("market://search?q=Plugin+Horaires+TER+SNCF");
+						try {
+							startActivity(new Intent(Intent.ACTION_VIEW, uri));
+						} catch (ActivityNotFoundException e) {
+							Toast.makeText(getApplicationContext(), "L'Android Market n'a pas pu être démarré. Vérifiez qu'il est bien inclus dans votre système !",
+									Toast.LENGTH_LONG).show();
+						}
+					}
+				});
+				builder.setPositiveButton("Continuer", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Toast.makeText(getApplicationContext(), "Merci d'avance de m'aider à continuer !", Toast.LENGTH_LONG).show();
+						Uri uri = Uri
+								.parse("https://www.paypal.com/fr/cgi-bin/webscr?cmd=_xclick&business=naholyr%40yahoo.fr&item_name=Nicolas+Chambrier+pour+Horaires+TER+SNCF&currency_code=EUR");
+						startActivity(new Intent(Intent.ACTION_VIEW, uri));
+					}
+				});
+				return builder.create();
+			}
+			case DIALOG_GEOLOCATION_FAILED: {
+				AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle("Géolocalisation échouée").setIcon(R.drawable.icon).setMessage(
+						"La géolocalisation a échoué. Souhaitez-vous basculer vers la liste des gares favorites, ou effectuer une recherche ?");
+				builder.setNegativeButton("Quitter", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
+				builder.setCancelable(true).setOnCancelListener(new DialogInterface.OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						finish();
+					}
+				});
+				builder.setNeutralButton("Recherche", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						startSearch(null, false, null, false);
+					}
+				});
+				builder.setPositiveButton("Favorites", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						showGares(ACTION_FAVORITES);
+					}
+				});
+				return builder.create();
 			}
 		}
 		return super.onCreateDialog(id);
+	}
+
+	@SuppressWarnings("serial")
+	public static class LocationException extends Exception {
+	}
+
+	private void getNetworkLocation() throws LocationException {
+		String provider = "network";
+		LocationManager locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		if (!locManager.isProviderEnabled(provider)) {
+			if (DEBUG) {
+				mLatitude = 45.7605367;
+				mLongitude = 4.8589391;
+			} else {
+				throw new LocationException();
+			}
+		} else {
+			Location location = locManager.getLastKnownLocation(provider);
+			if (location == null) {
+				throw new LocationException();
+			} else {
+				mLatitude = location.getLatitude();
+				mLongitude = location.getLongitude();
+			}
+		}
 	}
 
 }
