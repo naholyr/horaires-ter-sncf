@@ -160,7 +160,12 @@ public class GaresContentProvider extends android.content.ContentProvider {
 		}
 
 		SQLiteDatabase db = mDbHelper.getReadableDatabase();
-		Cursor c = sqlBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+		String limit = uri.getQueryParameter("limit");
+		String favsFirst = uri.getQueryParameter("favs_first");
+		if (favsFirst != null && favsFirst.matches("true|yes|1")) {
+			sortOrder = Gare.FAVORITE + " DESC, " + sortOrder;
+		}
+		Cursor c = sqlBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder, limit);
 
 		c.setNotificationUri(getContext().getContentResolver(), uri);
 
@@ -207,10 +212,10 @@ public class GaresContentProvider extends android.content.ContentProvider {
 
 	public static String getDefaultOrderBy(GeoPoint p) {
 		if (p == null) {
-			return Gare.NOM;
+			return Gare.NOM + " ASC";
 		} else {
-			// (a-a')� + (b-b')�
-			return String.valueOf(p.getLatitudeE6());
+			// (a-a')² + (b-b')²
+			return String.valueOf(p.getLatitudeE6()) + " ASC";
 		}
 	}
 

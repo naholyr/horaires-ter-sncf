@@ -9,9 +9,9 @@
   <string name="action_itineraire_from">Partir de cette gare</string>
   <string name="no_data">Aucune donnée n\'est disponible.\n\nCliquez sur ce bouton pour initialiser la base de données des gares</string>
   <string name="update_notification">Mise à jour disponible</string>
-  <string name="crash_notif_ticker_text">Une erreur s\'est produite, svp envoyez un rapport...</string>
-  <string name="crash_notif_title">Horaires TER SNCF a crashé...</string>
-  <string name="crash_notif_text">Merci de cliquer ici pour m\'aider à corriger ce problème.</string>
+  <string name="crash_notif_ticker_text">Erreur Horaires TER SNCF</string>
+  <string name="crash_notif_title">Erreur Horaires TER SNCF</string>
+  <string name="crash_notif_text">Cliquez ici pour envoyer un rapport d\'erreur</string>
   <string name="crash_dialog_title">Woops !</string>
   <string name="crash_dialog_text">Une erreur s\'est produite qui a causé la fermeture forcée de l\'application "Horaires TER SNCF". Aidez-moi à corriger ce problème en m\'envoyant un rapport d\'erreur : tout ce que vous avez à faire est cliquer sur "OK".</string>
   <string name="crash_dialog_comment_prompt">Vous pouvez ajouter un commentaire ci-dessous :</string>

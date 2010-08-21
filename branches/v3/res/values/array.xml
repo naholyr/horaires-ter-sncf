@@ -57,14 +57,13 @@
 		<item>20</item>
 	</string-array>
 	<string-array name="home_val">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-		<item>3</item>
+		<item>last</item>
+		<item>geolocation</item>
+		<item>favorites</item>
 	</string-array>
 	<string-array name="home_lib">
 		<item>Dernier utilisé</item>
-		<item>Les gares favories</item>
+		<item>Les gares favorites</item>
 		<item>Les gares proches</item>
 	</string-array>
 </resources>

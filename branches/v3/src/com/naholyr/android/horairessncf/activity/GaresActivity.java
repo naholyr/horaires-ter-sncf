@@ -35,13 +35,15 @@ public class GaresActivity extends ListActivity {
 
 	public static final String ACTION_GEOLOCATION = "geolocation";
 	public static final String ACTION_FAVORITES = "favorites";
+	public static final String ACTION_LAST_HOME = "last";
 	public static final String ACTION_SEARCH = Intent.ACTION_SEARCH;
-	private static final String DEFAULT_ACTION = ACTION_GEOLOCATION;
 
 	public static final String EXTRA_DISPLAY_MODE = "mode";
 
 	public static final int DIALOG_ABOUT = 1;
 	public static final int DIALOG_PAYPAL = 2;
+
+	private static final String PREF_LAST_HOME = "last_home";
 
 	private String mAction;
 
@@ -67,8 +69,13 @@ public class GaresActivity extends ListActivity {
 			// FIXME Geolocalisation
 			double latitude = 0;
 			double longitude = 0;
-			int rayon = 15;
+			int rayon = Integer.parseInt(mPreferences.getString(getString(R.string.pref_radiuskm), getString(R.string.default_radiuskm)));
+			String limit = mPreferences.getString(getString(R.string.pref_nbgares), getString(R.string.default_nbgares));
 			uri = Uri.withAppendedPath(uri, "/latitude/" + latitude + "/longitude/" + longitude + "/rayon/" + rayon);
+			uri = uri.buildUpon().appendQueryParameter("limit", limit).build();
+			if (mPreferences.getBoolean(getString(R.string.pref_favsfirst), true)) {
+				uri = uri.buildUpon().appendQueryParameter("favs_first", "true").build();
+			}
 		} else if (ACTION_SEARCH.equals(mAction)) {
 			String keywords = getIntent().getStringExtra(SearchManager.QUERY);
 			uri = Uri.withAppendedPath(uri, "recherche/" + Uri.encode(keywords));
@@ -76,7 +83,7 @@ public class GaresActivity extends ListActivity {
 		// Run query
 		Cursor c = this.getContentResolver().query(uri, null, null, null, null);
 		// Special case ACTION_SEARCH : store user's query
-		if (ACTION_SEARCH.equals(getIntent().getAction())) {
+		if (ACTION_SEARCH.equals(mAction)) {
 			String query = getIntent().getStringExtra(SearchManager.QUERY);
 			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this, GaresSearchSuggestionsProvider.AUTHORITY, GaresSearchSuggestionsProvider.MODE);
 			int count = c.getCount();
@@ -94,7 +101,7 @@ public class GaresActivity extends ListActivity {
 		}
 		// Special case ACTION_FAVORITES : data can be empty but no need for
 		// initialization
-		if (ACTION_FAVORITES.equals(getIntent().getAction()) && c.getCount() == 0) {
+		if (ACTION_FAVORITES.equals(mAction) && c.getCount() == 0) {
 			fixEmptyFavorites();
 		}
 		return c;
@@ -132,9 +139,16 @@ public class GaresActivity extends ListActivity {
 		// Intent action
 		final Intent queryIntent = getIntent();
 		mAction = queryIntent.getAction();
+		// Define last action and store the requested one
 		if (!ACTION_FAVORITES.equals(mAction) && !ACTION_GEOLOCATION.equals(mAction) && !ACTION_SEARCH.equals(mAction)) {
-			mAction = DEFAULT_ACTION;
+			String prefAction = mPreferences.getString(getString(R.string.pref_home), ACTION_LAST_HOME);
+			if (prefAction.equals(ACTION_LAST_HOME)) {
+				mAction = mPreferences.getString(PREF_LAST_HOME, getString(R.string.default_last_home));
+			} else {
+				mAction = prefAction;
+			}
 		}
+		mPreferences.edit().putString(PREF_LAST_HOME, mAction).commit();
 		// Action Bar
 		if (ACTION_FAVORITES.equals(mAction)) {
 			findViewById(R.id.action_bar_favorites).setVisibility(View.GONE);
