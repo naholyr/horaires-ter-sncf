@@ -2,12 +2,10 @@ package com.naholyr.android.horairessncf.plugins.gmap.activity;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.naholyr.android.horairessncf.plugins.gmap.Gare;
-import com.naholyr.android.horairessncf.plugins.gmap.Gare.Gares;
+import com.naholyr.android.horairessncf.Gare;
 
 public class MapActivity extends com.google.android.maps.MapActivity {
 
@@ -31,8 +29,7 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 		final Intent intent = getIntent();
 		if (intent.hasExtra(EXTRA_ID)) {
 			mId = intent.getLongExtra(EXTRA_ID, 0);
-			Uri uri = Uri.withAppendedPath(Gares.CONTENT_URI, String.valueOf(mId));
-			Cursor c = getContentResolver().query(uri, null, null, null, null);
+			Cursor c = Gare.retrieveById(this, mId);
 			if (c != null) {
 				if (c.moveToFirst()) {
 					mLatitude = c.getDouble(c.getColumnIndex(Gare.LATITUDE));
