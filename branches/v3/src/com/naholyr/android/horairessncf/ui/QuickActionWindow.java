@@ -17,6 +17,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -161,7 +163,7 @@ public class QuickActionWindow extends PopupWindow {
 		// http://github.com/ruqqq/WorldHeritageSite/blob/master/src/sg/ruqqq/WHSFinder/QuickActionWindow.java
 		if (isShowing()) {
 			int yoff;
-			final View contentView = getContentView();
+			final ViewGroup contentView = (ViewGroup) getContentView();
 			contentView.measure(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 			final int blockHeight = contentView.getMeasuredHeight();
 			final int[] anchorLocation = new int[2];
@@ -177,6 +179,13 @@ public class QuickActionWindow extends PopupWindow {
 				yoff = -additionalOffset;
 			}
 			this.update(anchor, 0, yoff, -1, blockHeight);
+
+			// Animation for all views
+			Animation anim = AnimationUtils.loadAnimation(anchor.getContext(), R.anim.quick_action_item_appear);
+			for (int i = 0; i < contentView.getChildCount(); i++) {
+				View v = contentView.getChildAt(i);
+				v.startAnimation(anim);
+			}
 		}
 	}
 
