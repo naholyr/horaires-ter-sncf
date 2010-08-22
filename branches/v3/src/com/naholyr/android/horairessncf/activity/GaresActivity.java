@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
@@ -192,8 +193,15 @@ public class GaresActivity extends ListActivity {
 		// Action Bar
 		if (ACTION_FAVORITES.equals(mAction)) {
 			findViewById(R.id.action_bar_favorites).setVisibility(View.GONE);
+			((ImageView) findViewById(R.id.title1)).setImageResource(R.drawable.title1_favorites);
+			((ImageView) findViewById(R.id.title2)).setImageResource(R.drawable.title2_favorites);
 		} else if (ACTION_GEOLOCATION.equals(mAction)) {
 			findViewById(R.id.action_bar_geolocation).setVisibility(View.GONE);
+			((ImageView) findViewById(R.id.title1)).setImageResource(R.drawable.title1_geolocation);
+			((ImageView) findViewById(R.id.title2)).setImageResource(R.drawable.title2_geolocation);
+		} else if (ACTION_SEARCH.equals(mAction)) {
+			((ImageView) findViewById(R.id.title1)).setImageResource(R.drawable.title1_search);
+			((ImageView) findViewById(R.id.title2)).setImageResource(R.drawable.title2_search);
 		}
 		findViewById(R.id.action_bar_geolocation).setOnClickListener(new View.OnClickListener() {
 			@Override
