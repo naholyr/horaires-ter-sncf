@@ -24,6 +24,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.naholyr.android.horairessncf.Gare;
@@ -240,53 +241,57 @@ public class GaresActivity extends ListActivity {
 		});
 		// Check updates now
 		if (!mPreferences.getBoolean(getString(R.string.pref_disable_auto_update), false)) {
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					UpdateService.scheduleNow(getApplicationContext());
-				}
-			}).start();
+			UpdateService.scheduleNow(getApplicationContext());
 		}
 	}
 
 	private void showQuickActions(final View anchor) {
-		int position = getListView().getPositionForView(anchor);
-		final long id = getListView().getItemIdAtPosition(position);
-
-		QuickActionWindow w = QuickActionWindow.getWindow(this, R.layout.quick_action_window);
-
-		// Embedded action : favorite
-		int favStringId, favIconId;
-		if (Gare.getFavorites(this).has(id)) {
-			favStringId = R.string.action_remove_favorite;
-			favIconId = R.drawable.quick_action_remove_favorite;
-		} else {
-			favStringId = R.string.action_add_favorite;
-			favIconId = R.drawable.quick_action_add_favorite;
-		}
-		w.addAction(getString(favStringId), getResources().getDrawable(favIconId), new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				anchor.findViewById(R.id.favicon).performClick();
-			}
-		});
-
-		// Advertisements for other activities : GMap & itineraires
-		QuickActionWindow.AdvertisementAction[] ads = new QuickActionWindow.AdvertisementAction[] {
-				new QuickActionWindow.AdvertisementAction("com.naholyr.android.horairessncf.plugins.gmap.activity.MapActivity", getResources().getDrawable(
-						R.drawable.quick_action_gmap), "Voir sur une carte", "com.naholyr.android.horairessncf.plugins.gmap"),
-				new QuickActionWindow.AdvertisementAction("com.naholyr.android.horairessncf.plugins.itineraire.activity.ItineraireFromActivity", getResources().getDrawable(
-						R.drawable.quick_action_itineraire_from), "Partir de...", "com.naholyr.android.horairessncf.plugins.itineraire"),
-				new QuickActionWindow.AdvertisementAction("com.naholyr.android.horairessncf.plugins.itineraire.activity.ItineraireToActivity", getResources().getDrawable(
-						R.drawable.quick_action_itineraire_to), "Aller vers...", "com.naholyr.android.horairessncf.plugins.itineraire"), };
-
-		// Other actions : all activities handling the content type
+		final ListView listView = getListView();
+		final long id = listView.getItemIdAtPosition(listView.getPositionForView(anchor));
 		final Intent pluginIntent = new Intent(Intent.ACTION_VIEW);
 		pluginIntent.setType(Gare.CONTENT_TYPE);
-		pluginIntent.putExtra(Gare._ID, id);
-		w.addActionsForIntent(this, pluginIntent, ads);
 
-		w.show(anchor, R.drawable.quick_actions_background_above, 30);
+		QuickActionWindow window = QuickActionWindow.getWindow(this, R.layout.quick_action_window, new QuickActionWindow.WindowInitializer() {
+			@Override
+			public void setItems(QuickActionWindow window) {
+				// Add item "add/remove to favorites", always here
+				int favStringId, favIconId;
+				if (Gare.getFavorites(GaresActivity.this).has(id)) {
+					favStringId = R.string.action_remove_favorite;
+					favIconId = R.drawable.quick_action_remove_favorite;
+				} else {
+					favStringId = R.string.action_add_favorite;
+					favIconId = R.drawable.quick_action_add_favorite;
+				}
+				window.addItem(getString(favStringId), getResources().getDrawable(favIconId), new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						anchor.findViewById(R.id.favicon).performClick();
+					}
+				});
+
+				// Advertisement items for not found plugins (GMap &
+				// Itineraires)
+				QuickActionWindow.ItemAdvertisement[] ads = new QuickActionWindow.ItemAdvertisement[] {
+						new QuickActionWindow.ItemAdvertisement("com.naholyr.android.horairessncf.plugins.gmap.activity.MapActivity", getResources().getDrawable(
+								R.drawable.quick_action_gmap), "Voir sur une carte", "com.naholyr.android.horairessncf.plugins.gmap"),
+						new QuickActionWindow.ItemAdvertisement("com.naholyr.android.horairessncf.plugins.itineraire.activity.ItineraireFromActivity", getResources().getDrawable(
+								R.drawable.quick_action_itineraire_from), "Partir de...", "com.naholyr.android.horairessncf.plugins.itineraire"),
+						new QuickActionWindow.ItemAdvertisement("com.naholyr.android.horairessncf.plugins.itineraire.activity.ItineraireToActivity", getResources().getDrawable(
+								R.drawable.quick_action_itineraire_to), "Aller vers...", "com.naholyr.android.horairessncf.plugins.itineraire"), };
+
+				// Plugins
+				window.addItemsForIntent(GaresActivity.this, pluginIntent, ads);
+			}
+		}, 0);
+
+		// Complete intent items, adding station ID
+		Bundle extras = new Bundle();
+		extras.putLong(Gare._ID, id);
+		window.dispatchIntentExtras(extras, pluginIntent);
+
+		// Show window next to clicked view
+		window.show(anchor, R.drawable.quick_actions_background_above, 30);
 	}
 
 	private void showGares(String action) {
