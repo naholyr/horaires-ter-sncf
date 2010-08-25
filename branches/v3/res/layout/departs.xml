@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="match_parent"
-	android:layout_height="match_parent" android:background="@drawable/list_background">
-	<ListView android:id="@id/android:list" android:layout_width="match_parent"
-		android:layout_height="match_parent" android:divider="#FFFFFF"
-		android:drawSelectorOnTop="false" android:visibility="gone" />
-	<TextView android:id="@id/android:empty" android:layout_width="match_parent"
-		android:layout_height="match_parent" android:text="No data"
-		android:gravity="center" android:visibility="gone" />
-	<TextView android:id="@+id/loading" android:layout_width="match_parent"
-		android:layout_height="match_parent" android:text="Recherche en cours..."
-		android:gravity="center" />
+	style="@style/Main_Layout">
+	<FrameLayout android:layout_width="match_parent"
+		android:layout_height="wrap_content" android:layout_margin="10dip"
+		android:layout_marginBottom="5dip">
+		<TextView android:id="@+id/title1" style="@style/Depart_Title.Shadow"
+			android:text="Prochains départs" />
+		<TextView android:id="@+id/title2" style="@style/Depart_Title.Foreground"
+			android:text="Prochains départs" />
+	</FrameLayout>
+	<LinearLayout style="@style/List_Layout">
+		<TextView android:id="@+id/loading" style="@style/List_Loading" />
+		<ListView android:id="@id/android:list" style="@style/List" />
+		<TextView android:id="@id/android:empty"
+			android:layout_width="match_parent" android:layout_height="match_parent"
+			android:text="No data" android:gravity="center" android:visibility="gone" />
+	</LinearLayout>
 </LinearLayout>

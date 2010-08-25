@@ -36,8 +36,8 @@ public class GaresContentProvider extends android.content.ContentProvider {
 	static {
 		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES, GARES);
-		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/recherche/*", GARES_PAR_NOM);
-		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/latitude/#/longitude/#/rayon/#", GARES_PAR_GEO);
+		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/search", GARES_PAR_NOM);
+		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/around", GARES_PAR_GEO);
 		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/favorites", GARES_FAVORITES);
 		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/#", GARE_PAR_ID);
 		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/*", GARE_PAR_NOM);
@@ -148,11 +148,26 @@ public class GaresContentProvider extends android.content.ContentProvider {
 				sqlBuilder.appendWhere(Gare.FAVORITE + " = 1");
 				break;
 			case GARES_PAR_GEO:
-				int latE6 = Integer.valueOf(uri.getPathSegments().get(2));
-				int longE6 = Integer.valueOf(uri.getPathSegments().get(4));
+				int latE6,
+				lonE6;
+				try {
+					latE6 = Integer.valueOf(uri.getQueryParameter("latE6"));
+				} catch (NumberFormatException e) {
+					throw new IllegalArgumentException("Expected integer query parameter 'latE6'");
+				}
+				try {
+					lonE6 = Integer.valueOf(uri.getQueryParameter("lonE6"));
+				} catch (NumberFormatException e) {
+					throw new IllegalArgumentException("Expected integer query parameter 'lonE6'");
+				}
+				double radius_km;
+				try {
+					radius_km = Double.valueOf(uri.getQueryParameter("radius"));
+				} catch (NumberFormatException e) {
+					throw new IllegalArgumentException("Expected double query parameter 'radius'");
+				}
 				latitude = ((double) latE6) / 1000000;
-				longitude = ((double) longE6) / 1000000;
-				double radius_km = Double.valueOf(uri.getPathSegments().get(6));
+				longitude = ((double) lonE6) / 1000000;
 				double latitude_radians = latitude * (Math.PI / 180);
 				double latitude_delta = radius_km / ONE_DEGREE_LAT_KM;
 				double longitude_delta = radius_km / Math.abs(Math.cos(latitude_radians) * ONE_DEGREE_LAT_KM);

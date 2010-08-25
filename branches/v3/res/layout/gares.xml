@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="match_parent"
-	android:layout_height="match_parent" android:background="@drawable/header_background">
+	style="@style/Main_Layout">
 	<LinearLayout android:layout_width="match_parent"
 		android:layout_height="wrap_content" android:orientation="horizontal"
 		android:layout_marginBottom="10dip">
@@ -15,26 +14,18 @@
 				android:layout_height="wrap_content" android:src="@drawable/title2_geolocation"
 				android:layout_gravity="center" />
 		</LinearLayout>
-		<LinearLayout android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:orientation="horizontal"
-			android:background="@drawable/action_bar_background">
+		<LinearLayout style="@style/ActionBar">
 			<ImageButton android:id="@+id/action_bar_geolocation"
-				android:src="@drawable/action_bar_geolocation" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:background="@drawable/action_bar_item_background" />
+				android:src="@drawable/action_bar_geolocation" style="@style/ActionBar_Item" />
 			<ImageButton android:id="@+id/action_bar_favorites"
-				android:src="@drawable/action_bar_favorites" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:background="@drawable/action_bar_item_background" />
+				android:src="@drawable/action_bar_favorites" style="@style/ActionBar_Item" />
 			<ImageButton android:id="@+id/action_bar_search"
-				android:src="@drawable/action_bar_search" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:background="@drawable/action_bar_item_background" />
+				android:src="@drawable/action_bar_search" style="@style/ActionBar_Item" />
 		</LinearLayout>
 	</LinearLayout>
-	<LinearLayout android:orientation="vertical"
-		android:layout_width="match_parent" android:layout_height="match_parent"
-		android:background="@drawable/list_background" android:gravity="center">
-		<TextView android:id="@+id/loading" android:layout_width="match_parent"
-			android:layout_height="match_parent" android:textColor="@android:color/secondary_text_light"
-			android:text="Recherche en cours..." android:gravity="center" />
+	<LinearLayout style="@style/List_Layout">
+		<TextView android:id="@+id/loading" style="@style/List_Loading" />
+		<ListView android:id="@id/android:list" style="@style/List" />
 		<LinearLayout android:orientation="vertical"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:id="@id/android:empty" android:layout_margin="20dip">
@@ -49,8 +40,5 @@
 Effectuez une recherche ou listez les gares autour de vous (boutons en haut de l'application) pour en ajouter."
 				android:gravity="center" android:visibility="gone" />
 		</LinearLayout>
-		<ListView android:id="@id/android:list" android:layout_width="match_parent"
-			android:layout_height="match_parent" android:divider="#FFFFFF"
-			android:drawSelectorOnTop="false" />
 	</LinearLayout>
 </LinearLayout>

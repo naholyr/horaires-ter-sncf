@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<style name="Depart.Heure.Text">
+		<item name="android:textSize">12dip</item>
+	</style>
+	<style name="Depart.Destination.Text">
+		<item name="android:textSize">11dip</item>
+	</style>
+	<style name="Depart.Quai.Text">
+		<item name="android:padding">3dip</item>
+		<item name="android:minWidth">20dip</item>
+		<item name="android:textSize">13dip</item>
+	</style>
+</resources>

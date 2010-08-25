@@ -66,17 +66,11 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 		Log.d("ID", String.valueOf(id));
 
 		c.addRow(new Object[] { 1, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
-		c.addRow(new Object[] { 2, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
-		c.addRow(new Object[] { 3, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
-		c.addRow(new Object[] { 4, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
-		c.addRow(new Object[] { 5, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
-		c.addRow(new Object[] { 6, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
-		c.addRow(new Object[] { 7, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
-		c.addRow(new Object[] { 8, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
-		c.addRow(new Object[] { 9, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
-		c.addRow(new Object[] { 10, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
-		c.addRow(new Object[] { 11, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
-		c.addRow(new Object[] { 12, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
+		c.addRow(new Object[] { 2, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Problème de signalisation, ou incident sur la voie, va savoir...", "J" });
+		c.addRow(new Object[] { 3, "Dijon-Ville", "17h22", "Grenoble", "17h50", null, null, "J" });
+		c.addRow(new Object[] { 4, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", null, "J" });
+		c.addRow(new Object[] { 5, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Problème de signalisation, ou incident sur la voie, va savoir...", "J" });
+		c.addRow(new Object[] { 6, "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Problème de signalisation, ou incident sur la voie, va savoir...", "J" });
 
 		c.setNotificationUri(getContext().getContentResolver(), uri);
 

@@ -4,4 +4,107 @@
 		<item name="android:windowEnterAnimation">@anim/quick_action_window_enter</item>
 		<item name="android:windowExitAnimation">@anim/quick_action_window_exit</item>
 	</style>
+	<style name="Depart_Layout" parent="@android:style/TextAppearance.Medium">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+	</style>
+	<style name="Depart_Divider">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">3dip</item>
+		<item name="android:background">@drawable/depart_item_background</item>
+		<item name="android:layout_marginBottom">5dip</item>
+	</style>
+	<style name="Depart">
+		<item name="android:typeface">monospace</item>
+		<item name="android:textStyle">bold</item>
+	</style>
+	<style name="Depart.Heure">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:textColor">#000</item>
+	</style>
+	<style name="Depart.Heure.Text">
+		<item name="android:textSize">17dip</item>
+	</style>
+	<style name="Depart.Destination">
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_weight">1</item>
+		<item name="android:paddingLeft">10dip</item>
+		<item name="android:textColor">#333</item>
+		<item name="android:lines">1</item>
+		<item name="android:ellipsize">marquee</item>
+	</style>
+	<style name="Depart.Destination.Text">
+		<item name="android:textSize">15dip</item>
+	</style>
+	<style name="Depart.Quai">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_alignParentRight">true</item>
+		<item name="android:background">#333333</item>
+		<item name="android:textColor">#FFFFFF</item>
+		<item name="android:gravity">center</item>
+		<item name="android:layout_alignParentBottom">true</item>
+		<item name="android:layout_alignParentTop">true</item>
+	</style>
+	<style name="Depart.Quai.Text">
+		<item name="android:padding">5dip</item>
+		<item name="android:minWidth">30dip</item>
+		<item name="android:textSize">20dip</item>
+	</style>
+	<style name="List_Layout">
+		<item name="android:orientation">vertical</item>
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">match_parent</item>
+		<item name="android:background">@drawable/list_background</item>
+		<item name="android:gravity">center</item>
+	</style>
+	<style name="List_Loading">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">match_parent</item>
+		<item name="android:textColor">@android:color/secondary_text_light</item>
+		<item name="android:text">@string/loading</item>
+		<item name="android:gravity">center</item>
+	</style>
+	<style name="List">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">match_parent</item>
+		<item name="android:fadeScrollbars">true</item>
+		<item name="android:padding">3dip</item>
+		<item name="android:divider">#FFFFFF</item>
+		<item name="android:drawSelectorOnTop">false</item>
+	</style>
+	<style name="Depart_Title">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:typeface">sans</item>
+		<item name="android:textSize">24dip</item>
+		<item name="android:lines">1</item>
+		<item name="android:ellipsize">end</item>
+	</style>
+	<style name="Depart_Title.Foreground">
+		<item name="android:textColor">@android:color/white</item>
+		<item name="android:paddingTop">1dip</item>
+		<item name="android:paddingLeft">1dip</item>
+	</style>
+	<style name="Depart_Title.Shadow">
+		<item name="android:textColor">@android:color/black</item>
+	</style>
+	<style name="Main_Layout">
+		<item name="android:orientation">vertical</item>
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">match_parent</item>
+		<item name="android:background">@drawable/header_background</item>
+	</style>
+	<style name="ActionBar">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:orientation">horizontal</item>
+		<item name="android:background">@drawable/action_bar_background</item>
+	</style>
+	<style name="ActionBar_Item">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:background">@drawable/action_bar_item_background</item>
+	</style>
 </resources>

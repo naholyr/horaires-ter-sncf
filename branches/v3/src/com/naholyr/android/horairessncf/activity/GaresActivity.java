@@ -90,28 +90,24 @@ public class GaresActivity extends ListActivity {
 			}
 		}
 		// Build content provider URI
-		Uri uri = Gare.Gares.CONTENT_URI;
+		Cursor c;
 		if (ACTION_FAVORITES.equals(mAction)) {
 			// Favorites
-			uri = Uri.withAppendedPath(uri, "favorites");
-		} else if (ACTION_GEOLOCATION.equals(mAction)) {
+			c = Gare.retrieveFavorites(this, null);
+		} else if (ACTION_SEARCH.equals(mAction)) {
+			// Search
+			String keywords = getIntent().getStringExtra(SearchManager.QUERY);
+			String limit = mPreferences.getString(getString(R.string.pref_nbgares), getString(R.string.default_nbgares));
+			c = Gare.retrieveByKeywords(this, keywords, limit);
+		} else { // Default : ACTION_GEOLOCATION
 			// Try geolocation, then build URI with location information
 			int rayon = Integer.parseInt(mPreferences.getString(getString(R.string.pref_radiuskm), getString(R.string.default_radiuskm)));
 			String limit = mPreferences.getString(getString(R.string.pref_nbgares), getString(R.string.default_nbgares));
 			int latE6 = (int) (mLatitude * 1000000);
-			int longE6 = (int) (mLongitude * 1000000);
-			uri = Uri.withAppendedPath(uri, "latitude/" + latE6 + "/longitude/" + longE6 + "/rayon/" + rayon);
-			uri = uri.buildUpon().appendQueryParameter("limit", limit).build();
-			if (mPreferences.getBoolean(getString(R.string.pref_favsfirst), true)) {
-				uri = uri.buildUpon().appendQueryParameter("favs_first", "true").build();
-			}
-		} else if (ACTION_SEARCH.equals(mAction)) {
-			// Search
-			String keywords = getIntent().getStringExtra(SearchManager.QUERY);
-			uri = Uri.withAppendedPath(uri, "recherche/" + Uri.encode(keywords));
+			int lonE6 = (int) (mLongitude * 1000000);
+			boolean favsFirst = mPreferences.getBoolean(getString(R.string.pref_favsfirst), true);
+			c = Gare.retrieveByLocation(this, latE6, lonE6, rayon, limit, favsFirst);
 		}
-		// Run query
-		Cursor c = getContentResolver().query(uri, null, null, null, null);
 		// Special case ACTION_SEARCH : store user's query
 		if (ACTION_SEARCH.equals(mAction)) {
 			String query = getIntent().getStringExtra(SearchManager.QUERY);
@@ -150,7 +146,7 @@ public class GaresActivity extends ListActivity {
 	}
 
 	private void fixEmptyFavorites() {
-		Cursor cAll = getContentResolver().query(Gare.Gares.CONTENT_URI, null, null, null, null);
+		Cursor cAll = Gare.query(this, null, null);
 		int count = 0;
 		if (cAll != null) {
 			count = cAll.getCount();

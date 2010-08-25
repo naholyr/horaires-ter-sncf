@@ -1,6 +1,7 @@
 package com.naholyr.android.horairessncf;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -111,15 +112,61 @@ public class Gare implements BaseColumns {
 		return favorites;
 	}
 
-	public static String getNom(Context context, long id) {
-		Cursor c = context.getContentResolver().query(Uri.withAppendedPath(Gares.CONTENT_URI, String.valueOf(id)), null, null, null, null);
-		if (c.moveToFirst()) {
-			String nom = c.getString(c.getColumnIndex(NOM));
-			c.close();
+	public static Cursor query(Context context, String appendPath, HashMap<String, String> queryParameters) {
+		Uri uri = Gares.CONTENT_URI;
 
-			return nom;
+		if (appendPath != null) {
+			uri = Uri.withAppendedPath(uri, appendPath);
 		}
-		return null;
+
+		if (queryParameters != null) {
+			Uri.Builder uriBuilder = uri.buildUpon();
+			for (String key : queryParameters.keySet()) {
+				uriBuilder.appendQueryParameter(key, queryParameters.get(key));
+			}
+			uri = uriBuilder.build();
+		}
+
+		return context.getContentResolver().query(uri, null, null, null, null);
+	}
+
+	public static Cursor retrieveById(Context context, long id) {
+		return query(context, String.valueOf(id), null);
+	}
+
+	public static Cursor retrieveFavorites(Context context, String limit) {
+		HashMap<String, String> params = null;
+		if (limit != null) {
+			params = new HashMap<String, String>();
+			params.put("limit", limit);
+		}
+
+		return query(context, "favorites", params);
+	}
+
+	public static Cursor retrieveByLocation(Context context, int latE6, int lonE6, int radius, String limit, Boolean favsFirst) {
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put("latE6", String.valueOf(latE6));
+		params.put("lonE6", String.valueOf(lonE6));
+		params.put("radius", String.valueOf(radius));
+		if (limit != null) {
+			params.put("limit", limit);
+		}
+		if (favsFirst != null) {
+			params.put("favs_first", favsFirst ? "true" : "false");
+		}
+
+		return query(context, "around", params);
+	}
+
+	public static Cursor retrieveByKeywords(Context context, String keywords, String limit) {
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put("keywords", keywords);
+		if (limit != null) {
+			params.put("limit", limit);
+		}
+
+		return query(context, "search", params);
 	}
 
 }

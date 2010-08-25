@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/Depart_Layout" android:orientation="vertical"
+	android:clickable="false">
+	<LinearLayout android:id="@+id/layout_train" style="@style/Depart_Layout"
+		android:orientation="horizontal">
+		<TextView android:id="@+id/heure" android:text="22h17"
+			style="@style/Depart.Heure.Text" />
+		<TextView android:id="@+id/destination" android:text="DIJON-VILLE SUR AZERGUES"
+			android:layout_width="match_parent" style="@style/Depart.Destination.Text" />
+		<TextView android:id="@+id/quai" android:text="J"
+			style="@style/Depart.Quai.Text" />
+	</LinearLayout>
+	<LinearLayout android:id="@+id/layout_retard" style="@style/Depart_Layout"
+		android:orientation="horizontal" android:layout_below="@id/layout_train"
+		android:gravity="center_vertical" android:layout_weight="1">
+		<ImageView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:src="@drawable/warning"
+			android:layout_margin="5dip" />
+		<TextView android:id="@+id/retard" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:textColor="#FF0000"
+			android:text="20 min" />
+		<TextView android:id="@+id/motif" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:textColor="#FF0000"
+			android:text="Problème de signalisation" android:layout_marginLeft="10dip" />
+	</LinearLayout>
+	<View style="@style/Depart_Divider" />
+</LinearLayout>
