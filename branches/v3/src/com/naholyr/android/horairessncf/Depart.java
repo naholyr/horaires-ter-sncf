@@ -16,6 +16,8 @@ public class Depart implements BaseColumns {
 	public static final String RETARD = "retard";
 	public static final String MOTIF_RETARD = "motif_retard";
 	public static final String QUAI = "quai";
+	public static final String TYPE = "type";
+	public static final String NUMERO = "numero";
 
 	public static final class Departs {
 		public static final Uri CONTENT_URI = Uri.parse("content://" + DepartsContentProvider.AUTHORITY + "/departs");

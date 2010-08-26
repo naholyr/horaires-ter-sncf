@@ -1,28 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	style="@style/Depart_Layout" android:orientation="vertical"
-	android:clickable="false">
-	<LinearLayout android:id="@+id/layout_train" style="@style/Depart_Layout"
-		android:orientation="horizontal">
-		<TextView android:id="@+id/heure" android:text="22h17"
-			style="@style/Depart.Heure.Text" />
-		<TextView android:id="@+id/destination" android:text="DIJON-VILLE SUR AZERGUES"
-			android:layout_width="match_parent" style="@style/Depart.Destination.Text" />
-		<TextView android:id="@+id/quai" android:text="J"
-			style="@style/Depart.Quai.Text" />
+	style="@style/Depart_Layout" android:clickable="false">
+	<LinearLayout android:id="@+id/depart_item"
+		android:orientation="vertical" android:layout_width="match_parent"
+		android:layout_height="wrap_content" android:layout_weight="1"
+		android:padding="2dip">
+		<LinearLayout android:orientation="horizontal"
+			android:id="@+id/titre" android:layout_width="match_parent"
+			android:layout_height="wrap_content" android:layout_weight="1">
+			<TextView android:id="@+id/heure" android:text="22h17"
+				style="@style/Depart.Heure.Text" />
+			<TextView android:id="@+id/destination" android:text="DIJON-VILLE SUR AZERGUES"
+				style="@style/Depart.Destination.Text" />
+			<TextView android:id="@+id/quai" android:text="J"
+				style="@style/Depart.Quai.Text" />
+		</LinearLayout>
+		<LinearLayout android:orientation="horizontal"
+			android:layout_width="match_parent" android:layout_height="wrap_content"
+			android:layout_weight="1" android:padding="2dip" android:gravity="center_vertical">
+			<LinearLayout android:id="@+id/layout_info"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:gravity="center_vertical">
+				<TextView android:id="@+id/type_text" android:text="Train"
+					style="@style/Depart_Train_Type_Text.Text" />
+				<ImageView android:id="@+id/type_image" style="@style/Depart_Train_Type_Image"
+					android:src="@drawable/type_train_train" />
+				<TextView android:id="@+id/numero" android:text="33712"
+					style="@style/Depart_Train_Numero.Text" />
+			</LinearLayout>
+			<LinearLayout android:orientation="horizontal"
+				android:id="@+id/layout_retard" style="@style/Depart_Layout"
+				android:gravity="center_vertical">
+				<ImageView android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:src="@drawable/warning"
+					android:padding="3dip" />
+				<TextView android:id="@+id/retard" style="@style/Depart.Retard.Heure.Text"
+					android:text="20 min" />
+				<TextView android:id="@+id/motif" style="@style/Depart.Retard.Motif.Text"
+					android:text="Problème de signalisation" android:layout_marginLeft="8dip" />
+			</LinearLayout>
+		</LinearLayout>
 	</LinearLayout>
-	<LinearLayout android:id="@+id/layout_retard" style="@style/Depart_Layout"
-		android:orientation="horizontal" android:layout_below="@id/layout_train"
-		android:gravity="center_vertical" android:layout_weight="1">
-		<ImageView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:src="@drawable/warning"
-			android:layout_margin="5dip" />
-		<TextView android:id="@+id/retard" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:textColor="#FF0000"
-			android:text="20 min" />
-		<TextView android:id="@+id/motif" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:textColor="#FF0000"
-			android:text="Problème de signalisation" android:layout_marginLeft="10dip" />
-	</LinearLayout>
-	<View style="@style/Depart_Divider" />
 </LinearLayout>

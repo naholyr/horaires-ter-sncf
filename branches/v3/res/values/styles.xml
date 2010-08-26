@@ -18,21 +18,41 @@
 		<item name="android:typeface">monospace</item>
 		<item name="android:textStyle">bold</item>
 	</style>
+	<style name="Depart.Retard">
+		<item name="android:textColor">#FF0000</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+	</style>
+	<style name="Depart.Retard.Motif">
+		<item name="android:typeface">sans</item>
+		<item name="android:textStyle">normal</item>
+	</style>
+	<style name="Depart.Retard.Motif.Text">
+		<item name="android:textSize">11dip</item>
+	</style>
+	<style name="Depart.Retard.Heure">
+		<item name="android:typeface">monospace</item>
+		<item name="android:textStyle">bold</item>
+	</style>
+	<style name="Depart.Retard.Heure.Text">
+		<item name="android:textSize">14dip</item>
+	</style>
 	<style name="Depart.Heure">
 		<item name="android:layout_width">wrap_content</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:textColor">#000</item>
 	</style>
 	<style name="Depart.Heure.Text">
-		<item name="android:textSize">17dip</item>
+		<item name="android:textSize">16dip</item>
 	</style>
 	<style name="Depart.Destination">
+		<item name="android:layout_width">match_parent</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_weight">1</item>
 		<item name="android:paddingLeft">10dip</item>
 		<item name="android:textColor">#333</item>
 		<item name="android:lines">1</item>
-		<item name="android:ellipsize">marquee</item>
+		<item name="android:ellipsize">end</item>
 	</style>
 	<style name="Depart.Destination.Text">
 		<item name="android:textSize">15dip</item>
@@ -49,8 +69,35 @@
 	</style>
 	<style name="Depart.Quai.Text">
 		<item name="android:padding">5dip</item>
-		<item name="android:minWidth">30dip</item>
-		<item name="android:textSize">20dip</item>
+		<item name="android:minWidth">25dip</item>
+		<item name="android:textSize">16dip</item>
+		<item name="android:layout_margin">3dip</item>
+	</style>
+	<style name="Depart_Train_Type_Image">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+	</style>
+	<style name="Depart_Train_Type_Text">
+		<item name="android:typeface">sans</item>
+		<item name="android:textStyle">normal</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:textColor">#999999</item>
+		<item name="android:visibility">gone</item>
+	</style>
+	<style name="Depart_Train_Type_Text.Text">
+		<item name="android:textSize">12dip</item>
+	</style>
+	<style name="Depart_Train_Numero">
+		<item name="android:typeface">monospace</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:textColor">#999999</item>
+		<item name="android:layout_marginLeft">4dip</item>
+	</style>
+	<style name="Depart_Train_Numero.Text">
+		<item name="android:textSize">12dip</item>
 	</style>
 	<style name="List_Layout">
 		<item name="android:orientation">vertical</item>
