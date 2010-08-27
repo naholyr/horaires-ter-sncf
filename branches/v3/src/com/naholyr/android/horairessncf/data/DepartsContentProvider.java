@@ -1,6 +1,8 @@
 package com.naholyr.android.horairessncf.data;
 
+import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.List;
 
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -8,14 +10,21 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.naholyr.android.horairessncf.Depart;
+import com.naholyr.android.horairessncf.Gare;
+import com.naholyr.android.horairessncf.ws.IBrowser;
+import com.naholyr.android.horairessncf.ws.JSONServerBrowser;
+import com.naholyr.android.horairessncf.ws.ProchainTrain.Retard;
 
 public class DepartsContentProvider extends android.content.ContentProvider {
 
 	public static final String AUTHORITY = "naholyr.horairessncf.providers.DepartsContentProvider";
 
 	public static final int DEPARTS_PAR_ID_GARE = 0;
+
+	public static final int DEFAULT_LIMIT = 12;
 
 	public static final String[] COLUMN_NAMES = new String[] { Depart._ID, Depart.TYPE, Depart.NUMERO, Depart.DESTINATION, Depart.HEURE_DEPART, Depart.ORIGINE,
 			Depart.HEURE_ARRIVEE, Depart.RETARD, Depart.MOTIF_RETARD, Depart.QUAI };
@@ -51,32 +60,105 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 		throw new UnsupportedOperationException();
 	}
 
+	private static final class DepartCursor extends BetterCursorWrapper {
+
+		public DepartCursor() {
+			super(null);
+		}
+
+		private IBrowser mBrowser;
+		private String mNomGare;
+		private int mLimite;
+
+		void query(IBrowser browser, String nomGare, int limit) throws IOException {
+			mBrowser = browser;
+			mNomGare = nomGare;
+			mLimite = limit;
+			query();
+		}
+
+		@Override
+		public boolean requery() {
+			try {
+				query();
+			} catch (IOException e) {
+				// FIXME Failed : no data change ?
+			}
+			return true;
+		}
+
+		void query() throws IOException {
+			// mUpdatedRows.clear();
+			SparseArray<String> gares = mBrowser.searchGares(mNomGare, mLimite);
+			String selectedNomGare = null;
+			int selectedIdGare = 0;
+			if (gares.size() == 1) {
+				selectedNomGare = gares.valueAt(0);
+				selectedIdGare = gares.keyAt(0);
+			} else if (gares.size() > 1) {
+				// TODO select
+			} else {
+				// TODO not found
+			}
+			if (selectedNomGare != null && selectedIdGare != 0) {
+				mBrowser.confirmGare(selectedIdGare);
+				Log.d("WS", "query...");
+				List<com.naholyr.android.horairessncf.ws.ProchainTrain.Depart> departs = mBrowser.getItems(mLimite, true);
+				Log.d("WS", "...found " + departs.size() + " item(s)");
+				int i = 0;
+				MatrixCursor c = new MatrixCursor(COLUMN_NAMES);
+				for (com.naholyr.android.horairessncf.ws.ProchainTrain.Depart depart : departs) {
+					String dureeRetard = null, motifRetard = null;
+					List<Retard> retards = depart.getRetards();
+					for (Retard retard : retards) {
+						if (dureeRetard == null || dureeRetard.compareToIgnoreCase(retard.getDuree()) < 0) {
+							dureeRetard = retard.getDuree();
+							motifRetard = retard.getMotif();
+						}
+					}
+					c.addRow(new Object[] { ++i, depart.getTypeLabel(), depart.getNumero(), depart.getDestination(), depart.getHeure(), depart.getOrigine(), null, dureeRetard,
+							motifRetard, depart.getVoie() });
+				}
+				setInternalCursor(c);
+			} else {
+				// TODO Exception not found
+			}
+		}
+
+	}
+
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-		MatrixCursor c = new MatrixCursor(COLUMN_NAMES);
+		DepartCursor c = new DepartCursor();
+
+		int limit;
+		try {
+			String sLimit = uri.getQueryParameter("limit");
+			limit = Integer.valueOf(sLimit);
+		} catch (NumberFormatException e) {
+			limit = DEFAULT_LIMIT;
+		}
 
 		long id;
 		switch (sUriMatcher.match(uri)) {
 			case DEPARTS_PAR_ID_GARE:
 				id = Long.valueOf(uri.getPathSegments().get(1));
+				Cursor cGare = Gare.retrieveById(getContext(), id);
+				if (cGare == null || !cGare.moveToFirst()) {
+					throw new IllegalArgumentException("ID gare invalide ! id=" + id);
+				}
+				String nomGare = cGare.getString(cGare.getColumnIndex(Gare.NOM));
+				IBrowser browser = getBrowserInstance();
+				try {
+					c.query(browser, nomGare, limit);
+				} catch (IOException e) {
+					// FIXME Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			default:
 				throw new InvalidParameterException();
 		}
-		Log.d("ID", String.valueOf(id));
-
-		c.addRow(new Object[] { 1, "Thalys", "3128", "Dijon-Ville", "17h22", "Grenoble", "17h50", "20 min", "Signalisation", "J" });
-		c
-				.addRow(new Object[] { 2, "TER", "3129", "Dijon-Ville", "17h23", "Grenoble", "17h50", "20 min", "Problème de signalisation, ou incident sur la voie, va savoir...",
-						null });
-		c.addRow(new Object[] { 3, "Corail", "3130", "Dijon-Ville", "17h24", "Grenoble", "17h50", null, null, null });
-		c.addRow(new Object[] { 4, "Car", "3131", "Dijon-Ville", "17h25", "Grenoble", "17h50", "20 min", null, "J" });
-		c.addRow(new Object[] { 5, "Voiture", "3132", "Dijon-Ville", "17h26", "Grenoble", "17h50", "20 min", "Problème de signalisation, ou incident sur la voie, va savoir...",
-				"J" });
-		c.addRow(new Object[] { 6, "Téléporteur", "3133", "Dijon-Ville", "17h27", "Grenoble", "17h50", "20 min",
-				"Problème de signalisation, ou incident sur la voie, va savoir...", null });
-
-		c.setNotificationUri(getContext().getContentResolver(), uri);
 
 		return c;
 	}
@@ -84,6 +166,16 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 	@Override
 	public int update(Uri uri, ContentValues values, String where, String[] whereArgs) {
 		throw new UnsupportedOperationException();
+	}
+
+	private static IBrowser mBrowserInstance = null;
+
+	public static IBrowser getBrowserInstance() {
+		if (mBrowserInstance == null) {
+			mBrowserInstance = new JSONServerBrowser();
+		}
+
+		return mBrowserInstance;
 	}
 
 }

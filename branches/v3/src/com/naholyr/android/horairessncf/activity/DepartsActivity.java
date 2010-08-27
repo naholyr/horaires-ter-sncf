@@ -1,9 +1,13 @@
 package com.naholyr.android.horairessncf.activity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ListAdapter;
 import android.widget.TextView;
@@ -83,6 +87,31 @@ public class DepartsActivity extends ListActivity {
 				}
 			}).start();
 		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.departs, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.menu_refresh: {
+				getCursor().requery();
+				break;
+			}
+			case R.id.menu_back: {
+				Intent intent = new Intent(this, GaresActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				finish();
+				break;
+			}
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 }

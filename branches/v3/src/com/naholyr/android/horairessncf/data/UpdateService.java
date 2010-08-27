@@ -90,6 +90,7 @@ public class UpdateService extends BroadcastReceiver {
 		CharSequence tickerText = "Mise à jour des gares disponible";
 		Notification notification = new Notification(R.drawable.icon, tickerText, System.currentTimeMillis());
 		Intent intent = new Intent(context, UpdateActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 		notification.setLatestEventInfo(context, "Mise à jour des gares", "Cliquez pour mettre à jour vos données", pendingIntent);
 		mNotificationManager.notify(UpdateActivity.NOTIFICATION_ID, notification);
@@ -104,7 +105,7 @@ public class UpdateService extends BroadcastReceiver {
 	public static void scheduleNext(Context context, long interval) {
 		scheduleNext(context, interval, false);
 	}
-	
+
 	public static void scheduleNext(Context context, long interval, boolean toast) {
 		// Schedule automatic updates
 		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -144,5 +145,5 @@ public class UpdateService extends BroadcastReceiver {
 			Toast.makeText(context, "Vérifications de mise à jour désactivées", Toast.LENGTH_SHORT).show();
 		}
 	}
-	
+
 }

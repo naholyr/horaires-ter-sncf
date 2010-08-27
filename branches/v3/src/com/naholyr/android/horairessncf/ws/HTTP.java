@@ -1,0 +1,303 @@
+package com.naholyr.android.horairessncf.ws;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+class HTTP {
+
+	public static final int BUFFER_SIZE = 1024;
+	public static final int READ_URL_SOCKET_TIMEOUT = 30000;
+	public static final int READ_URL_READY_TIMEOUT = 15000;
+
+	public static final class Response {
+
+		private Map<String, List<String>> headers = new HashMap<String, List<String>>();
+		private String body = null;
+		private Integer statusCode = null;
+		private String statusDescription = null;
+
+		private static final Pattern PATTERN_STATUS = Pattern.compile("^[A-Z/0-9\\.]+ ([0-9]+) (.*)$");
+
+		public Response(BufferedReader r) throws IOException {
+			this(r, true);
+		}
+
+		public Response(BufferedReader r, boolean readBody) throws IOException {
+			body = null;
+			String line;
+
+			// Read and parse headers, line by line
+			boolean parsedStatus = false;
+			while ((line = r.readLine()) != null) {
+				line = line.trim();
+				if (line.equals("")) {
+					// End of headers
+					break;
+				} else {
+					if (!parsedStatus) {
+						Matcher m = PATTERN_STATUS.matcher(line);
+						parsedStatus = true;
+						if (m.find()) {
+							statusCode = Integer.parseInt(m.group(1));
+							statusDescription = m.group(2);
+							continue;
+						} else {
+							statusCode = 0;
+							statusDescription = null;
+						}
+					}
+					if (line.indexOf(':') != -1) {
+						addHeader(line);
+					}
+				}
+			}
+
+			// Read body, all at once if the content-length header has been
+			// provided, else line by line
+			if (readBody) {
+				if (headers.containsKey("content-length")) {
+					try {
+						// Retrieve content-length
+						int contentLength = Integer.parseInt(getHeader("content-length"));
+						// Read all at once
+						char[] buffer = new char[contentLength];
+						r.read(buffer, 0, contentLength);
+						body = new String(buffer);
+					} catch (NumberFormatException e) {
+						// Mark body as unread
+						body = null;
+					}
+				}
+				if (body == null) {
+					// Read line by line
+					while ((line = r.readLine()) != null) {
+						line = line.trim();
+						if (!line.equals("")) {
+							body += line + "\n";
+						}
+					}
+				}
+			}
+
+			r.close();
+		}
+
+		public void addHeader(String line) {
+			int sepPos = line.indexOf(':');
+			String headerName = line.substring(0, sepPos).trim().toLowerCase();
+			String headerValue = line.substring(sepPos + 1).trim();
+			if (!headers.containsKey(headerName)) {
+				headers.put(headerName, new ArrayList<String>());
+			}
+			headers.get(headerName).add(headerValue);
+		}
+
+		public String getBody() {
+			return body;
+		}
+
+		public List<String> getHeaderList(String name) {
+			if (headers.containsKey(name)) {
+				return headers.get(name);
+			}
+			return null;
+		}
+
+		public String getHeader(String name, int index) {
+			if (headers.containsKey(name)) {
+				List<String> values = headers.get(name);
+				if (0 <= index && index < values.size()) {
+					return values.get(index);
+				}
+			}
+			return null;
+		}
+
+		public String getHeader(String name) {
+			return getHeader(name, 0);
+		}
+
+		public String[] getHeaderNames() {
+			return headers.keySet().toArray(new String[0]);
+		}
+
+		public Integer getStatusCode() {
+			return statusCode;
+		}
+
+		public String getStatusDescription() {
+			return statusDescription;
+		}
+
+	}
+
+	public static final class Request {
+
+		public static Map<String, String> getDefaultHeaders(String charset) {
+			Map<String, String> headers = new HashMap<String, String>();
+			headers.put("User-Agent", "Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3");
+			headers.put("Accept", "text/html");
+			headers.put("Accept-Language", "fr");
+			headers.put("Accept-Charset", charset);
+			headers.put("Keep-Alive", "300");
+			// headers.put("Cache-Control", "max-age=0");
+			headers.put("Connection", "keep-alive");
+
+			return headers;
+		}
+
+		public static Response GET(String host, int port, String path, String charset) throws IOException {
+			return GET(host, port, path, getDefaultHeaders(charset), charset);
+		}
+
+		public static Response GET(String host, int port, String path, boolean readBody, String charset) throws IOException {
+			return GET(host, port, path, getDefaultHeaders(charset), readBody, charset);
+		}
+
+		public static Response GET(String host, int port, String path, Map<String, String> headers, String charset) throws IOException {
+			return request("GET", host, port, path, headers, charset);
+		}
+
+		public static Response GET(String host, int port, String path, Map<String, String> headers, boolean readBody, String charset) throws IOException {
+			return request("GET", host, port, path, headers, readBody, charset);
+		}
+
+		public static Response POST(String host, int port, String path, Map<String, String> data, String charset) throws IOException {
+			return POST(host, port, path, getDefaultHeaders(charset), data, charset);
+		}
+
+		public static Response POST(String host, int port, String path, Map<String, String> data, boolean readBody, String charset) throws IOException {
+			return POST(host, port, path, getDefaultHeaders(charset), data, readBody, charset);
+		}
+
+		private static String getPostContent(Map<String, String> data, String charset) {
+			String content = "";
+			boolean addAmp = false;
+			for (Map.Entry<String, String> item : data.entrySet()) {
+				if (addAmp) {
+					content += "&";
+				}
+				String key = item.getKey();
+				String value = removeAccents(item.getValue());
+				content += URLEncoder.encode(key) + "=" + URLEncoder.encode(value);
+				if (!addAmp) {
+					addAmp = true;
+				}
+			}
+
+			return content;
+		}
+
+		public static Response POST(String host, int port, String path, Map<String, String> headers, Map<String, String> data, String charset) throws IOException {
+			headers.put("Content-Type", "application/x-www-form-urlencoded");
+			return request("POST", host, port, path, headers, getPostContent(data, charset), charset);
+		}
+
+		public static Response POST(String host, int port, String path, Map<String, String> headers, Map<String, String> data, boolean readBody, String charset) throws IOException {
+			headers.put("Content-Type", "application/x-www-form-urlencoded");
+			return request("POST", host, port, path, headers, getPostContent(data, charset), readBody, charset);
+		}
+
+		public static Response request(String method, String host, int port, String path, Map<String, String> headers, String charset) throws IOException {
+			return request(method, host, port, path, headers, (String) null, charset);
+		}
+
+		public static Response request(String method, String host, int port, String path, Map<String, String> headers, boolean readBody, String charset) throws IOException {
+			return request(method, host, port, path, headers, (String) null, readBody, charset);
+		}
+
+		public static Response request(String method, String host, int port, String path, Map<String, String> headers, String content, String charset) throws IOException {
+			return request(method, host, port, path, headers, content, true, charset);
+		}
+
+		public static Response request(String method, String host, int port, String path, Map<String, String> headers, String content, boolean readBody, String charset)
+				throws IOException {
+			Socket s = new Socket(host, port);
+			s.setSoTimeout(READ_URL_SOCKET_TIMEOUT);
+			OutputStreamWriter w = new OutputStreamWriter(s.getOutputStream());
+			BufferedReader r = new BufferedReader(new InputStreamReader(s.getInputStream(), charset), BUFFER_SIZE);
+			w.write(method + " " + path + " HTTP/1.1\n");
+			w.write("Host: " + host + "\n");
+			if (content != null) {
+				headers.put("Content-Length", String.valueOf(content.length()));
+			}
+			for (Map.Entry<String, String> header : headers.entrySet()) {
+				String name = header.getKey();
+				String value = header.getValue();
+				String headerLine = name + ": " + value + "\n";
+				w.write(headerLine);
+			}
+			w.write("\n");
+			if (content != null) {
+				w.write(content);
+				w.write("\n");
+			}
+			w.flush();
+
+			long time1 = Calendar.getInstance().getTimeInMillis();
+			while (!r.ready()) {
+				long time2 = Calendar.getInstance().getTimeInMillis();
+				long delay = time2 - time1;
+				if (delay < READ_URL_READY_TIMEOUT) {
+					continue;
+				} else {
+					throw new IOException("La requête a échoué : Le serveur a mis trop de temps à répondre.");
+				}
+			}
+
+			Response response = new Response(r, readBody);
+
+			w.close();
+
+			return response;
+		}
+
+	}
+
+	private static final String PLAIN_ASCII = "AaEeIiOoUu" // grave
+			+ "AaEeIiOoUuYy" // acute
+			+ "AaEeIiOoUuYy" // circumflex
+			+ "AaOoNn" // tilde
+			+ "AaEeIiOoUuYy" // umlaut
+			+ "Aa" // ring
+			+ "Cc" // cedilla
+			+ "OoUu" // double acute
+	;
+
+	private static final String UNICODE = "\u00C0\u00E0\u00C8\u00E8\u00CC\u00EC\u00D2\u00F2\u00D9\u00F9"
+			+ "\u00C1\u00E1\u00C9\u00E9\u00CD\u00ED\u00D3\u00F3\u00DA\u00FA\u00DD\u00FD" + "\u00C2\u00E2\u00CA\u00EA\u00CE\u00EE\u00D4\u00F4\u00DB\u00FB\u0176\u0177"
+			+ "\u00C3\u00E3\u00D5\u00F5\u00D1\u00F1" + "\u00C4\u00E4\u00CB\u00EB\u00CF\u00EF\u00D6\u00F6\u00DC\u00FC\u0178\u00FF" + "\u00C5\u00E5" + "\u00C7\u00E7"
+			+ "\u0150\u0151\u0170\u0171";
+
+	public static String removeAccents(String s) {
+		if (s == null) {
+			return null;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		int n = s.length();
+		for (int i = 0; i < n; i++) {
+			char c = s.charAt(i);
+			int pos = UNICODE.indexOf(c);
+			if (pos > -1) {
+				sb.append(PLAIN_ASCII.charAt(pos));
+			} else {
+				sb.append(c);
+			}
+		}
+
+		return sb.toString();
+	}
+
+}
