@@ -15,13 +15,14 @@ import com.naholyr.android.horairessncf.Depart;
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.ws.IBrowser;
 import com.naholyr.android.horairessncf.ws.JSONServerBrowser;
-import com.naholyr.android.horairessncf.ws.ProchainTrain.Retard;
+import com.naholyr.android.horairessncf.ws.ProchainTrain;
 
 public class DepartsContentProvider extends android.content.ContentProvider {
 
 	public static final String AUTHORITY = "naholyr.horairessncf.providers.DepartsContentProvider";
 
-	public static final int DEPARTS_PAR_ID_GARE = 0;
+	public static final int DEPARTS_PAR_GARE = 0;
+	public static final int DEPART_PAR_ID = 1;
 
 	public static final int DEFAULT_LIMIT = 12;
 
@@ -31,8 +32,11 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 	private static final UriMatcher sUriMatcher;
 	static {
 		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sUriMatcher.addURI(AUTHORITY, "departs/#", DEPARTS_PAR_ID_GARE);
+		sUriMatcher.addURI(AUTHORITY, "departs/par-gare", DEPARTS_PAR_GARE);
+		sUriMatcher.addURI(AUTHORITY, "departs/#", DEPART_PAR_ID);
 	}
+
+	private static final SparseArray<ProchainTrain.Depart> mCachedResultsById = new SparseArray<ProchainTrain.Depart>();
 
 	@Override
 	public boolean onCreate() {
@@ -42,8 +46,10 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 	@Override
 	public String getType(Uri uri) {
 		switch (sUriMatcher.match(uri)) {
-			case DEPARTS_PAR_ID_GARE:
+			case DEPARTS_PAR_GARE:
 				return Depart.Departs.CONTENT_TYPE;
+			case DEPART_PAR_ID:
+				return Depart.CONTENT_TYPE;
 			default:
 				throw new IllegalArgumentException("Unsupported URI: " + uri);
 		}
@@ -107,24 +113,74 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 				Log.d("WS", "query...");
 				List<com.naholyr.android.horairessncf.ws.ProchainTrain.Depart> departs = mBrowser.getItems(mLimite, true);
 				Log.d("WS", "...found " + departs.size() + " item(s)");
-				long i = 0;
-				for (com.naholyr.android.horairessncf.ws.ProchainTrain.Depart depart : departs) {
-					String dureeRetard = null, motifRetard = null;
-					List<Retard> retards = depart.getRetards();
-					for (Retard retard : retards) {
-						if (dureeRetard == null || dureeRetard.compareToIgnoreCase(retard.getDuree()) < 0) {
-							dureeRetard = retard.getDuree();
-							motifRetard = retard.getMotif();
-						}
-					}
-					addRow(new Object[] { ++i, depart.getTypeLabel(), depart.getNumero(), depart.getDestination(), depart.getHeure(), depart.getOrigine(), null, dureeRetard,
-							motifRetard, depart.getVoie() });
+				for (ProchainTrain.Depart depart : departs) {
+					addRow(departToRow(depart));
 				}
 			} else {
 				// TODO Exception not found
 			}
 		}
 
+	}
+
+	/**
+	 * Convert a ProchainTrain.Depart to a Object[] MatrixCursor-compatible
+	 * array
+	 * 
+	 * @param depart
+	 * @param cache
+	 * @return
+	 */
+	private static Object[] departToRow(ProchainTrain.Depart depart, boolean cache) {
+		int id = 0;
+		if (cache) {
+			int index = mCachedResultsById.indexOfValue(depart);
+			if (index >= 0) {
+				id = mCachedResultsById.keyAt(index);
+			} else {
+				while (mCachedResultsById.indexOfKey(id) >= 0) {
+					id++;
+				}
+				mCachedResultsById.put(id, depart);
+			}
+		}
+		String dureeRetard = null, motifRetard = null;
+		List<ProchainTrain.Retard> retards = depart.getRetards();
+		for (ProchainTrain.Retard retard : retards) {
+			if (dureeRetard == null || dureeRetard.compareToIgnoreCase(retard.getDuree()) < 0) {
+				dureeRetard = retard.getDuree();
+				motifRetard = retard.getMotif();
+			}
+		}
+		return new Object[] { (long) id, depart.getTypeLabel(), depart.getNumero(), depart.getDestination(), depart.getHeure(), depart.getOrigine(), null, dureeRetard,
+				motifRetard, depart.getVoie() };
+	}
+
+	/**
+	 * Get row, caching result and attributing a new id
+	 * 
+	 * @param depart
+	 * @return
+	 */
+	private static Object[] departToRow(ProchainTrain.Depart depart) {
+		return departToRow(depart, true);
+	}
+
+	/**
+	 * Get row by id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	private static Object[] departToRow(long id) throws IndexOutOfBoundsException {
+		ProchainTrain.Depart depart = mCachedResultsById.get((int) id, null);
+		if (depart == null) {
+			throw new IndexOutOfBoundsException("Invalid ID " + id);
+		}
+		Object[] row = departToRow(depart, false);
+		row[0] = id;
+
+		return row;
 	}
 
 	@Override
@@ -139,15 +195,21 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 			limit = DEFAULT_LIMIT;
 		}
 
-		long id;
 		switch (sUriMatcher.match(uri)) {
-			case DEPARTS_PAR_ID_GARE:
-				id = Long.valueOf(uri.getPathSegments().get(1));
-				Cursor cGare = Gare.retrieveById(getContext(), id);
-				if (cGare == null || !cGare.moveToFirst()) {
-					throw new IllegalArgumentException("ID gare invalide ! id=" + id);
+			case DEPARTS_PAR_GARE:
+				String nomGare = uri.getQueryParameter("nom");
+				if (nomGare == null) {
+					String qIdGare = uri.getQueryParameter("id");
+					if (qIdGare == null) {
+						throw new IllegalArgumentException("Mandatory parameters missing : use /gare?id=XXX or /gare?nom=YYY");
+					}
+					long idGare = Long.valueOf(qIdGare);
+					Cursor cGare = Gare.retrieveById(getContext(), idGare);
+					if (cGare == null || !cGare.moveToFirst()) {
+						throw new IllegalArgumentException("ID gare invalide ! id=" + idGare);
+					}
+					nomGare = cGare.getString(cGare.getColumnIndex(Gare.NOM));
 				}
-				String nomGare = cGare.getString(cGare.getColumnIndex(Gare.NOM));
 				IBrowser browser = getBrowserInstance();
 				try {
 					c.query(browser, nomGare, limit);
@@ -155,6 +217,10 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 					// FIXME Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
+			case DEPART_PAR_ID:
+				long id = Long.valueOf(uri.getPathSegments().get(1));
+				c.addRow(departToRow(id));
 				break;
 			default:
 				throw new InvalidParameterException();

@@ -3,7 +3,6 @@ package com.naholyr.android.horairessncf.activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,8 +45,7 @@ public class DepartsActivity extends ListActivity {
 			});
 			return null;
 		} else {
-			Uri uri = Uri.withAppendedPath(Depart.Departs.CONTENT_URI, String.valueOf(mId));
-			return getContentResolver().query(uri, null, null, null, null);
+			return Depart.retrieveById(this, mId);
 		}
 	}
 
