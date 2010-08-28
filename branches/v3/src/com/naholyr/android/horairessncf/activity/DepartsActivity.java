@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.ListAdapter;
 import android.widget.TextView;
@@ -69,14 +70,14 @@ public class DepartsActivity extends ListActivity {
 				public void run() {
 					Cursor c = Gare.retrieveById(getApplicationContext(), mId);
 					if (c != null && c.moveToFirst()) {
-						String nom = c.getString(c.getColumnIndex(Gare.NOM));
-						final TextView title1 = (TextView) findViewById(R.id.title1);
-						final TextView title2 = (TextView) findViewById(R.id.title2);
-						title1.setText(nom);
-						title2.setText(nom);
+						final String nom = c.getString(c.getColumnIndex(Gare.NOM));
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
+								TextView title1 = (TextView) findViewById(R.id.title1);
+								TextView title2 = (TextView) findViewById(R.id.title2);
+								title1.setText(nom);
+								title2.setText(nom);
 								Typeface font = Typeface.createFromAsset(getAssets(), "CALIBRIB.TTF");
 								title1.setTypeface(font);
 								title2.setTypeface(font);
@@ -100,7 +101,13 @@ public class DepartsActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_refresh: {
+				getListView().setVisibility(View.GONE);
 				getCursor().requery();
+				if (getCursor().getCount() > 0) {
+					getListView().setVisibility(View.VISIBLE);
+				} else {
+					findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
+				}
 				break;
 			}
 			case R.id.menu_back: {

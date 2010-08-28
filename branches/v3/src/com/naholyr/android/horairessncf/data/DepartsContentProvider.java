@@ -7,7 +7,6 @@ import java.util.List;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.net.Uri;
 import android.util.Log;
 import android.util.SparseArray;
@@ -60,15 +59,27 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 		throw new UnsupportedOperationException();
 	}
 
-	private static final class DepartCursor extends BetterCursorWrapper {
-
-		public DepartCursor() {
-			super(null);
-		}
+	private static final class DepartCursor extends MyMatrixCursor {
 
 		private IBrowser mBrowser;
 		private String mNomGare;
 		private int mLimite;
+
+		public DepartCursor() {
+			super(COLUMN_NAMES);
+		}
+
+		@Override
+		public boolean requery() {
+			clear();
+			try {
+				query();
+				return true;
+			} catch (IOException e) {
+				// FIXME
+				return false;
+			}
+		}
 
 		void query(IBrowser browser, String nomGare, int limit) throws IOException {
 			mBrowser = browser;
@@ -77,18 +88,9 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 			query();
 		}
 
-		@Override
-		public boolean requery() {
-			try {
-				query();
-			} catch (IOException e) {
-				// FIXME Failed : no data change ?
-			}
-			return true;
-		}
-
-		void query() throws IOException {
+		public void query() throws IOException {
 			// mUpdatedRows.clear();
+			clear();
 			SparseArray<String> gares = mBrowser.searchGares(mNomGare, mLimite);
 			String selectedNomGare = null;
 			int selectedIdGare = 0;
@@ -105,8 +107,7 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 				Log.d("WS", "query...");
 				List<com.naholyr.android.horairessncf.ws.ProchainTrain.Depart> departs = mBrowser.getItems(mLimite, true);
 				Log.d("WS", "...found " + departs.size() + " item(s)");
-				int i = 0;
-				MatrixCursor c = new MatrixCursor(COLUMN_NAMES);
+				long i = 0;
 				for (com.naholyr.android.horairessncf.ws.ProchainTrain.Depart depart : departs) {
 					String dureeRetard = null, motifRetard = null;
 					List<Retard> retards = depart.getRetards();
@@ -116,10 +117,9 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 							motifRetard = retard.getMotif();
 						}
 					}
-					c.addRow(new Object[] { ++i, depart.getTypeLabel(), depart.getNumero(), depart.getDestination(), depart.getHeure(), depart.getOrigine(), null, dureeRetard,
+					addRow(new Object[] { ++i, depart.getTypeLabel(), depart.getNumero(), depart.getDestination(), depart.getHeure(), depart.getOrigine(), null, dureeRetard,
 							motifRetard, depart.getVoie() });
 				}
-				setInternalCursor(c);
 			} else {
 				// TODO Exception not found
 			}
