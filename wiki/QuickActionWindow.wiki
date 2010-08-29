@@ -1,13 +1,18 @@
-#summary One-sentence summary of this page.
+#labels Featured,Phase-Implementation,Phase-Deploy
+#How to use the QuickActionWindow library developed for Horaires TER SNCF
 
-= Introduction =
+= Installation =
 
-Add your content here.
+  # [http://code.google.com/p/horaires-ter-sncf/downloads/detail?name=QuickActionWindow.jar Download JAR] (it contains compiled class AND source code so you can explore it if you want).
+  # Copy the JAR file to the "lib/" folder of your project.
+  # Right-click on the JAR file and choose "Build Path" then "Add to Build Path"
+
+That's all ! you can use Quick Action windows in your project :)
+
+= Usage =
+
+== Sample project ==
+
+Look at [http://code.google.com/p/horaires-ter-sncf/downloads/detail?name=QuickActionWindowSample.zip the QuickActionWindow Sample Project] for a full-featured example.
 
 
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
