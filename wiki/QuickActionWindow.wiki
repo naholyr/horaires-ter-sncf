@@ -1,9 +1,24 @@
+#summary How to use the QuickActionWindow library developed for Horaires TER SNCF
 #labels Featured,Phase-Implementation,Phase-Deploy
-#How to use the QuickActionWindow library developed for Horaires TER SNCF
+
+<wiki:toc max_depth="2" /> 
+
+{{{
+{{{
+def fib(n):
+  if n == 0 or n == 1:
+    return n
+  else:
+    # This recursion is not good for large numbers.
+    return fib(n-1) + fib(n-2)
+}}}
+}}}
+
 
 = Installation =
 
-  # [http://code.google.com/p/horaires-ter-sncf/downloads/detail?name=QuickActionWindow.jar Download JAR] (it contains compiled class AND source code so you can explore it if you want).
+  # 
+{{{[http://code.google.com/p/horaires-ter-sncf/downloads/detail?name=QuickActionWindow.jar Download JAR] (it contains compiled class AND source code so you can explore it if you want).
   # Copy the JAR file to the "lib/" folder of your project.
   # Right-click on the JAR file and choose "Build Path" then "Add to Build Path"
 
@@ -15,4 +30,21 @@ That's all ! you can use Quick Action windows in your project :)
 
 Look at [http://code.google.com/p/horaires-ter-sncf/downloads/detail?name=QuickActionWindowSample.zip the QuickActionWindow Sample Project] for a full-featured example.
 
+[http://horaires-ter-sncf.googlecode.com/files/device.png]
 
+== Basic usage ==
+
+=== 1. Configuration ===
+
+Define a {{{SparseIntArray}}} that will hold the configuration of your Quick Action Window.
+
+You will use keys defined in {{{QuickActionWindow.Config}}} to store configuration options.
+{{{
+<pre class="prettyprint">
+SparseIntArray windowConfiguration = new SparseIntArray();
+// Mandatory options
+windowConfiguration.put(QuickActionWindow.Config.WINDOW_LAYOUT, R.layout.quick_action_window);
+windowConfiguration.put(QuickActionWindow.Config.ITEM_LAYOUT, R.layout.quick_action_item);
+// Other options : see documentation of QuickActionWindow.Config...
+</pre>
+}}}
