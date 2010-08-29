@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,6 +19,7 @@ import android.widget.Toast;
 
 import com.naholyr.android.ui.QuickActionWindow.IntentItem;
 import com.naholyr.android.ui.QuickActionWindow.Item;
+import com.naholyr.android.ui.compat.ContactIntent;
 
 public class SampleActivity extends ListActivity {
 
@@ -28,6 +28,10 @@ public class SampleActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// Contacts handling has changed with Eclair, we use a way or another,
+		// depending on class availability
+		final ContactIntent contactIntentMaker = ContactIntent.Factory.get(getClassLoader());
 
 		// Inflate layout
 		setContentView(R.layout.main);
@@ -60,6 +64,10 @@ public class SampleActivity extends ListActivity {
 				windowConfiguration.put(QuickActionWindow.Config.ITEM_ICON, R.id.quick_action_icon);
 				windowConfiguration.put(QuickActionWindow.Config.ITEM_LABEL, R.id.quick_action_label);
 				windowConfiguration.put(QuickActionWindow.Config.ARROW_OFFSET, 20);
+
+				// Intent for contact creation, used twice : in items
+				// declaration, and later for extras dispatching
+				final Intent contactIntent = contactIntentMaker.getIntent();
 
 				// Initialize items : we use an initializer to enable cache of
 				// items (as we have intent items, it's not a bad habit to query
@@ -107,8 +115,6 @@ public class SampleActivity extends ListActivity {
 						// This one will propose to add/edit contact by name.
 						// No extra added here: we'll dispatch them outside item
 						// initializer.
-						Intent contactIntent = new Intent(ContactsContract.Intents.Insert.ACTION, ContactsContract.Contacts.CONTENT_URI);
-						contactIntent.putExtra(ContactsContract.Intents.EXTRA_FORCE_CREATE, true);
 						window.addItemsForIntent(context, contactIntent, null);
 
 					}
@@ -119,9 +125,8 @@ public class SampleActivity extends ListActivity {
 
 				// Special case of the intent with extras : dispatch extras now
 				Bundle extras = new Bundle();
-				Intent contactIntent = new Intent(ContactsContract.Intents.Insert.ACTION, ContactsContract.Contacts.CONTENT_URI);
-				extras.putString(ContactsContract.Intents.Insert.NAME, ((TextView) anchor.findViewById(android.R.id.text1)).getText().toString());
-				extras.putString(ContactsContract.Intents.Insert.EMAIL, ((TextView) anchor.findViewById(android.R.id.text2)).getText().toString());
+				contactIntentMaker.addExtras(extras, ((TextView) anchor.findViewById(android.R.id.text1)).getText().toString(),
+						((TextView) anchor.findViewById(android.R.id.text2)).getText().toString());
 				window.dispatchIntentExtras(extras, contactIntent);
 
 				// Show window
