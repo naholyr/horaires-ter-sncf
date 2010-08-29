@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
+import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,7 +34,8 @@ import com.naholyr.android.horairessncf.data.GaresSearchSuggestionsProvider;
 import com.naholyr.android.horairessncf.data.UpdateService;
 import com.naholyr.android.horairessncf.ui.AboutDialog;
 import com.naholyr.android.horairessncf.ui.ListeGaresAdapter;
-import com.naholyr.android.horairessncf.ui.QuickActionWindow;
+import com.naholyr.android.ui.QuickActionWindow;
+import com.naholyr.android.ui.QuickActionWindow.IntentItem;
 
 public class GaresActivity extends ListActivity {
 
@@ -241,13 +243,38 @@ public class GaresActivity extends ListActivity {
 		}
 	}
 
+	private static final SparseIntArray QUICK_ACTION_WINDOW_CONFIGURATION = new SparseIntArray() {
+		{
+			put(QuickActionWindow.Config.WINDOW_LAYOUT, R.layout.quick_action_window);
+			put(QuickActionWindow.Config.WINDOW_BACKGROUND_IF_ABOVE, R.drawable.quick_actions_background_above);
+			put(QuickActionWindow.Config.WINDOW_BACKGROUND_IF_BELOW, R.drawable.quick_actions_background_below);
+			put(QuickActionWindow.Config.ITEM_LAYOUT, R.layout.quick_action_item);
+			put(QuickActionWindow.Config.WINDOW_ANIMATION_STYLE, R.style.Animation_QuickActionWindow);
+			put(QuickActionWindow.Config.ITEM_APPEAR_ANIMATION, R.anim.quick_action_item_appear);
+			put(QuickActionWindow.Config.CONTAINER, R.id.quick_actions);
+			put(QuickActionWindow.Config.ITEM_ICON, R.id.quick_action_icon);
+			put(QuickActionWindow.Config.ITEM_LABEL, R.id.quick_action_label);
+			put(QuickActionWindow.Config.ARROW_OFFSET, 20);
+
+		}
+	};
+
+	private final class PluginMarketAdvertisement extends QuickActionWindow.MarketAdvertisement {
+		private static final String PKG_PREFIX = "com.naholyr.android.horairessncf.plugins.";
+
+		public PluginMarketAdvertisement(String plugin, String activity, int icon, String label) {
+			super(PKG_PREFIX + plugin + ".activity." + activity, getResources().getDrawable(icon), label, PKG_PREFIX + plugin,
+					"Erreur : Android Market non installé sur ce périphérique !");
+		}
+	}
+
 	private void showQuickActions(final View anchor) {
 		final ListView listView = getListView();
 		final long id = listView.getItemIdAtPosition(listView.getPositionForView(anchor));
 		final Intent pluginIntent = new Intent(Intent.ACTION_VIEW);
 		pluginIntent.setType(Gare.CONTENT_TYPE);
 
-		QuickActionWindow window = QuickActionWindow.getWindow(this, R.layout.quick_action_window, new QuickActionWindow.WindowInitializer() {
+		QuickActionWindow window = QuickActionWindow.getWindow(this, QUICK_ACTION_WINDOW_CONFIGURATION, new QuickActionWindow.Initializer() {
 			@Override
 			public void setItems(QuickActionWindow window) {
 				// Add item "add/remove to favorites", always here
@@ -259,25 +286,28 @@ public class GaresActivity extends ListActivity {
 					favStringId = R.string.action_add_favorite;
 					favIconId = R.drawable.quick_action_add_favorite;
 				}
-				window.addItem(getString(favStringId), getResources().getDrawable(favIconId), new View.OnClickListener() {
+				window.addItem(getString(favStringId), getResources().getDrawable(favIconId), new QuickActionWindow.Item.Callback() {
 					@Override
-					public void onClick(View v) {
+					public void onClick(QuickActionWindow.Item item, View anchor) {
 						anchor.findViewById(R.id.favicon).performClick();
 					}
 				});
 
 				// Advertisement items for not found plugins (GMap &
 				// Itineraires)
-				QuickActionWindow.ItemAdvertisement[] ads = new QuickActionWindow.ItemAdvertisement[] {
-						new QuickActionWindow.ItemAdvertisement("com.naholyr.android.horairessncf.plugins.gmap.activity.MapActivity", getResources().getDrawable(
-								R.drawable.quick_action_gmap), "Voir sur une carte", "com.naholyr.android.horairessncf.plugins.gmap"),
-						new QuickActionWindow.ItemAdvertisement("com.naholyr.android.horairessncf.plugins.itineraire.activity.ItineraireFromActivity", getResources().getDrawable(
-								R.drawable.quick_action_itineraire_from), "Partir de...", "com.naholyr.android.horairessncf.plugins.itineraire"),
-						new QuickActionWindow.ItemAdvertisement("com.naholyr.android.horairessncf.plugins.itineraire.activity.ItineraireToActivity", getResources().getDrawable(
-								R.drawable.quick_action_itineraire_to), "Aller vers...", "com.naholyr.android.horairessncf.plugins.itineraire"), };
+				QuickActionWindow.Advertisement[] ads = new QuickActionWindow.Advertisement[] {
+						new PluginMarketAdvertisement("gmap", "MapActivity", R.drawable.quick_action_gmap, "Localiser sur une carte"),
+						new PluginMarketAdvertisement("itineraire", "ItineraireFromActivity", R.drawable.quick_action_itineraire_from, "Itinéraire depuis cette gare..."),
+						new PluginMarketAdvertisement("itineraire", "ItineraireToActivity", R.drawable.quick_action_itineraire_to, "Itinéraire vers cette gare..."), };
 
 				// Plugins
-				window.addItemsForIntent(GaresActivity.this, pluginIntent, ads);
+				window.addItemsForIntent(GaresActivity.this, pluginIntent, new QuickActionWindow.IntentItem.ErrorCallback() {
+					@Override
+					public void onError(ActivityNotFoundException e, IntentItem item) {
+						Toast.makeText(item.getContext(), "Erreur : Application introuvable", Toast.LENGTH_LONG).show();
+						ErrorReporter.getInstance().handleSilentException(e);
+					}
+				}, ads);
 			}
 		}, 0);
 
@@ -287,7 +317,7 @@ public class GaresActivity extends ListActivity {
 		window.dispatchIntentExtras(extras, pluginIntent);
 
 		// Show window next to clicked view
-		window.show(anchor, R.drawable.quick_actions_background_above, 30);
+		window.show(anchor);
 	}
 
 	private void showGares(String action) {
