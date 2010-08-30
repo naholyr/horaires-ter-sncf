@@ -35,6 +35,10 @@ import android.widget.Toast;
  */
 public class QuickActionWindow extends PopupWindow {
 
+	public static final String VERSION = "1.0";
+
+	public static final String AUTHOR = "Nicolas Chambrier <naholyr@gmail.com>";
+
 	/**
 	 * Use an initializer when you want to initialize the items of your action
 	 * window only once and they get cached for later use of "getWindow()".
