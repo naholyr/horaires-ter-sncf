@@ -5,7 +5,7 @@
 
 = Installation =
 
-  # [http://code.google.com/p/horaires-ter-sncf/downloads/detail?name=QuickActionWindow.jar Download JAR] (it contains compiled class AND source code so you can explore it if you want).
+  # [http://code.google.com/p/horaires-ter-sncf/downloads/detail?name=QuickActionWindow-1.0.jar Download JAR] (it contains compiled class AND source code so you can explore it if you want).
   # Copy the JAR file to the "lib/" folder of your project.
   # Right-click on the JAR file and choose "Build Path" then "Add to Build Path"
 
