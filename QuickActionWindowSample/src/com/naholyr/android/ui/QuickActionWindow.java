@@ -807,6 +807,14 @@ public class QuickActionWindow extends PopupWindow {
 		} else {
 			container = (ViewGroup) getContentView();
 		}
+		// Remove view from its original parent before adding it.
+		// It allows re-using the same views, or we'll have to catch a layout
+		// exception !
+		ViewGroup parent = (ViewGroup) v.getParent();
+		if (parent != null) {
+			parent.removeView(v);
+		}
+		// Attach view now that it's free.
 		container.addView(v);
 	}
 
@@ -897,20 +905,6 @@ public class QuickActionWindow extends PopupWindow {
 	 */
 	public ArrayList<Item> getItems() {
 		return mItems;
-	}
-
-	@Override
-	public void dismiss() {
-		// Remove items views from their parent, so that if we re-use them it
-		// will work fine. If we don't do that, caching items and re-use them to
-		// show another action window will throw a layout exception
-		for (Item item : mItems) {
-			View v = item.getView();
-			if (v != null) {
-				((ViewGroup) v.getParent()).removeView(v);
-			}
-		}
-		super.dismiss();
 	}
 
 }
