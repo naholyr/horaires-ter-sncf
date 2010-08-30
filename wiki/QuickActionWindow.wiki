@@ -177,6 +177,34 @@ getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 });
 }}}
 
+Here is the same code with no items-caching :
+{{{
+final Context context = this;
+getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+  // When user clicks on an item of the list
+  public void onItemClick(AdapterView<?> adapter, final View anchor, final int position, final long id) {
+
+    // Initialize window
+    QuickActionWindow window = QuickActionWindow.getWindow(context, configuration)
+
+    // Intent for the clicked item
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    intent.setType("mime/type");
+    intent.putExtra("_id", id);
+
+    // Add window's items
+    window.addItemsForIntent(context, intent, null);
+
+    // Show window attached to the clicked item
+    window.show(anchor);
+  }
+
+});
+}}}
+
+Use one way or another, it depends on your tastes, your will for optimising little things (this is always arguable as it here has a clear impact on readability). Note that the best optimization we could do would be not to inflate layout each time, but there are a lot of issues when re-using such views when you have to show/dismiss your window twice or more. I'm working on it ;)
+
 == 3. Showing window ==
 
 Just call {{{show(View anchor)}}} and the window will appear attached to specified view. Below or above, depending on remaining space up or under the view.
