@@ -15,7 +15,9 @@ That's all ! you can use Quick Action windows in your project :)
 
 == Sample project ==
 
-Look at [http://code.google.com/p/horaires-ter-sncf/downloads/detail?name=QuickActionWindowSample.zip the QuickActionWindow Sample Project] for a full-featured example.
+Look at the sample project for a full-featured example.
+  * You can [http://code.google.com/p/horaires-ter-sncf/downloads/detail?name=QuickActionWindowSample.zip directly download it] as a ZIP archive
+  * Or you can checkout the SVN repository : {{{http://horaires-ter-sncf.googlecode.com/svn/QuickActionWindowSample}}}
 
 [http://horaires-ter-sncf.googlecode.com/files/device.png]
 
