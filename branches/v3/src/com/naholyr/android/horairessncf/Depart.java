@@ -50,24 +50,24 @@ public class Depart implements BaseColumns {
 		return query(context, String.valueOf(id), null);
 	}
 
-	public static Cursor retrieveByGare(Context context, long idGare, String limit) {
+	public static Cursor retrieveByGare(Context context, long idGare, Integer limit) {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("id", String.valueOf(idGare));
 		if (limit != null) {
-			params.put("limit", limit);
+			params.put("limit", String.valueOf(limit));
 		}
 
-		return query(context, "gare", params);
+		return query(context, "par-gare", params);
 	}
 
-	public static Cursor retrieveByGare(Context context, String nomGare, String limit) {
+	public static Cursor retrieveByGare(Context context, String nomGare, Integer limit) {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("nom", nomGare);
 		if (limit != null) {
-			params.put("limit", limit);
+			params.put("limit", String.valueOf(limit));
 		}
 
-		return query(context, "gare", params);
+		return query(context, "par-gare", params);
 	}
 
 }

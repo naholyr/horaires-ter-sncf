@@ -1,5 +1,9 @@
 package com.naholyr.android.horairessncf.activity;
 
+import org.acra.ErrorReporter;
+
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -13,16 +17,19 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.naholyr.android.horairessncf.Common;
 import com.naholyr.android.horairessncf.Depart;
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.ui.ListeDepartsAdapter;
+import com.naholyr.android.ui.QuickActionWindow;
+import com.naholyr.android.ui.QuickActionWindow.IntentItem;
 
 public class DepartsActivity extends ListActivity {
 
 	public static final String EXTRA_ID = Gare._ID;
 
-	long mId = 0;
+	long mIdGare = 0;
 
 	@Override
 	protected ListAdapter getAdapter(Cursor c) {
@@ -36,7 +43,7 @@ public class DepartsActivity extends ListActivity {
 
 	@Override
 	protected Cursor queryCursor() {
-		if (mId == 0) {
+		if (mIdGare == 0) {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
@@ -45,7 +52,7 @@ public class DepartsActivity extends ListActivity {
 			});
 			return null;
 		} else {
-			return Depart.retrieveById(this, mId);
+			return Depart.retrieveByGare(this, mIdGare, Common.DEFAULT_NB_TRAINS);
 		}
 	}
 
@@ -58,15 +65,15 @@ public class DepartsActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// Retrieve Station
-		mId = getIntent().getLongExtra(EXTRA_ID, 0);
+		mIdGare = getIntent().getLongExtra(EXTRA_ID, 0);
 		// Parent process
 		super.onCreate(savedInstanceState);
 		// Update title
-		if (mId != 0) {
+		if (mIdGare != 0) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					Cursor c = Gare.retrieveById(getApplicationContext(), mId);
+					Cursor c = Gare.retrieveById(getApplicationContext(), mIdGare);
 					if (c != null && c.moveToFirst()) {
 						final String nom = c.getString(c.getColumnIndex(Gare.NOM));
 						runOnUiThread(new Runnable() {
@@ -117,6 +124,39 @@ public class DepartsActivity extends ListActivity {
 			}
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected QuickActionWindow getQuickActionWindow(final int position, final long id) {
+		final Intent pluginIntent = new Intent(Intent.ACTION_VIEW);
+		pluginIntent.setType(Depart.CONTENT_TYPE);
+
+		final Context context = this;
+
+		QuickActionWindow window = QuickActionWindow.getWindow(this, Common.QUICK_ACTION_WINDOW_CONFIGURATION, new QuickActionWindow.Initializer() {
+			@Override
+			public void setItems(QuickActionWindow window) {
+				// Advertisement items for not found plugins (notifications)
+				QuickActionWindow.Advertisement[] ads = new QuickActionWindow.Advertisement[] { new Common.PluginMarketAdvertisement(context, "notification", "MainActivity",
+						R.drawable.quick_action_notification, "Notifications"), };
+
+				// Plugins
+				window.addItemsForIntent(context, pluginIntent, new QuickActionWindow.IntentItem.ErrorCallback() {
+					@Override
+					public void onError(ActivityNotFoundException e, IntentItem item) {
+						Toast.makeText(item.getContext(), "Erreur : Application introuvable", Toast.LENGTH_LONG).show();
+						ErrorReporter.getInstance().handleSilentException(e);
+					}
+				}, ads);
+			}
+		}, Common.QUICK_ACTION_WINDOW_DEPART);
+
+		// Complete intent items, adding station ID
+		Bundle extras = new Bundle();
+		extras.putLong(Depart._ID, id);
+		window.dispatchIntentExtras(extras, pluginIntent);
+
+		return window;
 	}
 
 }

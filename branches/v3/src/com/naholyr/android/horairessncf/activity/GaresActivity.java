@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,18 +17,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
-import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import com.naholyr.android.horairessncf.Common;
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.data.GaresSearchSuggestionsProvider;
@@ -53,8 +52,6 @@ public class GaresActivity extends ListActivity {
 	private static final int DIALOG_GEOLOCATION_FAILED = 3;
 
 	private static final String PREF_LAST_HOME = "last_home";
-
-	private static final boolean DEBUG = true;
 
 	private double mLatitude = 0;
 	private double mLongitude = 0;
@@ -222,13 +219,6 @@ public class GaresActivity extends ListActivity {
 				startSearch(null, false, null, false);
 			}
 		});
-		// Quick actions
-		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-				showQuickActions(view);
-			}
-		});
 		// Data initialization
 		findViewById(R.id.button_init_data).setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -243,43 +233,19 @@ public class GaresActivity extends ListActivity {
 		}
 	}
 
-	private static final SparseIntArray QUICK_ACTION_WINDOW_CONFIGURATION = new SparseIntArray() {
-		{
-			put(QuickActionWindow.Config.WINDOW_LAYOUT, R.layout.quick_action_window);
-			put(QuickActionWindow.Config.WINDOW_BACKGROUND_IF_ABOVE, R.drawable.quick_actions_background_above);
-			put(QuickActionWindow.Config.WINDOW_BACKGROUND_IF_BELOW, R.drawable.quick_actions_background_below);
-			put(QuickActionWindow.Config.ITEM_LAYOUT, R.layout.quick_action_item);
-			put(QuickActionWindow.Config.WINDOW_ANIMATION_STYLE, R.style.Animation_QuickActionWindow);
-			put(QuickActionWindow.Config.ITEM_APPEAR_ANIMATION, R.anim.quick_action_item_appear);
-			put(QuickActionWindow.Config.CONTAINER, R.id.quick_actions);
-			put(QuickActionWindow.Config.ITEM_ICON, R.id.quick_action_icon);
-			put(QuickActionWindow.Config.ITEM_LABEL, R.id.quick_action_label);
-			put(QuickActionWindow.Config.ARROW_OFFSET, 20);
-
-		}
-	};
-
-	private final class PluginMarketAdvertisement extends QuickActionWindow.MarketAdvertisement {
-		private static final String PKG_PREFIX = "com.naholyr.android.horairessncf.plugins.";
-
-		public PluginMarketAdvertisement(String plugin, String activity, int icon, String label) {
-			super(PKG_PREFIX + plugin + ".activity." + activity, getResources().getDrawable(icon), label, PKG_PREFIX + plugin,
-					"Erreur : Android Market non installé sur ce périphérique !");
-		}
-	}
-
-	private void showQuickActions(final View anchor) {
-		final ListView listView = getListView();
-		final long id = listView.getItemIdAtPosition(listView.getPositionForView(anchor));
+	@Override
+	protected QuickActionWindow getQuickActionWindow(final int position, final long id) {
 		final Intent pluginIntent = new Intent(Intent.ACTION_VIEW);
 		pluginIntent.setType(Gare.CONTENT_TYPE);
 
-		QuickActionWindow window = QuickActionWindow.getWindow(this, QUICK_ACTION_WINDOW_CONFIGURATION, new QuickActionWindow.Initializer() {
+		final Context context = this;
+
+		QuickActionWindow window = QuickActionWindow.getWindow(this, Common.QUICK_ACTION_WINDOW_CONFIGURATION, new QuickActionWindow.Initializer() {
 			@Override
 			public void setItems(QuickActionWindow window) {
 				// Add item "add/remove to favorites", always here
 				int favStringId, favIconId;
-				if (Gare.getFavorites(GaresActivity.this).has(id)) {
+				if (Gare.getFavorites(context).has(id)) {
 					favStringId = R.string.action_remove_favorite;
 					favIconId = R.drawable.quick_action_remove_favorite;
 				} else {
@@ -296,12 +262,13 @@ public class GaresActivity extends ListActivity {
 				// Advertisement items for not found plugins (GMap &
 				// Itineraires)
 				QuickActionWindow.Advertisement[] ads = new QuickActionWindow.Advertisement[] {
-						new PluginMarketAdvertisement("gmap", "MapActivity", R.drawable.quick_action_gmap, "Localiser sur une carte"),
-						new PluginMarketAdvertisement("itineraire", "ItineraireFromActivity", R.drawable.quick_action_itineraire_from, "Itinéraire depuis cette gare..."),
-						new PluginMarketAdvertisement("itineraire", "ItineraireToActivity", R.drawable.quick_action_itineraire_to, "Itinéraire vers cette gare..."), };
+						new Common.PluginMarketAdvertisement(context, "gmap", "MapActivity", R.drawable.quick_action_gmap, "Localiser sur une carte"),
+						new Common.PluginMarketAdvertisement(context, "itineraire", "ItineraireFromActivity", R.drawable.quick_action_itineraire_from,
+								"Itinéraire depuis cette gare..."),
+						new Common.PluginMarketAdvertisement(context, "itineraire", "ItineraireToActivity", R.drawable.quick_action_itineraire_to, "Itinéraire vers cette gare..."), };
 
 				// Plugins
-				window.addItemsForIntent(GaresActivity.this, pluginIntent, new QuickActionWindow.IntentItem.ErrorCallback() {
+				window.addItemsForIntent(context, pluginIntent, new QuickActionWindow.IntentItem.ErrorCallback() {
 					@Override
 					public void onError(ActivityNotFoundException e, IntentItem item) {
 						Toast.makeText(item.getContext(), "Erreur : Application introuvable", Toast.LENGTH_LONG).show();
@@ -309,15 +276,14 @@ public class GaresActivity extends ListActivity {
 					}
 				}, ads);
 			}
-		}, 0);
+		}, Common.QUICK_ACTION_WINDOW_GARE);
 
 		// Complete intent items, adding station ID
 		Bundle extras = new Bundle();
 		extras.putLong(Gare._ID, id);
 		window.dispatchIntentExtras(extras, pluginIntent);
 
-		// Show window next to clicked view
-		window.show(anchor);
+		return window;
 	}
 
 	private void showGares(String action) {
@@ -486,9 +452,9 @@ public class GaresActivity extends ListActivity {
 		String provider = "network";
 		LocationManager locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		if (!locManager.isProviderEnabled(provider)) {
-			if (DEBUG) {
-				mLatitude = 45.7605367;
-				mLongitude = 4.8589391;
+			if (Common.DEBUG) {
+				mLatitude = Common.DEBUG_LATITUDE;
+				mLongitude = Common.DEBUG_LONGITUDE;
 			} else {
 				throw new LocationException();
 			}

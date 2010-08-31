@@ -5,10 +5,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 
+import com.naholyr.android.horairessncf.Common;
 import com.naholyr.android.horairessncf.R;
+import com.naholyr.android.ui.QuickActionWindow;
 
 abstract public class ListActivity extends android.app.ListActivity {
 
@@ -33,10 +37,24 @@ abstract public class ListActivity extends android.app.ListActivity {
 		setContentView(getLayout());
 		findViewById(android.R.id.empty).setVisibility(View.GONE);
 		findViewById(R.id.loading).setVisibility(View.VISIBLE);
-		new Task().execute();
+		new QueryTask().execute();
+		// Quick actions
+		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+				showQuickActions(view, position, id);
+			}
+		});
 	}
 
-	private class Task extends AsyncTask<Void, Void, Void> {
+	protected void showQuickActions(final View anchor, final int position, final long id) {
+		QuickActionWindow window = getQuickActionWindow(position, id);
+		if (window != null) {
+			window.show(anchor);
+		}
+	}
+
+	private class QueryTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
 		protected Void doInBackground(Void... params) {
@@ -64,6 +82,7 @@ abstract public class ListActivity extends android.app.ListActivity {
 	}
 
 	protected void onQueryFailure(Throwable e) {
+		Log.e(Common.TAG, "Query failed", e);
 		finish();
 	}
 
@@ -79,5 +98,7 @@ abstract public class ListActivity extends android.app.ListActivity {
 	abstract protected Cursor queryCursor() throws Throwable;
 
 	abstract protected ListAdapter getAdapter(Cursor c);
+
+	abstract protected QuickActionWindow getQuickActionWindow(int position, long id);
 
 }

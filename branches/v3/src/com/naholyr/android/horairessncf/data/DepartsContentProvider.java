@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.naholyr.android.horairessncf.Common;
 import com.naholyr.android.horairessncf.Depart;
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.ws.IBrowser;
@@ -23,8 +24,6 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 
 	public static final int DEPARTS_PAR_GARE = 0;
 	public static final int DEPART_PAR_ID = 1;
-
-	public static final int DEFAULT_LIMIT = 12;
 
 	public static final String[] COLUMN_NAMES = new String[] { Depart._ID, Depart.TYPE, Depart.NUMERO, Depart.DESTINATION, Depart.HEURE_DEPART, Depart.ORIGINE,
 			Depart.HEURE_ARRIVEE, Depart.RETARD, Depart.MOTIF_RETARD, Depart.QUAI };
@@ -192,7 +191,7 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 			String sLimit = uri.getQueryParameter("limit");
 			limit = Integer.valueOf(sLimit);
 		} catch (NumberFormatException e) {
-			limit = DEFAULT_LIMIT;
+			limit = Common.DEFAULT_NB_TRAINS;
 		}
 
 		switch (sUriMatcher.match(uri)) {

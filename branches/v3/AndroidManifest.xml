@@ -33,6 +33,15 @@
 				<data android:mimeType="vnd.android.cursor.item/vnd.horairessncf.gare" />
 			</intent-filter>
 		</activity>
+		<activity android:name=".activity.TrainActivity"
+			android:label="Informations trajet" android:icon="@drawable/quick_action_info_train"
+			android:theme="@android:style/Theme.Light.NoTitleBar">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="vnd.android.cursor.item/vnd.horairessncf.depart" />
+			</intent-filter>
+		</activity>
 		<activity android:name=".activity.UpdateActivity"
 			android:theme="@android:style/Theme.Translucent.NoTitleBar"
 			android:label="Mise à jour" android:launchMode="singleTop" />
