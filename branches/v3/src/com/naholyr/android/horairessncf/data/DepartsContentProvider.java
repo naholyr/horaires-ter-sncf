@@ -82,6 +82,7 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 				return true;
 			} catch (IOException e) {
 				// FIXME
+				e.printStackTrace();
 				return false;
 			}
 		}

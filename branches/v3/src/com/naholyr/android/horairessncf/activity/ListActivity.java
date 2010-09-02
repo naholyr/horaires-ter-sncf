@@ -7,8 +7,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.naholyr.android.horairessncf.Common;
 import com.naholyr.android.horairessncf.R;
@@ -38,13 +38,12 @@ abstract public class ListActivity extends android.app.ListActivity {
 		findViewById(android.R.id.empty).setVisibility(View.GONE);
 		findViewById(R.id.loading).setVisibility(View.VISIBLE);
 		new QueryTask().execute();
-		// Quick actions
-		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-				showQuickActions(view, position, id);
-			}
-		});
+	}
+
+	@Override
+	protected void onListItemClick(ListView listView, View view, int position, long id) {
+		// Quick Actions
+		showQuickActions(view, position, id);
 	}
 
 	protected void showQuickActions(final View anchor, final int position, final long id) {
