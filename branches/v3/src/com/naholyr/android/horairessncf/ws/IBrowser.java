@@ -2,6 +2,7 @@ package com.naholyr.android.horairessncf.ws;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import android.util.SparseArray;
 
@@ -88,5 +89,14 @@ public interface IBrowser {
 	 * @throws IOException
 	 */
 	public ProchainTrain.Depart getItem(String numero) throws IOException;
+
+	/**
+	 * Liste des arrêts d'un train
+	 * 
+	 * @param numeroTrain
+	 * @return
+	 * @throws IOException
+	 */
+	public List<Map<String, Object>> getArrets(String numeroTrain) throws IOException;
 
 }

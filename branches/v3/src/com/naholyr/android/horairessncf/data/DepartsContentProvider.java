@@ -205,9 +205,13 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 					long idGare = Long.valueOf(qIdGare);
 					Cursor cGare = Gare.retrieveById(getContext(), idGare);
 					if (cGare == null || !cGare.moveToFirst()) {
+						if (cGare != null) {
+							cGare.close();
+						}
 						throw new IllegalArgumentException("ID gare invalide ! id=" + idGare);
 					}
 					nomGare = cGare.getString(cGare.getColumnIndex(Gare.NOM));
+					cGare.close();
 				}
 				IBrowser browser = getBrowserInstance();
 				try {

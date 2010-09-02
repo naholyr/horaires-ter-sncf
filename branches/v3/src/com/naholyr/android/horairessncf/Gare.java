@@ -48,11 +48,15 @@ public class Gare implements BaseColumns {
 		public boolean has(long id) {
 			Uri uri = Uri.withAppendedPath(Gares.CONTENT_URI, String.valueOf(id));
 			Cursor c = mContext.getContentResolver().query(uri, new String[] { FAVORITE }, null, null, null);
-			if (!c.moveToFirst()) {
-				return false;
+
+			boolean isFavorite = false;
+			if (c != null) {
+				if (c.moveToFirst()) {
+					isFavorite = c.getInt(c.getColumnIndex(FAVORITE)) > 0;
+				}
+				c.close();
 			}
-			boolean isFavorite = c.getInt(c.getColumnIndex(FAVORITE)) > 0;
-			c.close();
+
 			return isFavorite;
 		}
 
@@ -75,6 +79,7 @@ public class Gare implements BaseColumns {
 				while (c.moveToNext()) {
 					result.add(c.getLong(c.getColumnIndex(_ID)));
 				}
+				c.close();
 			}
 			long[] result_as_array = new long[result.size()];
 			for (int i = 0; i < result_as_array.length; i++) {

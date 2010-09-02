@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	android:versionCode="300" android:versionName="3.0 (refonte)"
-	package="com.naholyr.android.horairessncf">	<!-- Application, options Froyo incluses -->
+	package="com.naholyr.android.horairessncf">
+	<!-- Application, options Froyo incluses -->
 	<application android:allowBackup="true"
 		android:restoreAnyVersion="false" android:allowClearUserData="true"
 		android:icon="@drawable/icon" android:label="@string/app_name"
@@ -33,8 +34,8 @@
 				<data android:mimeType="vnd.android.cursor.item/vnd.horairessncf.gare" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".activity.TrainActivity"
-			android:label="Informations trajet" android:icon="@drawable/quick_action_info_train"
+		<activity android:name=".activity.ArretsActivity"
+			android:label="Liste des arrêts" android:icon="@drawable/quick_action_info_train"
 			android:theme="@android:style/Theme.Light.NoTitleBar">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
@@ -52,6 +53,8 @@
 			android:name=".data.GaresContentProvider" />
 		<provider android:authorities="naholyr.horairessncf.providers.DepartsContentProvider"
 			android:name=".data.DepartsContentProvider" />
+		<provider android:authorities="naholyr.horairessncf.providers.ArretsContentProvider"
+			android:name=".data.ArretsContentProvider" />
 		<provider
 			android:authorities="naholyr.horairessncf.providers.GaresSearchSuggestionsProvider"
 			android:name=".data.GaresSearchSuggestionsProvider" />

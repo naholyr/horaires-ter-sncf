@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -73,21 +74,24 @@ public class DepartsActivity extends ListActivity {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					Log.d(Common.TAG, "idGare = " + mIdGare);
 					Cursor c = Gare.retrieveById(getApplicationContext(), mIdGare);
-					if (c != null && c.moveToFirst()) {
-						final String nom = c.getString(c.getColumnIndex(Gare.NOM));
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								TextView title1 = (TextView) findViewById(R.id.title1);
-								TextView title2 = (TextView) findViewById(R.id.title2);
-								title1.setText(nom);
-								title2.setText(nom);
-								Typeface font = Typeface.createFromAsset(getAssets(), "CALIBRIB.TTF");
-								title1.setTypeface(font);
-								title2.setTypeface(font);
-							}
-						});
+					if (c != null) {
+						if (c.moveToFirst()) {
+							final String nom = c.getString(c.getColumnIndex(Gare.NOM));
+							runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									TextView title1 = (TextView) findViewById(R.id.title1);
+									TextView title2 = (TextView) findViewById(R.id.title2);
+									title1.setText(nom);
+									title2.setText(nom);
+									Typeface font = Typeface.createFromAsset(getAssets(), "CALIBRIB.TTF");
+									title1.setTypeface(font);
+									title2.setTypeface(font);
+								}
+							});
+						}
 						c.close();
 					}
 				}

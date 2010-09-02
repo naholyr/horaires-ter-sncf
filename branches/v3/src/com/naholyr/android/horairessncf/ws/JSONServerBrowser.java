@@ -1,10 +1,12 @@
 package com.naholyr.android.horairessncf.ws;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,6 +14,7 @@ import org.json.JSONObject;
 
 import android.util.SparseArray;
 
+import com.naholyr.android.horairessncf.Arret;
 import com.naholyr.android.horairessncf.ws.JSONWebServiceClient.JSONResponse;
 
 public class JSONServerBrowser implements IBrowser {
@@ -434,6 +437,38 @@ public class JSONServerBrowser implements IBrowser {
 			return ProchainTrain.TYPE_CORAIL;
 		}
 		return ProchainTrain.TYPE_AUTRE;
+	}
+
+	public List<Map<String, Object>> getArrets(String numeroTrain) throws IOException {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("num", numeroTrain);
+		// Request
+		try {
+			JSONResponse response = mClient.query(WS_TRAIN_URI, params);
+			if (response.isSuccess()) {
+				List<Map<String, Object>> trajet = new ArrayList<Map<String, Object>>();
+				JSONObject data = response.getSuccessData();
+				JSONObject heures = data.getJSONObject("heures");
+				JSONArray gares = data.getJSONArray("arrets");
+				for (int i = 0; i < gares.length(); i++) {
+					String gare = gares.getString(i);
+					Map<String, Object> row = new HashMap<String, Object>();
+					row.put(Arret.NOM_GARE, gare);
+					if (heures.has(gare)) {
+						String heure = heures.getString(gare);
+						row.put(Arret.HEURE, heure);
+					}
+					trajet.add(row);
+				}
+				return trajet;
+			} else {
+				return null;
+			}
+		} catch (JSONException e) {
+			return null;
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

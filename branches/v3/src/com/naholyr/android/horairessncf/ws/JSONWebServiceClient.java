@@ -29,7 +29,7 @@ class JSONWebServiceClient {
 		}
 
 		StringWriter writer = new StringWriter();
-		BufferedReader buffer = new BufferedReader(new InputStreamReader(is));
+		BufferedReader buffer = new BufferedReader(new InputStreamReader(is), 512);
 		String line = "";
 		while (null != (line = buffer.readLine())) {
 			writer.write(line);

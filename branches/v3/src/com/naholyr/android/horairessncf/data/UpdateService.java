@@ -55,25 +55,27 @@ public class UpdateService extends BroadcastReceiver {
 					} catch (IOException e) {
 						Log.e(TAG, "Error retrieving update file", e);
 					}
-					BufferedReader reader = new BufferedReader(new InputStreamReader(stream), 512);
-					// Read first line = number of stations
-					try {
-						String line = reader.readLine();
-						if (line != null) {
-							try {
-								if (Integer.parseInt(line.trim()) > 0) {
-									sendUpdateNotification(context);
-								} else {
-									Log.i(TAG, "No update available");
+					if (stream != null) {
+						BufferedReader reader = new BufferedReader(new InputStreamReader(stream), 512);
+						// Read first line = number of stations
+						try {
+							String line = reader.readLine();
+							if (line != null) {
+								try {
+									if (Integer.parseInt(line.trim()) > 0) {
+										sendUpdateNotification(context);
+									} else {
+										Log.i(TAG, "No update available");
+									}
+								} catch (NumberFormatException e) {
+									Log.e(TAG, "Invalid number in update file : " + line, e);
 								}
-							} catch (NumberFormatException e) {
-								Log.e(TAG, "Invalid number in update file : " + line, e);
+							} else {
+								Log.e(TAG, "No data in update file");
 							}
-						} else {
-							Log.e(TAG, "No data in update file");
+						} catch (IOException e) {
+							Log.e(TAG, "Cannot read update file", e);
 						}
-					} catch (IOException e) {
-						Log.e(TAG, "Cannot read update file", e);
 					}
 				}
 			} catch (SQLException e) {
