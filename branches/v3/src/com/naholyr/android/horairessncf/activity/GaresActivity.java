@@ -62,6 +62,7 @@ public class GaresActivity extends ListActivity {
 
 	@Override
 	protected ListAdapter getAdapter(Cursor c) {
+		startManagingCursor(c);
 		if (mLatitude != 0 && mLongitude != 0) {
 			return new ListeGaresAdapter(this, c, mLatitude, mLongitude);
 		} else {

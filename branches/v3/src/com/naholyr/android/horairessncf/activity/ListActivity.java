@@ -18,6 +18,8 @@ abstract public class ListActivity extends android.app.ListActivity {
 
 	private Cursor mCursor;
 
+	protected boolean mLoading = false;
+
 	private Handler mQueryFailureHandler = new Handler(new Handler.Callback() {
 		@Override
 		public boolean handleMessage(Message msg) {
@@ -64,7 +66,6 @@ abstract public class ListActivity extends android.app.ListActivity {
 						@Override
 						public void run() {
 							findViewById(R.id.loading).setVisibility(View.GONE);
-							startManagingCursor(mCursor);
 							ListAdapter adapter = getAdapter(mCursor);
 							setListAdapter(adapter);
 						}
@@ -87,6 +88,36 @@ abstract public class ListActivity extends android.app.ListActivity {
 
 	protected Cursor getCursor() {
 		return mCursor;
+	}
+
+	protected void refresh(final Runnable postRefresh) {
+		final View list = getListView();
+		final View empty = findViewById(android.R.id.empty);
+		final View loading = findViewById(R.id.loading);
+		list.setVisibility(View.GONE);
+		empty.setVisibility(View.GONE);
+		loading.setVisibility(View.VISIBLE);
+		mLoading = true;
+		new Thread() {
+			public void run() {
+				getCursor().requery();
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (getCursor().getCount() > 0) {
+							list.setVisibility(View.VISIBLE);
+						} else {
+							empty.setVisibility(View.VISIBLE);
+						}
+						loading.setVisibility(View.GONE);
+						if (postRefresh != null) {
+							postRefresh.run();
+						}
+					}
+				});
+				mLoading = false;
+			}
+		}.start();
 	}
 
 	protected void requestWindowFeatures() {

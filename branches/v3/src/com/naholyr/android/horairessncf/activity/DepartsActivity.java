@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.widget.ListAdapter;
 import android.widget.TextView;
@@ -103,6 +102,10 @@ public class DepartsActivity extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.departs, menu);
+		MenuItem item = menu.findItem(R.id.menu_refresh);
+		if (item != null) {
+			item.setEnabled(!mLoading);
+		}
 		return true;
 	}
 
@@ -110,13 +113,7 @@ public class DepartsActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_refresh: {
-				getListView().setVisibility(View.GONE);
-				getCursor().requery();
-				if (getCursor().getCount() > 0) {
-					getListView().setVisibility(View.VISIBLE);
-				} else {
-					findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
-				}
+				refresh(null);
 				break;
 			}
 			case R.id.menu_back: {
