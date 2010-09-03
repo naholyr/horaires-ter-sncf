@@ -184,7 +184,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 				selectionArgs = selectionArgsList.toArray(new String[0]);
 				break;
 			case GARES_PAR_NOM: {
-				String[] keywords = uri.getPathSegments().get(2).split(" +");
+				String[] keywords = uri.getQueryParameter("keywords").split(" +");
 				sqlBuilder.appendWhere("1 = 1");
 				for (String keyword : keywords) {
 					String like = "%" + keyword + "%";
