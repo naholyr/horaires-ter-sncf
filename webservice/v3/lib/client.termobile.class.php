@@ -216,15 +216,30 @@ class client_termobile implements client_interface
     return $departs;
   }
 
-  public function cherche_train($num)
+  public function cherche_train($num, $time = null, $try_around_if_fail = true)
   {
     // Rechercher le train
-    $html = $this->do_post('http://www.termobile.fr/rechercherRMT.do', array('numTrain' => $num, 'dateTrain' => date('Y|m|d')), $status);
+    if (is_null($time)) {
+      $time = time();
+    }
+    $html = $this->do_post('http://www.termobile.fr/rechercherRMT.do', array('numTrain' => $num, 'dateTrain' => date('Y|m|d', $time)), $status);
     if ($html !== false && preg_match('/n° *recherch(é|&eacute;)/i', utf8_encode($html))) {
       $html = $this->do_get(dirname($this->current_url()) . '/montraindetail.jsp', array('idMonTrain' => '0'), $status);
     }
     if ($html === false) {
       erreur("Erreur serveur (status = $status)", 321);
+    }
+    if (false !== strpos($html, 'Veuillez saisir un autre num')) {
+      // Le train n'existe pas pour la date donnée.
+      // Cas autour de minuit : on est probablement en train de demander le train du jour suivant ou précédent et il y a un décalage avec l'heure serveur !
+      $h = intval(date('h'));
+      if ($try_around_if_fail && $h >= 23) {
+        return $this->cherche_train($num, $time + 24*3600, false);
+      } elseif ($try_around_if_fail && $h <= 2) {
+        return $this->cherche_train($num, $time - 24*3600, false);
+      } else {
+        erreur("Numéro de train invalide à la date demandée", 331);
+      }
     }
     // Extraire la liste des arrêts du train demandé
     $info = array();
