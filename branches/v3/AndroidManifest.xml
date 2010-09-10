@@ -9,7 +9,8 @@
 		android:name="MyApplication">
 		<!-- Activité principale : liste des gares -->
 		<activity android:name=".activity.GaresActivity"
-			android:label="@string/app_name" android:theme="@android:style/Theme.Light.NoTitleBar">
+			android:label="@string/app_name" android:theme="@android:style/Theme.Light.NoTitleBar"
+			android:configChanges="keyboardHidden|orientation">
 			<!-- Activité principale -->
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -27,7 +28,8 @@
 			android:label="Horaires TER SNCF - Paramètres" />
 		<activity android:name=".activity.DepartsActivity"
 			android:label="Prochains départs" android:icon="@drawable/quick_action_prochains_departs"
-			android:theme="@android:style/Theme.Light.NoTitleBar">
+			android:theme="@android:style/Theme.Light.NoTitleBar"
+			android:configChanges="keyboardHidden|orientation">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
@@ -36,7 +38,8 @@
 		</activity>
 		<activity android:name=".activity.ArretsActivity"
 			android:label="Liste des arrêts" android:icon="@drawable/quick_action_info_train"
-			android:theme="@android:style/Theme.Light.NoTitleBar">
+			android:theme="@android:style/Theme.Light.NoTitleBar"
+			android:configChanges="keyboardHidden|orientation">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
@@ -45,7 +48,8 @@
 		</activity>
 		<activity android:name=".activity.UpdateActivity"
 			android:theme="@android:style/Theme.Translucent.NoTitleBar"
-			android:label="Mise à jour" android:launchMode="singleTop" />
+			android:label="Mise à jour" android:launchMode="singleTop"
+			android:configChanges="keyboardHidden|orientation" />
 		<activity android:name="org.acra.CrashReportDialog"
 			android:theme="@android:style/Theme.Dialog" android:launchMode="singleInstance" />
 		<!-- Content providers -->
@@ -67,7 +71,7 @@
 				<action android:name="com.naholyr.android.horairessncf.action.UPDATE_GARES" />
 			</intent-filter>
 			<intent-filter>
-				<action android:name="android.intent.action.BOOT_COMPLETsED" />
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
 			</intent-filter>
 		</receiver>
 	</application>

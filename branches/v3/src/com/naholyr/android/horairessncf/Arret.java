@@ -51,7 +51,7 @@ public class Arret implements BaseColumns {
 		Cursor c = Depart.retrieveById(context, idDepart);
 		if (c != null) {
 			if (c.moveToFirst()) {
-				String numeroTrain = c.getString(c.getColumnIndex(Depart.NUMERO));
+				String numeroTrain = c.getString(c.getColumnIndexOrThrow(Depart.NUMERO));
 				result = retrieveByNumeroTrain(context, numeroTrain);
 			}
 			c.close();

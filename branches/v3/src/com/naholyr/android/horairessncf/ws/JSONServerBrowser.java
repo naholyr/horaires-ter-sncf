@@ -12,16 +12,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.naholyr.android.horairessncf.Arret;
+import com.naholyr.android.horairessncf.Common;
 import com.naholyr.android.horairessncf.ws.JSONWebServiceClient.JSONResponse;
 
 public class JSONServerBrowser implements IBrowser {
 
 	public static final String WS_HOST = "http://horaires-ter-sncf.naholyr.fr/v3";
 	public static final String WS_GARE_URI = WS_HOST + "/prochainsdeparts.php";
-	public static final String WS_TRAIN_URI = WS_HOST + "/train.php";
+	public static final String WS_TRAIN_URI = "http://horaires-ter-sncf.naholyr.fr/v3/train.php";
 
 	private int mIdGare;
 	private String mNomGare;
@@ -244,7 +246,7 @@ public class JSONServerBrowser implements IBrowser {
 			try {
 				updateStatusMessage(STEP_SEARCH_GARE);
 				HashMap<String, Object> params = new HashMap<String, Object>();
-				params.put("gare", HTTP.removeAccents(nom));
+				params.put("gare", Common.removeAccents(nom));
 				params.put("nb", nbItems);
 				JSONResponse response = mClient.query(WS_GARE_URI, params);
 				if (response.isError()) {
@@ -292,7 +294,7 @@ public class JSONServerBrowser implements IBrowser {
 			try {
 				updateStatusMessage(STEP_SEARCH_HORAIRES);
 				HashMap<String, Object> params = new HashMap<String, Object>();
-				params.put("gare", HTTP.removeAccents(mNomGare));
+				params.put("gare", Common.removeAccents(mNomGare));
 				params.put("id", mIdGare);
 				params.put("nb", nbItems);
 				JSONResponse response = mClient.query(WS_GARE_URI, params);
@@ -462,9 +464,11 @@ public class JSONServerBrowser implements IBrowser {
 				}
 				return trajet;
 			} else {
+				Log.e(Common.TAG, "Failed [" + response.getCode() + "] " + response.getErrorMessage());
 				return null;
 			}
 		} catch (JSONException e) {
+			e.printStackTrace();
 			return null;
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);

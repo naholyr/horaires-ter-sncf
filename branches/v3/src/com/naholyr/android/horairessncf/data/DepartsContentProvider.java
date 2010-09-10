@@ -138,6 +138,7 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 			if (index >= 0) {
 				id = mCachedResultsById.keyAt(index);
 			} else {
+				id = 1;
 				while (mCachedResultsById.indexOfKey(id) >= 0) {
 					id++;
 				}
@@ -211,7 +212,7 @@ public class DepartsContentProvider extends android.content.ContentProvider {
 						}
 						throw new IllegalArgumentException("ID gare invalide ! id=" + idGare);
 					}
-					nomGare = cGare.getString(cGare.getColumnIndex(Gare.NOM));
+					nomGare = cGare.getString(cGare.getColumnIndexOrThrow(Gare.NOM));
 					cGare.close();
 				}
 				IBrowser browser = getBrowserInstance();

@@ -30,4 +30,6 @@
   <string name="pref_disable_search_history">disable_search_history</string>
   <string name="pref_clear_search_history">clear_search_history</string>
 <string name="loading">Recherche en cours...</string>
+<string name="no_data_search">Aucun résultat pour votre recherche...</string>
+    <string name="no_data_favorites">Aucune gare dans vos favoris !</string>
 </resources>

@@ -49,7 +49,7 @@ abstract public class ListActivity extends android.app.ListActivity {
 	}
 
 	protected void showQuickActions(final View anchor, final int position, final long id) {
-		QuickActionWindow window = getQuickActionWindow(position, id);
+		QuickActionWindow window = getQuickActionWindow(anchor, position, id);
 		if (window != null) {
 			window.show(anchor);
 		}
@@ -129,6 +129,6 @@ abstract public class ListActivity extends android.app.ListActivity {
 
 	abstract protected ListAdapter getAdapter(Cursor c);
 
-	abstract protected QuickActionWindow getQuickActionWindow(int position, long id);
+	abstract protected QuickActionWindow getQuickActionWindow(View anchor, int position, long id);
 
 }

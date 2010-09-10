@@ -27,17 +27,21 @@
 		<TextView android:id="@+id/loading" style="@style/List_Loading" />
 		<ListView android:id="@id/android:list" style="@style/List" />
 		<LinearLayout android:orientation="vertical"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:id="@id/android:empty" android:layout_margin="20dip">
+			android:gravity="center" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@id/android:empty"
+			android:layout_margin="20dip">
 			<Button android:id="@+id/button_init_data"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:text="@string/no_data" />
-			<TextView android:id="@+id/txt_add_favorite"
-				android:layout_width="match_parent" android:layout_height="match_parent"
+			<TextView android:id="@+id/txt_no_data_gares"
+				android:layout_width="match_parent" android:layout_height="wrap_content"
+				android:textColor="@android:color/primary_text_light" android:text="@string/no_data"
+				android:gravity="center" android:visibility="gone"
+				android:layout_marginBottom="20dip" />
+			<TextView android:id="@+id/txt_no_data_gares_more"
+				android:layout_width="match_parent" android:layout_height="wrap_content"
 				android:textColor="@android:color/primary_text_light"
-				android:text="Aucune gare dans vos favoris.
-
-Effectuez une recherche ou listez les gares autour de vous (boutons en haut de l'application) pour en ajouter."
+				android:text="Effectuez une recherche ou listez les gares autour de vous (boutons en haut de l'application) pour en ajouter."
 				android:gravity="center" android:visibility="gone" />
 		</LinearLayout>
 	</LinearLayout>

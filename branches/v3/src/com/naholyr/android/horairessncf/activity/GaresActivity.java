@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.naholyr.android.horairessncf.Common;
@@ -119,7 +121,7 @@ public class GaresActivity extends ListActivity {
 				line2 = getString(R.string.nb_results_0);
 			} else if (count == 1) {
 				c.moveToFirst();
-				line2 = c.getString(c.getColumnIndex(Gare.NOM));
+				line2 = c.getString(c.getColumnIndexOrThrow(Gare.NOM));
 			} else {
 				line2 = getString(R.string.nb_results_more).replace("%d", String.valueOf(count));
 			}
@@ -127,8 +129,9 @@ public class GaresActivity extends ListActivity {
 		}
 		// Special case ACTION_FAVORITES : data can be empty but no need for
 		// initialization
-		if (ACTION_FAVORITES.equals(mAction) && c.getCount() == 0) {
-			fixEmptyFavorites();
+		if ((ACTION_FAVORITES.equals(mAction) || ACTION_SEARCH.equals(mAction)) && c.getCount() == 0) {
+
+			fixEmptyResults();
 		}
 		return c;
 	}
@@ -145,7 +148,7 @@ public class GaresActivity extends ListActivity {
 		}
 	}
 
-	private void fixEmptyFavorites() {
+	private void fixEmptyResults() {
 		Cursor cAll = Gare.query(this, null, null);
 		int count = 0;
 		if (cAll != null) {
@@ -153,11 +156,18 @@ public class GaresActivity extends ListActivity {
 		}
 		if (count != 0) {
 			// We have data, just no favorite
-			findViewById(R.id.txt_add_favorite).setVisibility(View.VISIBLE);
+			if (ACTION_FAVORITES.equals(mAction)) {
+				((TextView) findViewById(R.id.txt_no_data_gares)).setText(R.string.no_data_favorites);
+			} else if (ACTION_SEARCH.equals(mAction)) {
+				((TextView) findViewById(R.id.txt_no_data_gares)).setText(R.string.no_data_search);
+			}
+			findViewById(R.id.txt_no_data_gares).setVisibility(View.VISIBLE);
+			findViewById(R.id.txt_no_data_gares_more).setVisibility(View.VISIBLE);
 			findViewById(R.id.button_init_data).setVisibility(View.GONE);
 		} else {
 			// We really have no data
-			findViewById(R.id.txt_add_favorite).setVisibility(View.GONE);
+			findViewById(R.id.txt_no_data_gares).setVisibility(View.GONE);
+			findViewById(R.id.txt_no_data_gares_more).setVisibility(View.GONE);
 			findViewById(R.id.button_init_data).setVisibility(View.VISIBLE);
 			findViewById(R.id.button_init_data).setEnabled(true);
 		}
@@ -171,7 +181,7 @@ public class GaresActivity extends ListActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		Log.d(Common.TAG, "onCreate");
 		// Preferences
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		// Intent action
@@ -186,6 +196,9 @@ public class GaresActivity extends ListActivity {
 				mAction = prefAction;
 			}
 		}
+		// Create activity
+		super.onCreate(savedInstanceState);
+		// Store last home for later access
 		mPreferences.edit().putString(PREF_LAST_HOME, mAction).commit();
 		// Action Bar
 		if (ACTION_FAVORITES.equals(mAction)) {
@@ -235,7 +248,7 @@ public class GaresActivity extends ListActivity {
 	}
 
 	@Override
-	protected QuickActionWindow getQuickActionWindow(final int position, final long id) {
+	protected QuickActionWindow getQuickActionWindow(final View anchor, final int position, final long id) {
 		final Intent pluginIntent = new Intent(Intent.ACTION_VIEW);
 		pluginIntent.setType(Gare.CONTENT_TYPE);
 
@@ -260,14 +273,6 @@ public class GaresActivity extends ListActivity {
 					}
 				});
 
-				// Advertisement items for not found plugins (GMap &
-				// Itineraires)
-				QuickActionWindow.Advertisement[] ads = new QuickActionWindow.Advertisement[] {
-						new Common.PluginMarketAdvertisement(context, "gmap", "MapActivity", R.drawable.quick_action_gmap, "Localiser sur une carte"),
-						new Common.PluginMarketAdvertisement(context, "itineraire", "ItineraireFromActivity", R.drawable.quick_action_itineraire_from,
-								"Itinéraire depuis cette gare..."),
-						new Common.PluginMarketAdvertisement(context, "itineraire", "ItineraireToActivity", R.drawable.quick_action_itineraire_to, "Itinéraire vers cette gare..."), };
-
 				// Plugins
 				window.addItemsForIntent(context, pluginIntent, new QuickActionWindow.IntentItem.ErrorCallback() {
 					@Override
@@ -275,7 +280,7 @@ public class GaresActivity extends ListActivity {
 						Toast.makeText(item.getContext(), "Erreur : Application introuvable", Toast.LENGTH_LONG).show();
 						ErrorReporter.getInstance().handleSilentException(e);
 					}
-				}, ads);
+				}, Common.getAds(context, Common.AD_TYPE_GARE));
 			}
 		}, Common.QUICK_ACTION_WINDOW_GARE);
 
@@ -308,7 +313,7 @@ public class GaresActivity extends ListActivity {
 						Toast.makeText(this, "Mise à jour terminée avec succès", Toast.LENGTH_SHORT).show();
 						getCursor().requery();
 						// FIXME put that in a content observer ?
-						fixEmptyFavorites();
+						fixEmptyResults();
 						break;
 					case UpdateActivity.RESULT_CANCELED:
 						Toast.makeText(this, "Mise à jour annulée par l'utilisateur", Toast.LENGTH_SHORT).show();

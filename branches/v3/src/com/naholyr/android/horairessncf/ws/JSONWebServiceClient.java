@@ -13,6 +13,10 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
+import com.naholyr.android.horairessncf.Common;
+
 class JSONWebServiceClient {
 
 	public JSONResponse query(String serverUrl, Map<String, Object> params) throws IOException, MalformedURLException, JSONException {
@@ -43,6 +47,7 @@ class JSONWebServiceClient {
 		private JSONObject mObject;
 
 		public JSONResponse(String json) throws JSONException {
+			Log.d(Common.TAG, json);
 			mObject = new JSONObject(json);
 		}
 

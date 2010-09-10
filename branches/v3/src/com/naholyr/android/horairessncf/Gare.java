@@ -52,7 +52,7 @@ public class Gare implements BaseColumns {
 			boolean isFavorite = false;
 			if (c != null) {
 				if (c.moveToFirst()) {
-					isFavorite = c.getInt(c.getColumnIndex(FAVORITE)) > 0;
+					isFavorite = c.getInt(c.getColumnIndexOrThrow(FAVORITE)) > 0;
 				}
 				c.close();
 			}
@@ -77,7 +77,7 @@ public class Gare implements BaseColumns {
 			ArrayList<Long> result = new ArrayList<Long>();
 			if (c != null) {
 				while (c.moveToNext()) {
-					result.add(c.getLong(c.getColumnIndex(_ID)));
+					result.add(c.getLong(c.getColumnIndexOrThrow(_ID)));
 				}
 				c.close();
 			}

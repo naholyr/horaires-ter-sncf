@@ -9,9 +9,11 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.naholyr.android.horairessncf.Arret;
+import com.naholyr.android.horairessncf.Common;
 import com.naholyr.android.horairessncf.ws.IBrowser;
 import com.naholyr.android.horairessncf.ws.JSONServerBrowser;
 
@@ -90,8 +92,11 @@ public class ArretsContentProvider extends android.content.ContentProvider {
 		public void query() throws IOException {
 			clear();
 			List<Map<String, Object>> arrets = mBrowser.getArrets(mNumeroTrain);
-			for (Map<String, Object> arret : arrets) {
-				addRow(arretToRow(arret));
+			if (arrets != null) {
+				Log.d(Common.TAG, "found " + arrets.size());
+				for (Map<String, Object> arret : arrets) {
+					addRow(arretToRow(arret));
+				}
 			}
 		}
 
@@ -122,6 +127,7 @@ public class ArretsContentProvider extends android.content.ContentProvider {
 		if (cache) {
 			int id = Integer.valueOf(String.valueOf(row[0]));
 			if (id == 0) {
+				id = 1;
 				while (mCachedResultsById.indexOfKey(id) >= 0) {
 					id++;
 				}
@@ -170,6 +176,7 @@ public class ArretsContentProvider extends android.content.ContentProvider {
 				}
 				IBrowser browser = getBrowserInstance();
 				try {
+					Log.d(Common.TAG, "query");
 					c.query(browser, numeroTrain);
 				} catch (IOException e) {
 					// FIXME Auto-generated catch block
