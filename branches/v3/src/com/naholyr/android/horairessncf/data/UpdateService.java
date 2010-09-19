@@ -38,7 +38,7 @@ public class UpdateService extends BroadcastReceiver {
 		} else if (ALARM_ACTION.equals(intent.getAction())) {
 			// Check latest update
 			try {
-				SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+				SQLiteDatabase db = new DatabaseHelper(context).getWritableDatabase();
 				String updateDate = DatabaseHelper.getLastUpdate(db);
 				db.close();
 				if (updateDate == null) {

@@ -202,7 +202,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 			sortOrder = getDefaultOrderBy(latitude, longitude);
 		}
 
-		SQLiteDatabase db = mDbHelper.getReadableDatabase();
+		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		String limit = uri.getQueryParameter("limit");
 		String favsFirst = uri.getQueryParameter("favs_first");
 		if (favsFirst != null && favsFirst.matches("true|yes|1")) {
