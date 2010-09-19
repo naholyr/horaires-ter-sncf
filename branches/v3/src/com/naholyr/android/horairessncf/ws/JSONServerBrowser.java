@@ -453,11 +453,13 @@ public class JSONServerBrowser implements IBrowser {
 				JSONObject heures = data.getJSONObject("heures");
 				JSONArray gares = data.getJSONArray("arrets");
 				for (int i = 0; i < gares.length(); i++) {
-					String gare = gares.getString(i);
+					String nomGare = gares.getString(i);
+					// Generate row
 					Map<String, Object> row = new HashMap<String, Object>();
-					row.put(Arret.NOM_GARE, gare);
-					if (heures.has(gare)) {
-						String heure = heures.getString(gare);
+					row.put(Arret.ID_GARE, 0);
+					row.put(Arret.NOM_GARE, nomGare);
+					if (heures.has(nomGare)) {
+						String heure = heures.getString(nomGare);
 						row.put(Arret.HEURE, heure);
 					}
 					trajet.add(row);

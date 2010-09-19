@@ -20,6 +20,8 @@ public class ListeDepartsAdapter extends SimpleCursorAdapter {
 	private static final String[] FROM = new String[] { Depart.TYPE, Depart.NUMERO, Depart.DESTINATION, Depart.HEURE_DEPART, Depart.QUAI, Depart.RETARD, Depart.MOTIF_RETARD };
 	private static final int[] TO = new int[] { R.id.type_text, R.id.numero, R.id.destination, R.id.heure, R.id.quai, R.id.retard, R.id.motif };
 
+	private static Animation mDelayAnim = null;
+
 	public ListeDepartsAdapter(Context context, Cursor c) {
 		super(context, LAYOUT, c, FROM, TO);
 	}
@@ -32,33 +34,27 @@ public class ListeDepartsAdapter extends SimpleCursorAdapter {
 		// Alternate background colors
 		v.findViewById(R.id.depart_item).setBackgroundResource(position % 2 == 1 ? R.color.depart_2 : R.color.depart_1);
 
-		// No delay : hide layout...
+		// Delay information
 		TextView delay = (TextView) v.findViewById(R.id.retard);
 		boolean hasDelay = delay != null && !TextUtils.isEmpty(delay.getText());
 		final View delayLayout = v.findViewById(R.id.layout_retard);
-		delayLayout.setVisibility(View.GONE);
+		final View delayText = v.findViewById(R.id.motif);
+		// No delay : hide layout...
+		if (!hasDelay) {
+			delayLayout.setVisibility(View.GONE);
+			delayText.setVisibility(View.GONE);
+		}
 		// ...else show it with an animation
-		if (hasDelay) {
-			Animation anim = AnimationUtils.loadAnimation(v.getContext(), android.R.anim.slide_in_left);
-			anim.setDuration(500);
-			anim.setStartOffset(1000);
-			anim.setAnimationListener(new Animation.AnimationListener() {
-
-				@Override
-				public void onAnimationStart(Animation animation) {
-					delayLayout.setVisibility(View.VISIBLE);
-				}
-
-				@Override
-				public void onAnimationRepeat(Animation animation) {
-				}
-
-				@Override
-				public void onAnimationEnd(Animation animation) {
-				}
-
-			});
-			delayLayout.startAnimation(anim);
+		else {
+			delayLayout.setVisibility(View.VISIBLE);
+			delayText.setVisibility(View.VISIBLE);
+			if (mDelayAnim == null) {
+				mDelayAnim = AnimationUtils.loadAnimation(v.getContext(), android.R.anim.slide_in_left);
+				mDelayAnim.setStartOffset(1000);
+				mDelayAnim.setDuration(500);
+			}
+			delayLayout.startAnimation(mDelayAnim);
+			delayText.startAnimation(mDelayAnim);
 		}
 
 		// Train type : text to image (if possible)

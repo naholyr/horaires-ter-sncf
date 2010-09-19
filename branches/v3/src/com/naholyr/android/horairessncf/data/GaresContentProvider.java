@@ -111,11 +111,20 @@ public class GaresContentProvider extends android.content.ContentProvider {
 		return count;
 	}
 
+	private static void fixIndexNom(ContentValues values) {
+		String nom = values.getAsString(Gare.NOM);
+		if (nom != null) {
+			values.put(Gare.INDEX_NOM, Gare.indexify(nom));
+		}
+	}
+
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		if (sUriMatcher.match(uri) != GARES) {
 			throw new IllegalArgumentException("Unsupported URI for insert: " + uri);
 		}
+
+		fixIndexNom(values);
 
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		long rowid = db.insert(DatabaseHelper.TABLE_GARES, Gare.NOM, values);
@@ -188,7 +197,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 				sqlBuilder.appendWhere("1 = 1");
 				for (String keyword : keywords) {
 					String like = "%" + keyword + "%";
-					sqlBuilder.appendWhere(" AND " + Gare.NOM + " LIKE ");
+					sqlBuilder.appendWhere(" AND " + Gare.INDEX_NOM + " LIKE ");
 					sqlBuilder.appendWhereEscapeString(like);
 				}
 				break;
@@ -219,6 +228,8 @@ public class GaresContentProvider extends android.content.ContentProvider {
 	public int update(Uri uri, ContentValues values, String where, String[] whereArgs) {
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		int count;
+
+		fixIndexNom(values);
 
 		switch (sUriMatcher.match(uri)) {
 			case GARE_PAR_NOM: {

@@ -36,9 +36,9 @@
 					android:padding="3dip" />
 				<TextView android:id="@+id/retard" style="@style/Depart.Retard.Heure.Text"
 					android:text="20 min" />
-				<TextView android:id="@+id/motif" style="@style/Depart.Retard.Motif.Text"
-					android:text="Problème de signalisation" android:layout_marginLeft="8dip" />
 			</LinearLayout>
 		</LinearLayout>
+		<TextView android:id="@+id/motif" style="@style/Depart.Retard.Motif.Text"
+			android:text="Problème de signalisation" android:layout_marginLeft="8dip" />
 	</LinearLayout>
 </LinearLayout>

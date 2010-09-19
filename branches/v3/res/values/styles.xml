@@ -5,7 +5,7 @@
 		<item name="android:windowExitAnimation">@anim/quick_action_window_exit</item>
 	</style>
 	<style name="Depart_Layout" parent="@android:style/TextAppearance.Medium">
-		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_width">match_parent</item>
 		<item name="android:layout_height">wrap_content</item>
 	</style>
 	<style name="Depart_Divider">
@@ -28,7 +28,7 @@
 		<item name="android:textStyle">normal</item>
 	</style>
 	<style name="Depart.Retard.Motif.Text">
-		<item name="android:textSize">11dip</item>
+		<item name="android:textSize">12dip</item>
 	</style>
 	<style name="Depart.Retard.Heure">
 		<item name="android:typeface">monospace</item>
@@ -153,5 +153,31 @@
 		<item name="android:layout_width">wrap_content</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:background">@drawable/action_bar_item_background</item>
+	</style>
+	<style name="Arret_Layout">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:orientation">horizontal</item>
+	</style>
+	<style name="Arret">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+	</style>
+	<style name="Arret.Nom">
+		<item name="android:layout_weight">1</item>
+		<item name="android:textColor">#FF000000</item>
+		<item name="android:textStyle">bold</item>
+	</style>
+	<style name="Arret.Nom.Text">
+		<item name="android:textSize">15dip</item>
+	</style>
+	<style name="Arret.Heure">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:textColor">#FF666666</item>
+		<item name="android:textStyle">normal</item>
+		<item name="android:gravity">right</item>
+	</style>
+	<style name="Arret.Heure.Text">
+		<item name="android:textSize">14dip</item>
 	</style>
 </resources>

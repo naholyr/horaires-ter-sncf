@@ -2,10 +2,6 @@ package com.naholyr.android.horairessncf.activity;
 
 import java.security.InvalidParameterException;
 
-import org.acra.ErrorReporter;
-
-import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -18,7 +14,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.naholyr.android.horairessncf.Common;
 import com.naholyr.android.horairessncf.Depart;
@@ -26,7 +21,6 @@ import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.ui.ListeDepartsAdapter;
 import com.naholyr.android.ui.QuickActionWindow;
-import com.naholyr.android.ui.QuickActionWindow.IntentItem;
 
 public class DepartsActivity extends ListActivity {
 
@@ -119,31 +113,7 @@ public class DepartsActivity extends ListActivity {
 
 	@Override
 	protected QuickActionWindow getQuickActionWindow(View anchor, final int position, final long id) {
-		final Intent pluginIntent = new Intent(Intent.ACTION_VIEW);
-		pluginIntent.setType(Depart.CONTENT_TYPE);
-
-		final Context context = this;
-
-		QuickActionWindow window = QuickActionWindow.getWindow(this, Common.QUICK_ACTION_WINDOW_CONFIGURATION, new QuickActionWindow.Initializer() {
-			@Override
-			public void setItems(QuickActionWindow window) {
-				// Plugins
-				window.addItemsForIntent(context, pluginIntent, new QuickActionWindow.IntentItem.ErrorCallback() {
-					@Override
-					public void onError(ActivityNotFoundException e, IntentItem item) {
-						Toast.makeText(item.getContext(), "Erreur : Application introuvable", Toast.LENGTH_LONG).show();
-						ErrorReporter.getInstance().handleSilentException(e);
-					}
-				}, Common.getAds(context, Common.AD_TYPE_TRAIN));
-			}
-		}, Common.QUICK_ACTION_WINDOW_DEPART);
-
-		// Complete intent items, adding station ID
-		Bundle extras = new Bundle();
-		extras.putLong(Depart._ID, id);
-		window.dispatchIntentExtras(extras, pluginIntent);
-
-		return window;
+		return Common.getQuickActionWindow(this, Common.TRAIN, id);
 	}
 
 }

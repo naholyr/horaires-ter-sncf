@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,7 +35,6 @@ import com.naholyr.android.horairessncf.data.UpdateService;
 import com.naholyr.android.horairessncf.ui.AboutDialog;
 import com.naholyr.android.horairessncf.ui.ListeGaresAdapter;
 import com.naholyr.android.ui.QuickActionWindow;
-import com.naholyr.android.ui.QuickActionWindow.IntentItem;
 
 public class GaresActivity extends ListActivity {
 
@@ -249,47 +247,7 @@ public class GaresActivity extends ListActivity {
 
 	@Override
 	protected QuickActionWindow getQuickActionWindow(final View anchor, final int position, final long id) {
-		final Intent pluginIntent = new Intent(Intent.ACTION_VIEW);
-		pluginIntent.setType(Gare.CONTENT_TYPE);
-
-		final Context context = this;
-
-		QuickActionWindow window = QuickActionWindow.getWindow(this, Common.QUICK_ACTION_WINDOW_CONFIGURATION, new QuickActionWindow.Initializer() {
-			@Override
-			public void setItems(QuickActionWindow window) {
-				// Add item "add/remove to favorites", always here
-				int favStringId, favIconId;
-				if (Gare.getFavorites(context).has(id)) {
-					favStringId = R.string.action_remove_favorite;
-					favIconId = R.drawable.quick_action_remove_favorite;
-				} else {
-					favStringId = R.string.action_add_favorite;
-					favIconId = R.drawable.quick_action_add_favorite;
-				}
-				window.addItem(getString(favStringId), getResources().getDrawable(favIconId), new QuickActionWindow.Item.Callback() {
-					@Override
-					public void onClick(QuickActionWindow.Item item, View anchor) {
-						anchor.findViewById(R.id.favicon).performClick();
-					}
-				});
-
-				// Plugins
-				window.addItemsForIntent(context, pluginIntent, new QuickActionWindow.IntentItem.ErrorCallback() {
-					@Override
-					public void onError(ActivityNotFoundException e, IntentItem item) {
-						Toast.makeText(item.getContext(), "Erreur : Application introuvable", Toast.LENGTH_LONG).show();
-						ErrorReporter.getInstance().handleSilentException(e);
-					}
-				}, Common.getAds(context, Common.AD_TYPE_GARE));
-			}
-		}, Common.QUICK_ACTION_WINDOW_GARE);
-
-		// Complete intent items, adding station ID
-		Bundle extras = new Bundle();
-		extras.putLong(Gare._ID, id);
-		window.dispatchIntentExtras(extras, pluginIntent);
-
-		return window;
+		return Common.getQuickActionWindow(this, Common.GARE, id);
 	}
 
 	private void showGares(String action) {
@@ -455,7 +413,7 @@ public class GaresActivity extends ListActivity {
 	}
 
 	private void getNetworkLocation() throws LocationException {
-		String provider = "network";
+		String provider = LocationManager.NETWORK_PROVIDER;
 		LocationManager locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		if (!locManager.isProviderEnabled(provider)) {
 			if (Common.DEBUG) {

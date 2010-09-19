@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	style="@style/Depart_Layout" android:clickable="false">
-	<include layout="@android:layout/simple_list_item_2" />
+	style="@style/Arret_Layout" android:clickable="false" android:id="@+id/arret_item">
+	<TextView android:id="@+id/nom" android:text="Nom de la gare" style="@style/Arret.Nom.Text" />
+	<TextView android:id="@+id/heure" android:text="13h23" style="@style/Arret.Heure.Text" />
 </LinearLayout>

@@ -13,7 +13,7 @@
 		<item name="android:layout_margin">1dip</item>
 	</style>
 	<style name="Depart.Retard.Motif.Text">
-		<item name="android:textSize">9dip</item>
+		<item name="android:textSize">10dip</item>
 	</style>
 	<style name="Depart.Retard.Heure.Text">
 		<item name="android:textSize">10dip</item>
@@ -23,5 +23,11 @@
 	</style>
 	<style name="Depart_Train_Type_Text.Text">
 		<item name="android:textSize">9dip</item>
+	</style>
+	<style name="Arret.Nom.Text">
+		<item name="android:textSize">12dip</item>
+	</style>
+	<style name="Arret.Heure.Text">
+		<item name="android:textSize">10dip</item>
 	</style>
 </resources>

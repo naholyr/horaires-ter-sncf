@@ -16,6 +16,7 @@ public class Gare implements BaseColumns {
 	public static final String CONTENT_TYPE = "vnd.android.cursor.item/vnd.horairessncf.gare";
 
 	public static final String NOM = "nom";
+	public static final String INDEX_NOM = "index_nom";
 	public static final String REGION = "region";
 	public static final String ADRESSE = "adresse";
 	public static final String LATITUDE = "latitude";
@@ -104,6 +105,7 @@ public class Gare implements BaseColumns {
 	public static ContentValues values(int id, String nom, String region, String adresse, double latitude, double longitude) {
 		ContentValues v = values(nom, region, adresse, latitude, longitude);
 		v.put(_ID, id);
+		v.put(INDEX_NOM, indexify(nom));
 
 		return v;
 	}
@@ -172,6 +174,14 @@ public class Gare implements BaseColumns {
 		}
 
 		return query(context, "search", params);
+	}
+
+	public static String indexify(String s) {
+		s = Common.removeAccents(s);
+		s = s.replace('-', ' ').replace('.', ' ');
+		s = (" " + s + " ").replaceAll("(?i: st | ville | les | la | le | du | des | de |[^A-Z0-9a-z])", " ");
+
+		return s.trim();
 	}
 
 }

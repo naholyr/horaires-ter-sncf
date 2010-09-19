@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.util.SparseArray;
 
 import com.naholyr.android.horairessncf.Arret;
 import com.naholyr.android.horairessncf.Common;
+import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.ws.IBrowser;
 import com.naholyr.android.horairessncf.ws.JSONServerBrowser;
 
@@ -66,6 +68,7 @@ public class ArretsContentProvider extends android.content.ContentProvider {
 
 		private IBrowser mBrowser;
 		private String mNumeroTrain;
+		private Context mContext;
 
 		public ArretCursor() {
 			super(COLUMN_NAMES);
@@ -83,9 +86,10 @@ public class ArretsContentProvider extends android.content.ContentProvider {
 			}
 		}
 
-		void query(IBrowser browser, String numeroTrain) throws IOException {
+		void query(Context context, IBrowser browser, String numeroTrain) throws IOException {
 			mBrowser = browser;
 			mNumeroTrain = numeroTrain;
+			mContext = context;
 			query();
 		}
 
@@ -95,7 +99,7 @@ public class ArretsContentProvider extends android.content.ContentProvider {
 			if (arrets != null) {
 				Log.d(Common.TAG, "found " + arrets.size());
 				for (Map<String, Object> arret : arrets) {
-					addRow(arretToRow(arret));
+					addRow(arretToRow(mContext, arret));
 				}
 			}
 		}
@@ -110,7 +114,20 @@ public class ArretsContentProvider extends android.content.ContentProvider {
 	 * @param cache
 	 * @return
 	 */
-	private static Object[] arretToRow(Map<String, Object> arret, boolean cache) {
+	private static Object[] arretToRow(Context context, Map<String, Object> arret, boolean cache) {
+		// FIX nom + id
+		if ((Integer) arret.get(Arret.ID_GARE) == 0) {
+			String keywords = Gare.indexify((String) arret.get(Arret.NOM_GARE));
+			Cursor gares = Gare.retrieveByKeywords(context, keywords, "1");
+			if (gares != null) {
+				if (gares.moveToFirst()) {
+					arret.put(Arret.ID_GARE, gares.getInt(gares.getColumnIndex(Gare._ID)));
+					arret.put(Arret.NOM_GARE, gares.getString(gares.getColumnIndex(Gare.NOM)));
+				}
+				gares.close();
+			}
+		}
+		// Convert to array
 		Object[] row = new Object[COLUMN_NAMES.length];
 		for (int column_index = 0; column_index < COLUMN_NAMES.length; column_index++) {
 			String column_name = COLUMN_NAMES[column_index];
@@ -145,8 +162,8 @@ public class ArretsContentProvider extends android.content.ContentProvider {
 	 * @param depart
 	 * @return
 	 */
-	private static Object[] arretToRow(Map<String, Object> arret) {
-		return arretToRow(arret, true);
+	private static Object[] arretToRow(Context context, Map<String, Object> arret) {
+		return arretToRow(context, arret, true);
 	}
 
 	/**
@@ -177,7 +194,7 @@ public class ArretsContentProvider extends android.content.ContentProvider {
 				IBrowser browser = getBrowserInstance();
 				try {
 					Log.d(Common.TAG, "query");
-					c.query(browser, numeroTrain);
+					c.query(getContext(), browser, numeroTrain);
 				} catch (IOException e) {
 					// FIXME Auto-generated catch block
 					e.printStackTrace();
