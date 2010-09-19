@@ -55,9 +55,10 @@ public class DepartsActivity extends ListActivity {
 					}
 					c.close();
 				}
-				Typeface font = Typeface.createFromAsset(getAssets(), "CALIBRIB.TTF");
-				title1.setTypeface(font);
-				title2.setTypeface(font);
+				// Typeface font = Typeface.createFromAsset(getAssets(),
+				// "CALIBRIB.TTF");
+				// title1.setTypeface(font);
+				// title2.setTypeface(font);
 			}
 		});
 		// Query

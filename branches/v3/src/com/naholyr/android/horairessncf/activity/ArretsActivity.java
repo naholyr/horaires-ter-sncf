@@ -79,9 +79,10 @@ public class ArretsActivity extends ListActivity {
 					title1.setText(title);
 					title2.setText(title);
 				}
-				Typeface font = Typeface.createFromAsset(getAssets(), "CALIBRIB.TTF");
-				title1.setTypeface(font);
-				title2.setTypeface(font);
+				// Typeface font = Typeface.createFromAsset(getAssets(),
+				// "CALIBRIB.TTF");
+				// title1.setTypeface(font);
+				// title2.setTypeface(font);
 			}
 		});
 		// Execute query
