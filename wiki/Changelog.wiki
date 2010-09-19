@@ -1,6 +1,13 @@
 #summary Historique des versions
 #labels Featured
 
+*Version 3.0.0* :
+  * Refonte complète de l'UI : meilleur respect des UI guidelines de Google (Action Bar, Quick Action Window...)
+  * Refonte interne (utilisation des ListActivity, généralisation de l'utilisation des content providers)
+  * Changement de serveur (utilisation d'un serveur dédié dont je suis l'unique propriétaire)
+  * Ajout de liens pour les dons Paypal (suite à la location du serveur :))
+  * Plugins en cours de développement... Prévu : Google Maps (pour revenir aux fonctionnalités de la version précédente !), itinéraires, abonnement à un train.
+
 *Version 2.3.0* :
   * Ajout des voies pour les gares disponibles (expérimental).
   * Compatibilité Froyo et installation externe.
