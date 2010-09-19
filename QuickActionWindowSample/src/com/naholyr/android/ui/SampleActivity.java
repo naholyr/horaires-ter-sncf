@@ -80,14 +80,14 @@ public class SampleActivity extends ListActivity {
 						// Option "yes"
 						window.addItem(new QuickActionWindow.Item(context, android.R.string.yes, android.R.drawable.ic_input_add, new QuickActionWindow.Item.Callback() {
 							@Override
-							public void onClick(Item item, View anchor) {
+							public void onClick(QuickActionWindow window, Item item, View anchor) {
 								Toast.makeText(context, "You clicked yes :)", Toast.LENGTH_SHORT).show();
 							}
 						}));
 						// Option "no"
 						window.addItem(new QuickActionWindow.Item(context, android.R.string.no, android.R.drawable.ic_input_delete, new QuickActionWindow.Item.Callback() {
 							@Override
-							public void onClick(Item item, View anchor) {
+							public void onClick(QuickActionWindow window, Item item, View anchor) {
 								Toast.makeText(context, "You clicked no :(", Toast.LENGTH_SHORT).show();
 							}
 						}));

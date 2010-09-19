@@ -148,7 +148,7 @@ public class QuickActionWindow extends PopupWindow {
 			 * @param item
 			 *            The selected item.
 			 */
-			public void onClick(Item item, View anchor);
+			public void onClick(QuickActionWindow window, Item item, View anchor);
 
 		}
 
@@ -159,6 +159,10 @@ public class QuickActionWindow extends PopupWindow {
 		Callback mCallback;
 
 		View mView = null;
+
+		View mAnchor = null;
+
+		QuickActionWindow mWindow = null;
 
 		/**
 		 * @param label
@@ -236,8 +240,11 @@ public class QuickActionWindow extends PopupWindow {
 					mView.setClickable(true);
 					mView.setOnClickListener(new View.OnClickListener() {
 						@Override
-						public void onClick(View anchor) {
-							mCallback.onClick(Item.this, anchor);
+						public void onClick(View view) {
+							if (mWindow.mDismissOnClick) {
+								mWindow.dismiss();
+							}
+							mCallback.onClick(mWindow, Item.this, mAnchor);
 						}
 					});
 				}
@@ -260,6 +267,24 @@ public class QuickActionWindow extends PopupWindow {
 		 */
 		public Callback getCallback() {
 			return mCallback;
+		}
+
+		/**
+		 * 
+		 * @param anchor
+		 *            Current anchor, to which the item's window is attached
+		 */
+		public void setAnchor(View anchor) {
+			mAnchor = anchor;
+		}
+
+		/**
+		 * 
+		 * @param window
+		 *            Current window
+		 */
+		public void setWindow(QuickActionWindow window) {
+			mWindow = window;
 		}
 
 	}
@@ -306,7 +331,7 @@ public class QuickActionWindow extends PopupWindow {
 			}
 
 			@Override
-			public void onClick(Item item, View anchor) {
+			public void onClick(QuickActionWindow window, Item item, View anchor) {
 				if (item instanceof IntentItem) {
 					onClick((IntentItem) item);
 				} else {
@@ -589,7 +614,7 @@ public class QuickActionWindow extends PopupWindow {
 
 	SparseIntArray mConfig;
 
-	static SparseArray<ArrayList<Item>> cachedItems = new SparseArray<ArrayList<Item>>();
+	static SparseArray<ArrayList<Item>> mCachedItems = new SparseArray<ArrayList<Item>>();
 
 	/**
 	 * @see {@link #getWindow(Activity, Config, List)}
@@ -606,7 +631,7 @@ public class QuickActionWindow extends PopupWindow {
 	public static QuickActionWindow getWindow(Activity activity, SparseIntArray config, Initializer initializer, Integer windowID) {
 		ArrayList<Item> items = null;
 		if (windowID != null) {
-			items = cachedItems.get(windowID, null);
+			items = mCachedItems.get(windowID, null);
 		}
 
 		QuickActionWindow w = getWindow(activity, config, items);
@@ -615,7 +640,13 @@ public class QuickActionWindow extends PopupWindow {
 			items = new ArrayList<Item>();
 			initializer.setItems(w);
 			if (windowID != null) {
-				cachedItems.put(windowID, w.getItems());
+				// Clone list so that it doesn't get modified by further calls
+				// to "addItem()"
+				ArrayList<Item> cachedItems = new ArrayList<Item>();
+				for (Item item : w.getItems()) {
+					cachedItems.add(item);
+				}
+				mCachedItems.put(windowID, cachedItems);
 			}
 		}
 
@@ -704,6 +735,11 @@ public class QuickActionWindow extends PopupWindow {
 	 * @param anchor
 	 */
 	public void show(View anchor) {
+		for (Item item : mItems) {
+			item.setAnchor(anchor);
+			item.setWindow(this);
+		}
+
 		showAtLocation(anchor, Gravity.NO_GRAVITY, 0, 0);
 
 		// http://github.com/ruqqq/WorldHeritageSite/blob/master/src/sg/ruqqq/WHSFinder/QuickActionWindow.java
@@ -744,18 +780,45 @@ public class QuickActionWindow extends PopupWindow {
 	}
 
 	/**
+	 * Add a new item at last position
+	 * 
+	 * @see {@link QuickActionWindow#addItem(Item, int)}
+	 * @param item
+	 * @return
+	 */
+	public QuickActionWindow addItem(Item item) {
+		return addItem(item, -1);
+	}
+
+	/**
 	 * Add a new item to the window. Note that view will be attached
 	 * dynamically, so you can call this method even if window is already
 	 * showing.
 	 * 
 	 * @param item
+	 * @param position
+	 *            position at which you want to insert the item in the list (0 =
+	 *            first, -1 = default = last)
 	 * @return the window for chaining calls.
 	 */
-	public QuickActionWindow addItem(Item item) {
+	public QuickActionWindow addItem(Item item, int position) {
 		mItems.add(item);
-		addItemView(item);
+		addItemView(item, position);
 
 		return this;
+	}
+
+	/**
+	 * Add a basic item, built with parameters, at end of list
+	 * 
+	 * @see {@link #addItem(String, Drawable, com.naholyr.android.ui.QuickActionWindow.Item.Callback, int)}
+	 * @param label
+	 * @param icon
+	 * @param callback
+	 * @return the window for chaining calls.
+	 */
+	public QuickActionWindow addItem(String label, Drawable icon, Item.Callback callback) {
+		return addItem(label, icon, callback, -1);
 	}
 
 	/**
@@ -766,11 +829,12 @@ public class QuickActionWindow extends PopupWindow {
 	 * @param label
 	 * @param icon
 	 * @param callback
+	 * @param position
 	 * @return the window for chaining calls.
 	 */
-	public QuickActionWindow addItem(String label, Drawable icon, Item.Callback callback) {
+	public QuickActionWindow addItem(String label, Drawable icon, Item.Callback callback, int position) {
 		Item item = new Item(label, icon, callback);
-		addItem(item);
+		addItem(item, position);
 
 		return this;
 	}
@@ -780,22 +844,12 @@ public class QuickActionWindow extends PopupWindow {
 	 * 
 	 * @param item
 	 */
-	protected void addItemView(final Item item) {
-		final Item.Callback listener = item.getCallback();
+	protected void addItemView(final Item item, int position) {
 		int itemLayout = mConfig.get(Config.ITEM_LAYOUT);
 		int itemIcon = mConfig.get(Config.ITEM_ICON, -1);
 		int itemLabel = mConfig.get(Config.ITEM_LABEL, -1);
 		View v = item.getView(mInflater, itemLayout, itemIcon != -1 ? itemIcon : null, itemLabel != -1 ? itemLabel : null);
-		v.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View anchor) {
-				listener.onClick(item, anchor);
-				if (mDismissOnClick) {
-					dismiss();
-				}
-			}
-		});
-		addView(v);
+		addView(v, position);
 	}
 
 	/**
@@ -803,7 +857,7 @@ public class QuickActionWindow extends PopupWindow {
 	 * 
 	 * @param v
 	 */
-	protected void addView(View v) {
+	protected void addView(View v, int position) {
 		ViewGroup container;
 		int containerId = mConfig.get(Config.CONTAINER, -1);
 		if (containerId != -1) {
@@ -819,7 +873,11 @@ public class QuickActionWindow extends PopupWindow {
 			parent.removeView(v);
 		}
 		// Attach view now that it's free.
-		container.addView(v);
+		if (position >= 0) {
+			container.addView(v, position);
+		} else {
+			container.addView(v);
+		}
 	}
 
 	/**
