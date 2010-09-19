@@ -19,7 +19,7 @@ import com.naholyr.android.ui.QuickActionWindow.IntentItem;
 
 public class Common {
 
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
 	public static final double DEBUG_LATITUDE = 45.7605367;
 	public static final double DEBUG_LONGITUDE = 4.8589391;
@@ -102,13 +102,23 @@ public class Common {
 		switch (type) {
 			case GARE:
 			case ARRET: {
-				ads.add(new PluginMarketAdvertisement(context, "gmap", "MapActivity", R.drawable.quick_action_gmap, "Localiser sur une carte"));
-				ads.add(new PluginMarketAdvertisement(context, "itineraire", "ItineraireFromActivity", R.drawable.quick_action_itineraire_from, "Itinéraire depuis cette gare..."));
-				ads.add(new PluginMarketAdvertisement(context, "itineraire", "ItineraireToActivity", R.drawable.quick_action_itineraire_to, "Itinéraire vers cette gare..."));
+				// ads.add(new PluginMarketAdvertisement(context, "gmap",
+				// "MapActivity", R.drawable.quick_action_gmap,
+				// "Localiser sur une carte"));
+				// ads.add(new PluginMarketAdvertisement(context, "itineraire",
+				// "ItineraireFromActivity",
+				// R.drawable.quick_action_itineraire_from,
+				// "Itinéraire depuis cette gare..."));
+				// ads.add(new PluginMarketAdvertisement(context, "itineraire",
+				// "ItineraireToActivity",
+				// R.drawable.quick_action_itineraire_to,
+				// "Itinéraire vers cette gare..."));
 				break;
 			}
 			case TRAIN: {
-				ads.add(new PluginMarketAdvertisement(context, "notification", "MainActivity", R.drawable.quick_action_notification, "Suivre ce train"));
+				// ads.add(new PluginMarketAdvertisement(context,
+				// "notification", "MainActivity",
+				// R.drawable.quick_action_notification, "Suivre ce train"));
 				break;
 			}
 		}
@@ -138,25 +148,25 @@ public class Common {
 				window = QuickActionWindow.getWindow(activity, Common.QUICK_ACTION_WINDOW_CONFIGURATION, new QuickActionWindow.Initializer() {
 					@Override
 					public void setItems(QuickActionWindow window) {
-						// Add item "add/remove to favorites", always here
-						int favStringId, favIconId;
-						if (Gare.getFavorites(activity).has(id)) {
-							favStringId = R.string.action_remove_favorite;
-							favIconId = R.drawable.quick_action_remove_favorite;
-						} else {
-							favStringId = R.string.action_add_favorite;
-							favIconId = R.drawable.quick_action_add_favorite;
-						}
-						window.addItem(activity.getString(favStringId), activity.getResources().getDrawable(favIconId), new QuickActionWindow.Item.Callback() {
-							@Override
-							public void onClick(QuickActionWindow.Item item, View anchor) {
-								anchor.findViewById(R.id.favicon).performClick();
-							}
-						});
 						// Plugins
 						addQuickActionAds(activity, pluginIntent, window, type);
 					}
 				}, Common.QUICK_ACTION_WINDOW_GARE);
+				// Add item "add/remove to favorites", always here
+				int favStringId, favIconId;
+				if (Gare.getFavorites(activity).has(id)) {
+					favStringId = R.string.action_remove_favorite;
+					favIconId = R.drawable.quick_action_remove_favorite;
+				} else {
+					favStringId = R.string.action_add_favorite;
+					favIconId = R.drawable.quick_action_add_favorite;
+				}
+				window.addItem(activity.getString(favStringId), activity.getResources().getDrawable(favIconId), new QuickActionWindow.Item.Callback() {
+					@Override
+					public void onClick(QuickActionWindow window, QuickActionWindow.Item item, View anchor) {
+						anchor.findViewById(R.id.favicon).performClick();
+					}
+				}, 0);
 				// Complete intent items, adding station ID
 				extras.putLong(Gare._ID, id);
 				window.dispatchIntentExtras(extras, pluginIntent);

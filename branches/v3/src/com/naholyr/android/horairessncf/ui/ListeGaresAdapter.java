@@ -58,9 +58,12 @@ public class ListeGaresAdapter extends SimpleCursorAdapter {
 			if (mCenterLatitude != null && mCenterLongitude != null) {
 				double latitude = c.getDouble(c.getColumnIndexOrThrow(Gare.LATITUDE));
 				double longitude = c.getDouble(c.getColumnIndexOrThrow(Gare.LONGITUDE));
-				String txt = distanceFormat.format(getDistance(latitude, longitude)) + " km";
-				((TextView) v.findViewById(R.id.distance)).setText(txt);
-				((TextView) v.findViewById(R.id.distance)).setVisibility(View.VISIBLE);
+				double distance = getDistance(latitude, longitude);
+				if (distance != -1) {
+					String txt = distanceFormat.format(distance) + " km";
+					((TextView) v.findViewById(R.id.distance)).setText(txt);
+					((TextView) v.findViewById(R.id.distance)).setVisibility(View.VISIBLE);
+				}
 			} else {
 				((TextView) v.findViewById(R.id.distance)).setVisibility(View.GONE);
 			}

@@ -51,6 +51,8 @@ abstract public class ListActivity extends android.app.ListActivity {
 	protected void showQuickActions(final View anchor, final int position, final long id) {
 		QuickActionWindow window = getQuickActionWindow(anchor, position, id);
 		if (window != null) {
+			Log.d(Common.TAG, "favicon ? " + (anchor.findViewById(R.id.favicon) == null ? "no" : "yes"));
+			Log.d(Common.TAG, "nom ? " + (anchor.findViewById(R.id.nom) == null ? "no" : "yes"));
 			window.show(anchor);
 		}
 	}

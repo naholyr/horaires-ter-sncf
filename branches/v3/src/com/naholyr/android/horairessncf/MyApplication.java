@@ -8,7 +8,7 @@ public class MyApplication extends CrashReportingApplication {
 
 	@Override
 	public String getFormId() {
-		return "dEVCS19jRVBUVFVyalZkQ0ZPUjE3Vnc6MQ";
+		return "dDZCNjJxYnIyeDdyM1pud3lSRWQ4QkE6MQ";
 	}
 
 	@Override

@@ -66,7 +66,7 @@ public class GaresActivity extends ListActivity {
 		if (mLatitude != 0 && mLongitude != 0) {
 			return new ListeGaresAdapter(this, c, mLatitude, mLongitude);
 		} else {
-			return new ListeGaresAdapter(this, c, mLatitude, mLongitude);
+			return new ListeGaresAdapter(this, c);
 		}
 	}
 
