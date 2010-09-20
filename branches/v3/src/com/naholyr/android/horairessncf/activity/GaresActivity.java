@@ -9,6 +9,7 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
@@ -242,6 +243,19 @@ public class GaresActivity extends ListActivity {
 		// Check updates now
 		if (!mPreferences.getBoolean(getString(R.string.pref_disable_auto_update), false)) {
 			UpdateService.scheduleNow(getApplicationContext());
+		}
+		// New version ? Display about dialog
+		try {
+			String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+			if (versionName == null || !mPreferences.getString("app_version", "").equals(versionName)) {
+				// Show about dialog
+				showDialog(DIALOG_ABOUT);
+				if (versionName != null) {
+					mPreferences.edit().putString("app_version", versionName).commit();
+				}
+			}
+		} catch (NameNotFoundException e) {
+			// OK nevermind, forget it...
 		}
 	}
 
