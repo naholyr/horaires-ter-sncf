@@ -122,7 +122,7 @@ public class ArretsActivity extends ListActivity {
 		if (idGare != 0) {
 			return Common.getQuickActionWindow(this, Common.ARRET, idGare);
 		} else {
-			Toast.makeText(this, "Gare non trouvée dans la base de données.", Toast.LENGTH_SHORT);
+			Toast.makeText(this, "Gare non trouvée dans la base de données.", Toast.LENGTH_SHORT).show();
 			return null;
 		}
 	}
