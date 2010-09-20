@@ -19,7 +19,7 @@ import com.naholyr.android.ui.QuickActionWindow.IntentItem;
 
 public class Common {
 
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
 	public static final double DEBUG_LATITUDE = 45.7605367;
 	public static final double DEBUG_LONGITUDE = 4.8589391;
@@ -164,7 +164,12 @@ public class Common {
 				window.addItem(activity.getString(favStringId), activity.getResources().getDrawable(favIconId), new QuickActionWindow.Item.Callback() {
 					@Override
 					public void onClick(QuickActionWindow window, QuickActionWindow.Item item, View anchor) {
-						anchor.findViewById(R.id.favicon).performClick();
+						View favButton = anchor.findViewById(R.id.favicon);
+						if (favButton != null) {
+							favButton.performClick();
+						} else {
+							Gare.getFavorites(anchor.getContext()).add(id);
+						}
 					}
 				}, 0);
 				// Complete intent items, adding station ID

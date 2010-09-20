@@ -74,6 +74,21 @@
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 			</intent-filter>
 		</receiver>
+		<!-- Active folders -->
+		<activity android:icon="@drawable/icon" android:label="Gares favorites"
+			android:name=".activity.FavoritesLiveFolder">
+			<intent-filter>
+				<action android:name="android.intent.action.CREATE_LIVE_FOLDER" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+		<activity android:icon="@drawable/icon" android:label="Gares proches"
+			android:name=".activity.GeolocationLiveFolder">
+			<intent-filter>
+				<action android:name="android.intent.action.CREATE_LIVE_FOLDER" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
 	</application>
 	<!-- Compatibilité Android 1.5 Cupcake -->
 	<uses-sdk android:minSdkVersion="3" />

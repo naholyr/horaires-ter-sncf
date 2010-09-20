@@ -4,6 +4,7 @@ import java.security.InvalidParameterException;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,6 +19,7 @@ import com.naholyr.android.horairessncf.Common;
 import com.naholyr.android.horairessncf.Depart;
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
+import com.naholyr.android.horairessncf.data.GaresContentProvider;
 import com.naholyr.android.horairessncf.ui.ListeDepartsAdapter;
 import com.naholyr.android.ui.QuickActionWindow;
 
@@ -75,6 +77,16 @@ public class DepartsActivity extends ListActivity {
 		// Read parameters
 		mIdGare = getIntent().getLongExtra(EXTRA_ID, 0);
 		Log.d(Common.TAG, "idGare = " + mIdGare);
+		if (mIdGare == 0) {
+			// From live folder ?
+			Uri data = getIntent().getData();
+			if (data != null) {
+				if (GaresContentProvider.URI_MATCHER.match(data) == GaresContentProvider.GARE_PAR_ID) {
+					mIdGare = Long.valueOf(data.getPathSegments().get(1));
+					getIntent().putExtra(EXTRA_ID, mIdGare);
+				}
+			}
+		}
 		if (mIdGare == 0) {
 			throw new InvalidParameterException("Expected extra '" + EXTRA_ID + "'");
 		}

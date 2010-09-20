@@ -1,5 +1,6 @@
 package com.naholyr.android.horairessncf.data;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,12 +8,16 @@ import java.util.List;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.provider.LiveFolders;
 import android.text.TextUtils;
 
 import com.naholyr.android.horairessncf.Gare;
@@ -21,26 +26,30 @@ public class GaresContentProvider extends android.content.ContentProvider {
 
 	public static final String AUTHORITY = "naholyr.horairessncf.providers.GaresContentProvider";
 
-	private static final int GARES = 1;
-	private static final int GARE_PAR_NOM = 2;
-	private static final int GARE_PAR_ID = 3;
-	private static final int GARES_PAR_GEO = 4;
-	private static final int GARES_PAR_NOM = 5;
-	private static final int GARES_FAVORITES = 6;
+	public static final int GARES = 1;
+	public static final int GARE_PAR_NOM = 2;
+	public static final int GARE_PAR_ID = 3;
+	public static final int GARES_PAR_GEO = 4;
+	public static final int GARES_PAR_NOM = 5;
+	public static final int GARES_FAVORITES = 6;
 
-	private static final UriMatcher sUriMatcher;
+	public static final UriMatcher URI_MATCHER;
+
 	private static final HashMap<String, String> sProjectionMap;
+	private static final HashMap<String, String> sLiveFolderProjectionMap;
 
 	private static final double ONE_DEGREE_LAT_KM = 111d;
 
+	private static final double DEFAULT_RADIUS = 10;
+
 	static {
-		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES, GARES);
-		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/search", GARES_PAR_NOM);
-		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/around", GARES_PAR_GEO);
-		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/favorites", GARES_FAVORITES);
-		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/#", GARE_PAR_ID);
-		sUriMatcher.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/*", GARE_PAR_NOM);
+		URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
+		URI_MATCHER.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES, GARES);
+		URI_MATCHER.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/search", GARES_PAR_NOM);
+		URI_MATCHER.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/around", GARES_PAR_GEO);
+		URI_MATCHER.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/favorites", GARES_FAVORITES);
+		URI_MATCHER.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/#", GARE_PAR_ID);
+		URI_MATCHER.addURI(AUTHORITY, DatabaseHelper.TABLE_GARES + "/*", GARE_PAR_NOM);
 		sProjectionMap = new HashMap<String, String>();
 		sProjectionMap.put(Gare._ID, Gare._ID);
 		sProjectionMap.put(Gare.NOM, Gare.NOM);
@@ -49,6 +58,10 @@ public class GaresContentProvider extends android.content.ContentProvider {
 		sProjectionMap.put(Gare.LATITUDE, Gare.LATITUDE);
 		sProjectionMap.put(Gare.LONGITUDE, Gare.LONGITUDE);
 		sProjectionMap.put(Gare.FAVORITE, Gare.FAVORITE);
+		sLiveFolderProjectionMap = new HashMap<String, String>();
+		sLiveFolderProjectionMap.put(LiveFolders._ID, Gare._ID + " AS " + LiveFolders._ID);
+		sLiveFolderProjectionMap.put(LiveFolders.NAME, Gare.NOM + " AS " + LiveFolders.NAME);
+		sLiveFolderProjectionMap.put(LiveFolders.DESCRIPTION, Gare.ADRESSE + " AS " + LiveFolders.DESCRIPTION);
 	}
 
 	protected static DatabaseHelper mDbHelper = null;
@@ -61,7 +74,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 
 	@Override
 	public String getType(Uri uri) {
-		switch (sUriMatcher.match(uri)) {
+		switch (URI_MATCHER.match(uri)) {
 			case GARES:
 			case GARES_PAR_NOM:
 			case GARES_PAR_GEO:
@@ -80,7 +93,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		int count;
 
-		switch (sUriMatcher.match(uri)) {
+		switch (URI_MATCHER.match(uri)) {
 			case GARE_PAR_NOM: {
 				String nomGare = uri.getPathSegments().get(1);
 				String selection = Gare.NOM + " = '" + nomGare.replaceAll("'", "''") + "'";
@@ -120,7 +133,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
-		if (sUriMatcher.match(uri) != GARES) {
+		if (URI_MATCHER.match(uri) != GARES) {
 			throw new IllegalArgumentException("Unsupported URI for insert: " + uri);
 		}
 
@@ -139,11 +152,17 @@ public class GaresContentProvider extends android.content.ContentProvider {
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 		SQLiteQueryBuilder sqlBuilder = new SQLiteQueryBuilder();
 		sqlBuilder.setTables(DatabaseHelper.TABLE_GARES);
-		sqlBuilder.setProjectionMap(sProjectionMap);
+		if (sortOrder != null && sortOrder.equals(LiveFolders.NAME + " ASC")) {
+			// Live folder
+			sqlBuilder.setProjectionMap(sLiveFolderProjectionMap);
+		} else {
+			// Usual query
+			sqlBuilder.setProjectionMap(sProjectionMap);
+		}
 
 		Double latitude = null, longitude = null;
 
-		switch (sUriMatcher.match(uri)) {
+		switch (URI_MATCHER.match(uri)) {
 			case GARES:
 				// Nothing
 				break;
@@ -159,21 +178,38 @@ public class GaresContentProvider extends android.content.ContentProvider {
 			case GARES_PAR_GEO:
 				int latE6,
 				lonE6;
-				try {
-					latE6 = Integer.valueOf(uri.getQueryParameter("latE6"));
-				} catch (NumberFormatException e) {
-					throw new IllegalArgumentException("Expected integer query parameter 'latE6'");
-				}
-				try {
-					lonE6 = Integer.valueOf(uri.getQueryParameter("lonE6"));
-				} catch (NumberFormatException e) {
-					throw new IllegalArgumentException("Expected integer query parameter 'lonE6'");
+				if (uri.getQueryParameter("latE6") == null && uri.getQueryParameter("lonE6") == null) {
+					// Default : retrieve location (used for live folder)
+					String provider = LocationManager.NETWORK_PROVIDER;
+					LocationManager locManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+					if (!locManager.isProviderEnabled(provider)) {
+						throw new InvalidParameterException("No location available");
+					} else {
+						Location location = locManager.getLastKnownLocation(provider);
+						if (location == null) {
+							throw new InvalidParameterException("No location available");
+						} else {
+							latE6 = Math.round(1000000 * ((float) location.getLatitude()));
+							lonE6 = Math.round(1000000 * ((float) location.getLongitude()));
+						}
+					}
+				} else {
+					try {
+						latE6 = Integer.valueOf(uri.getQueryParameter("latE6"));
+					} catch (NumberFormatException e) {
+						throw new IllegalArgumentException("Expected integer query parameter 'latE6'");
+					}
+					try {
+						lonE6 = Integer.valueOf(uri.getQueryParameter("lonE6"));
+					} catch (NumberFormatException e) {
+						throw new IllegalArgumentException("Expected integer query parameter 'lonE6'");
+					}
 				}
 				double radius_km;
 				try {
 					radius_km = Double.valueOf(uri.getQueryParameter("radius"));
 				} catch (NumberFormatException e) {
-					throw new IllegalArgumentException("Expected double query parameter 'radius'");
+					radius_km = DEFAULT_RADIUS;
 				}
 				latitude = ((double) latE6) / 1000000;
 				longitude = ((double) lonE6) / 1000000;
@@ -231,7 +267,7 @@ public class GaresContentProvider extends android.content.ContentProvider {
 
 		fixIndexNom(values);
 
-		switch (sUriMatcher.match(uri)) {
+		switch (URI_MATCHER.match(uri)) {
 			case GARE_PAR_NOM: {
 				String nomGare = uri.getPathSegments().get(1);
 				String selection = Gare.NOM + " = '" + nomGare.replaceAll("'", "''") + "'";
