@@ -78,10 +78,8 @@ public class GaresActivity extends ListActivity {
 
 	@Override
 	protected Cursor queryCursor() throws LocationException {
-		// All cases : retrieve current location (very fast, last known location
-		// by network)
-		// Special case : in geolocation mode, we rethrow the exception, to show
-		// dialog
+		// All cases : retrieve current location (very fast, last known location by network)
+		// Special case : in geolocation mode, we rethrow the exception, to show dialog
 		// Other cases simply won't show distance
 		try {
 			getNetworkLocation();
@@ -98,8 +96,8 @@ public class GaresActivity extends ListActivity {
 		} else if (ACTION_SEARCH.equals(mAction)) {
 			// Search
 			String keywords = getIntent().getStringExtra(SearchManager.QUERY);
-			String limit = mPreferences.getString(getString(R.string.pref_nbgares), getString(R.string.default_nbgares));
-			c = Gare.retrieveByKeywords(this, keywords, limit);
+			// Disable limit
+			c = Gare.retrieveByKeywords(this, keywords, null);
 		} else { // Default : ACTION_GEOLOCATION
 			// Try geolocation, then build URI with location information
 			int rayon = Integer.parseInt(mPreferences.getString(getString(R.string.pref_radiuskm), getString(R.string.default_radiuskm)));
@@ -390,8 +388,8 @@ public class GaresActivity extends ListActivity {
 				return builder.create();
 			}
 			case DIALOG_GEOLOCATION_FAILED: {
-				AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle("Géolocalisation échouée").setIcon(R.drawable.icon).setMessage(
-						"La géolocalisation a échoué. Souhaitez-vous basculer vers la liste des gares favorites, ou effectuer une recherche ?");
+				AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle("Géolocalisation échouée").setIcon(R.drawable.icon)
+						.setMessage("La géolocalisation a échoué. Souhaitez-vous basculer vers la liste des gares favorites, ou effectuer une recherche ?");
 				builder.setNegativeButton("Quitter", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -430,12 +428,7 @@ public class GaresActivity extends ListActivity {
 		String provider = LocationManager.NETWORK_PROVIDER;
 		LocationManager locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		if (!locManager.isProviderEnabled(provider)) {
-			if (Common.DEBUG) {
-				mLatitude = Common.DEBUG_LATITUDE;
-				mLongitude = Common.DEBUG_LONGITUDE;
-			} else {
-				throw new LocationException();
-			}
+			throw new LocationException();
 		} else {
 			Location location = locManager.getLastKnownLocation(provider);
 			if (location == null) {

@@ -19,11 +19,6 @@ import com.naholyr.android.ui.QuickActionWindow.IntentItem;
 
 public class Common {
 
-	public static final boolean DEBUG = true;
-
-	public static final double DEBUG_LATITUDE = 45.7605367;
-	public static final double DEBUG_LONGITUDE = 4.8589391;
-
 	public static final String TAG = "HorairesTERSNCF";
 
 	private static final String PLAIN_ASCII = "AaEeIiOoUu" // grave

@@ -1,6 +1,5 @@
 package com.naholyr.android.horairessncf.data;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -161,6 +160,16 @@ public class GaresContentProvider extends android.content.ContentProvider {
 		}
 
 		Double latitude = null, longitude = null;
+		// Default : retrieve location (used for live folder)
+		String provider = LocationManager.NETWORK_PROVIDER;
+		LocationManager locManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+		if (locManager.isProviderEnabled(provider)) {
+			Location location = locManager.getLastKnownLocation(provider);
+			if (location != null) {
+				latitude = location.getLatitude();
+				longitude = location.getLongitude();
+			}
+		}
 
 		switch (URI_MATCHER.match(uri)) {
 			case GARES:
@@ -179,28 +188,22 @@ public class GaresContentProvider extends android.content.ContentProvider {
 				int latE6,
 				lonE6;
 				if (uri.getQueryParameter("latE6") == null && uri.getQueryParameter("lonE6") == null) {
-					// Default : retrieve location (used for live folder)
-					String provider = LocationManager.NETWORK_PROVIDER;
-					LocationManager locManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-					if (!locManager.isProviderEnabled(provider)) {
-						throw new InvalidParameterException("No location available");
+					if (latitude == null && longitude == null) {
+						throw new IllegalAccessError("Unknown location");
 					} else {
-						Location location = locManager.getLastKnownLocation(provider);
-						if (location == null) {
-							throw new InvalidParameterException("No location available");
-						} else {
-							latE6 = Math.round(1000000 * ((float) location.getLatitude()));
-							lonE6 = Math.round(1000000 * ((float) location.getLongitude()));
-						}
+						latE6 = (int) (1000000 * latitude);
+						lonE6 = (int) (1000000 * longitude);
 					}
 				} else {
 					try {
 						latE6 = Integer.valueOf(uri.getQueryParameter("latE6"));
+						latitude = ((double) latE6) / 1000000;
 					} catch (NumberFormatException e) {
 						throw new IllegalArgumentException("Expected integer query parameter 'latE6'");
 					}
 					try {
 						lonE6 = Integer.valueOf(uri.getQueryParameter("lonE6"));
+						longitude = ((double) lonE6) / 1000000;
 					} catch (NumberFormatException e) {
 						throw new IllegalArgumentException("Expected integer query parameter 'lonE6'");
 					}
@@ -211,8 +214,6 @@ public class GaresContentProvider extends android.content.ContentProvider {
 				} catch (NumberFormatException e) {
 					radius_km = DEFAULT_RADIUS;
 				}
-				latitude = ((double) latE6) / 1000000;
-				longitude = ((double) lonE6) / 1000000;
 				double latitude_radians = latitude * (Math.PI / 180);
 				double latitude_delta = radius_km / ONE_DEGREE_LAT_KM;
 				double longitude_delta = radius_km / Math.abs(Math.cos(latitude_radians) * ONE_DEGREE_LAT_KM);
@@ -302,13 +303,13 @@ public class GaresContentProvider extends android.content.ContentProvider {
 
 	public static String getDefaultOrderBy(Double latitude, Double longitude) {
 		if (latitude == null || longitude == null) {
-			return Gare.NOM + " ASC";
+			return Gare.FAVORITE + " DESC, " + Gare.NOM + " ASC";
 		} else {
 			// (a-a')² + (b-b')²
 			// a² + a'² - 2aa' + b² + b'² - 2bb'
 			// a² + b² - 2(aa'+bb')
-			return Gare.LATITUDE + "*" + Gare.LATITUDE + "+" + Gare.LONGITUDE + "*" + Gare.LONGITUDE + "-2*(" + latitude + "*" + Gare.LATITUDE + "+" + longitude + "*"
-					+ Gare.LONGITUDE + ") ASC";
+			return Gare.FAVORITE + " DESC, " + Gare.LATITUDE + "*" + Gare.LATITUDE + "+" + Gare.LONGITUDE + "*" + Gare.LONGITUDE + "-2*(" + latitude + "*" + Gare.LATITUDE + "+"
+					+ longitude + "*" + Gare.LONGITUDE + ") ASC";
 		}
 	}
 
