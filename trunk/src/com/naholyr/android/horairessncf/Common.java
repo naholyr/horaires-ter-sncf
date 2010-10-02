@@ -9,6 +9,8 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.SparseIntArray;
 import android.view.View;
@@ -170,6 +172,16 @@ public class Common {
 				// Complete intent items, adding station ID
 				extras.putLong(Gare._ID, id);
 				window.dispatchIntentExtras(extras, pluginIntent);
+				// Integration with Google Maps
+				Cursor c = Gare.retrieveById(activity, id);
+				if (c != null && c.moveToFirst()) {
+					Double latitude = c.getDouble(c.getColumnIndex(Gare.LATITUDE));
+					Double longitude = c.getDouble(c.getColumnIndex(Gare.LATITUDE));
+					if (latitude != null && longitude != null && latitude != 0 && longitude != 0) {
+						Intent gmapIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:" + latitude + "," + longitude));
+						window.addItemsForIntent(activity, gmapIntent, null);
+					}
+				}
 				break;
 			}
 			case TRAIN: {
