@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	android:versionCode="300" android:versionName="3.0 (refonte)"
+	package="com.naholyr.android.horairessncf">
+	<!-- Application, options Froyo incluses -->
+	<application android:allowBackup="true"
+		android:restoreAnyVersion="false" android:allowClearUserData="true"
+		android:icon="@drawable/icon" android:label="@string/app_name"
+		android:name="MyApplication">
+		<!-- Activité principale : liste des gares -->
+		<activity android:name=".activity.GaresActivity"
+			android:label="@string/app_name" android:theme="@android:style/Theme.Light.NoTitleBar"
+			android:configChanges="keyboardHidden|orientation">
+			<!-- Activité principale -->
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+			<!-- Activation de la recherche -->
+			<intent-filter>
+				<action android:name="android.intent.action.SEARCH" />
+			</intent-filter>
+			<meta-data android:name="android.app.searchable"
+				android:resource="@xml/search_gares" />
+		</activity>
+		<!-- Autres activités -->
+		<activity android:name=".activity.PreferencesActivity"
+			android:label="Horaires TER SNCF - Paramètres" />
+		<activity android:name=".activity.DepartsActivity"
+			android:label="Prochains départs" android:icon="@drawable/quick_action_prochains_departs"
+			android:theme="@android:style/Theme.Light.NoTitleBar"
+			android:configChanges="keyboardHidden|orientation">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="vnd.android.cursor.item/vnd.horairessncf.gare" />
+			</intent-filter>
+		</activity>
+		<activity android:name=".activity.ArretsActivity"
+			android:label="Liste des arrêts" android:icon="@drawable/quick_action_info_train"
+			android:theme="@android:style/Theme.Light.NoTitleBar"
+			android:configChanges="keyboardHidden|orientation">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="vnd.android.cursor.item/vnd.horairessncf.depart" />
+			</intent-filter>
+		</activity>
+		<activity android:name=".activity.UpdateActivity"
+			android:theme="@android:style/Theme.Translucent.NoTitleBar"
+			android:label="Mise à jour" android:launchMode="singleTop"
+			android:configChanges="keyboardHidden|orientation" />
+		<activity android:name="org.acra.CrashReportDialog"
+			android:theme="@android:style/Theme.Dialog" android:launchMode="singleInstance" />
+		<!-- Content providers -->
+		<provider android:authorities="naholyr.horairessncf.providers.GaresContentProvider"
+			android:name=".data.GaresContentProvider" />
+		<provider android:authorities="naholyr.horairessncf.providers.DepartsContentProvider"
+			android:name=".data.DepartsContentProvider" />
+		<provider android:authorities="naholyr.horairessncf.providers.ArretsContentProvider"
+			android:name=".data.ArretsContentProvider" />
+		<provider
+			android:authorities="naholyr.horairessncf.providers.GaresSearchSuggestionsProvider"
+			android:name=".data.GaresSearchSuggestionsProvider" />
+		<!-- Activation globale de la recherche -->
+		<meta-data android:name="android.app.default_searchable"
+			android:value=".activity.GaresActivity" />
+		<!-- Event listeners -->
+		<receiver android:name=".data.UpdateService">
+			<intent-filter>
+				<action android:name="com.naholyr.android.horairessncf.action.UPDATE_GARES" />
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
+			</intent-filter>
+		</receiver>
+		<!-- Active folders -->
+		<activity android:icon="@drawable/icon" android:label="Gares favorites"
+			android:name=".activity.FavoritesLiveFolder">
+			<intent-filter>
+				<action android:name="android.intent.action.CREATE_LIVE_FOLDER" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+		<activity android:icon="@drawable/icon" android:label="Gares proches"
+			android:name=".activity.GeolocationLiveFolder">
+			<intent-filter>
+				<action android:name="android.intent.action.CREATE_LIVE_FOLDER" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+	</application>
+	<!-- Compatibilité Android 1.5 Cupcake -->
+	<uses-sdk android:minSdkVersion="3" />
+	<!-- Support multi-écran : toutes résolutions -->
+	<supports-screens android:smallScreens="true"
+		android:normalScreens="true" android:largeScreens="true" />	<!-- Permissions requises -->
+	<uses-permission android:name="android.permission.INTERNET" /> <!-- Pour webservice -->
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Pour géolocalisation par le réseau -->
+	<uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Pendant les mises à jour -->
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- Service de détection des mises à jour -->
+</manifest>
