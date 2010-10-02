@@ -14,8 +14,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.naholyr.android.horairessncf.Gare;
-import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.Gare.Favorites;
+import com.naholyr.android.horairessncf.R;
 
 public class ListeGaresAdapter extends SimpleCursorAdapter {
 

@@ -50,8 +50,8 @@ public class ListeDepartsAdapter extends SimpleCursorAdapter {
 			delayText.setVisibility(View.VISIBLE);
 			if (mDelayAnim == null) {
 				mDelayAnim = AnimationUtils.loadAnimation(v.getContext(), android.R.anim.slide_in_left);
-				mDelayAnim.setStartOffset(1000);
-				mDelayAnim.setDuration(500);
+				mDelayAnim.setStartOffset(500);
+				mDelayAnim.setDuration(400);
 			}
 			delayLayout.startAnimation(mDelayAnim);
 			delayText.startAnimation(mDelayAnim);
