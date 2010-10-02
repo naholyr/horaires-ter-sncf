@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="rayons_val">
+		<item>5</item>
+		<item>10</item>
+		<item>15</item>
+		<item>20</item>
+		<item>25</item>
+		<item>30</item>
+		<item>50</item>
+	</string-array>
+	<string-array name="rayons_lib">
+		<item>5 km</item>
+		<item>10 km</item>
+		<item>15 km</item>
+		<item>20 km</item>
+		<item>25 km</item>
+		<item>30 km</item>
+		<item>50 km</item>
+	</string-array>
+	<string-array name="nbgares_val">
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+		<item>4</item>
+		<item>5</item>
+		<item>6</item>
+		<item>7</item>
+		<item>8</item>
+		<item>9</item>
+		<item>10</item>
+	</string-array>
+	<string-array name="nbgares_lib">
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+		<item>4</item>
+		<item>5</item>
+		<item>6</item>
+		<item>7</item>
+		<item>8</item>
+		<item>9</item>
+		<item>10</item>
+	</string-array>
+	<string-array name="nbtrains_val">
+		<item>4</item>
+		<item>8</item>
+		<item>12</item>
+		<item>16</item>
+		<item>20</item>
+	</string-array>
+	<string-array name="nbtrains_lib">
+		<item>4</item>
+		<item>8</item>
+		<item>12</item>
+		<item>16</item>
+		<item>20</item>
+	</string-array>
+	<string-array name="home_val">
+		<item>last</item>
+		<item>geolocation</item>
+		<item>favorites</item>
+	</string-array>
+	<string-array name="home_lib">
+		<item>Dernier utilisé</item>
+		<item>Les gares favorites</item>
+		<item>Les gares proches</item>
+	</string-array>
+</resources>
