@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-	<item name="default_nbgares" type="string" format="integer">5</item>
-	<item name="default_radiuskm" type="string" format="integer">5</item>
-	<item name="default_home" type="string" format="string">last</item>
-	<item name="default_last_home" type="string" format="string">geolocation</item>
-</resources>
