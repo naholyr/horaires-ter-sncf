@@ -1,7 +1,5 @@
 package com.naholyr.android.horairessncf.activity;
 
-import org.acra.ErrorReporter;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -110,7 +108,8 @@ public class GaresActivity extends ListActivity {
 		// Special case ACTION_SEARCH : store user's query
 		if (ACTION_SEARCH.equals(mAction)) {
 			String query = getIntent().getStringExtra(SearchManager.QUERY);
-			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this, GaresSearchSuggestionsProvider.AUTHORITY, GaresSearchSuggestionsProvider.MODE);
+			SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this, GaresSearchSuggestionsProvider.AUTHORITY,
+					GaresSearchSuggestionsProvider.MODE);
 			int count = c.getCount();
 			String line2 = null;
 			// 2 lines : line 2 is hint about search result
@@ -140,7 +139,7 @@ public class GaresActivity extends ListActivity {
 			showDialog(DIALOG_GEOLOCATION_FAILED);
 		} else {
 			Toast.makeText(this, "La recherche a échoué de manière inattendue !", Toast.LENGTH_LONG);
-			ErrorReporter.getInstance().handleException(e);
+			getCapptainAgent().sendSessionError("GeolocationFailed: " + e.getMessage(), null);
 			finish();
 		}
 	}
@@ -344,9 +343,11 @@ public class GaresActivity extends ListActivity {
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 			case DIALOG_ABOUT: {
+				getCapptainAgent().sendSessionEvent("about_dialog_shown", null);
 				return AboutDialog.create(this);
 			}
 			case DIALOG_PAYPAL: {
+				getCapptainAgent().sendSessionEvent("paypal_dialog_shown", null);
 				AlertDialog.Builder builder = new AlertDialog.Builder(this)
 						.setTitle("Faire un don")
 						.setIcon(R.drawable.icon)
@@ -355,23 +356,27 @@ public class GaresActivity extends ListActivity {
 				builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						getCapptainAgent().sendSessionEvent("paypal_cancelled", null);
 						dialog.cancel();
 					}
 				});
 				builder.setCancelable(true).setOnCancelListener(new DialogInterface.OnCancelListener() {
 					@Override
 					public void onCancel(DialogInterface dialog) {
+						getCapptainAgent().sendSessionEvent("paypal_refuse", null);
 						Toast.makeText(getApplicationContext(), "Tant pis, une prochaine fois :)", Toast.LENGTH_LONG).show();
 					}
 				});
 				builder.setNeutralButton("Voir les plugins", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						getCapptainAgent().sendSessionEvent("paypal_plugins", null);
 						Uri uri = Uri.parse("market://search?q=Plugin+Horaires+TER+SNCF");
 						try {
 							startActivity(new Intent(Intent.ACTION_VIEW, uri));
 						} catch (ActivityNotFoundException e) {
-							Toast.makeText(getApplicationContext(), "L'Android Market n'a pas pu être démarré. Vérifiez qu'il est bien inclus dans votre système !",
+							Toast.makeText(getApplicationContext(),
+									"L'Android Market n'a pas pu être démarré. Vérifiez qu'il est bien inclus dans votre système !",
 									Toast.LENGTH_LONG).show();
 						}
 					}
@@ -379,6 +384,7 @@ public class GaresActivity extends ListActivity {
 				builder.setPositiveButton("Continuer", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						getCapptainAgent().sendSessionEvent("paypal_accept", null);
 						Toast.makeText(getApplicationContext(), "Merci d'avance de m'aider à continuer !", Toast.LENGTH_LONG).show();
 						Uri uri = Uri
 								.parse("https://www.paypal.com/fr/cgi-bin/webscr?cmd=_xclick&business=naholyr%40yahoo.fr&item_name=Nicolas+Chambrier+pour+Horaires+TER+SNCF&currency_code=EUR");
@@ -388,8 +394,11 @@ public class GaresActivity extends ListActivity {
 				return builder.create();
 			}
 			case DIALOG_GEOLOCATION_FAILED: {
-				AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle("Géolocalisation échouée").setIcon(R.drawable.icon)
-						.setMessage("La géolocalisation a échoué. Souhaitez-vous basculer vers la liste des gares favorites, ou effectuer une recherche ?");
+				AlertDialog.Builder builder = new AlertDialog.Builder(this)
+						.setTitle("Géolocalisation échouée")
+						.setIcon(R.drawable.icon)
+						.setMessage(
+								"La géolocalisation a échoué. Souhaitez-vous basculer vers la liste des gares favorites, ou effectuer une recherche ?");
 				builder.setNegativeButton("Quitter", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {

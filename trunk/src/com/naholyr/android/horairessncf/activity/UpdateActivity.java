@@ -8,7 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
@@ -26,8 +25,9 @@ import android.util.Log;
 import com.naholyr.android.horairessncf.Gare;
 import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.horairessncf.data.DatabaseHelper;
+import com.ubikod.capptain.android.sdk.activity.CapptainActivity;
 
-public class UpdateActivity extends Activity {
+public class UpdateActivity extends CapptainActivity {
 
 	// Notification
 	public static final int NOTIFICATION_ID = R.string.update_notification;
@@ -125,6 +125,8 @@ public class UpdateActivity extends Activity {
 
 		@Override
 		public void run() {
+			getCapptainAgent().startJob("update", null);
+
 			mState = STATE_RUNNING;
 
 			// Cancel current notification
@@ -172,6 +174,10 @@ public class UpdateActivity extends Activity {
 						if ((line = reader.readLine()) != null) {
 							try {
 								total = Integer.parseInt(line.trim());
+								Bundle updateData = new Bundle();
+								updateData.putInt("count", total);
+								updateData.putString("date", updateDate);
+								getCapptainAgent().sendJobEvent("nb_update", "update", updateData);
 								mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_MESSAGE, line.trim() + " mise(s) à jour..."));
 								mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_MAX, total, 0));
 							} catch (NumberFormatException e) {
@@ -185,6 +191,7 @@ public class UpdateActivity extends Activity {
 						setResult(RESULT_NO_UPDATE);
 						mState = STATE_DONE;
 						dismissDialog(PROGRESS_DIALOG);
+						getCapptainAgent().sendJobEvent("no_update", "update", null);
 						finish();
 					}
 					// Ligne 2 : date de mise à jour
@@ -212,7 +219,8 @@ public class UpdateActivity extends Activity {
 								if (parts[2].startsWith("DELETED ")) {
 									db.delete(DatabaseHelper.TABLE_GARES, Gare._ID + "=" + parts[0], null);
 								} else {
-									ContentValues row = Gare.values(Integer.parseInt(parts[0]), parts[2], parts[1], parts[3], Double.valueOf(parts[4]), Double.valueOf(parts[5]));
+									ContentValues row = Gare.values(Integer.parseInt(parts[0]), parts[2], parts[1], parts[3],
+											Double.valueOf(parts[4]), Double.valueOf(parts[5]));
 									try {
 										db.insertOrThrow(DatabaseHelper.TABLE_GARES, null, row);
 									} catch (SQLException e) {
@@ -280,6 +288,7 @@ public class UpdateActivity extends Activity {
 				mState = STATE_DONE;
 				mHandler.sendEmptyMessage(MSG_FINISHED);
 			}
+			getCapptainAgent().endJob("update");
 		}
 
 		public void setState(int state) {
@@ -288,6 +297,9 @@ public class UpdateActivity extends Activity {
 
 		private void error(Throwable t) {
 			t.printStackTrace();
+			Bundle errorData = new Bundle();
+			errorData.putString("message", t.getMessage());
+			getCapptainAgent().sendJobEvent("error", "update", errorData);
 			error();
 		}
 
@@ -295,7 +307,9 @@ public class UpdateActivity extends Activity {
 			setResult(RESULT_ERROR);
 			mState = STATE_DONE;
 			dismissDialog(PROGRESS_DIALOG);
+			getCapptainAgent().endJob("update");
 			finish();
 		}
 	}
+
 }
