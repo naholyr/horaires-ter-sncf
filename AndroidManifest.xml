@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.naholyr.android.horairessncf" android:versionName="3.0.2 (bugfix)"
-	android:versionCode="302">
+	package="com.naholyr.android.horairessncf" android:versionName="3.0.4 (statistiques)"
+	android:versionCode="304">
 	<!-- Application, options Froyo incluses -->
 	<application android:allowBackup="true"
 		android:restoreAnyVersion="false" android:allowClearUserData="true"
@@ -89,6 +89,19 @@
 				<category android:name="android.intent.category.DEFAULT" />
 			</intent-filter>
 		</activity>
+		<!-- Capptain -->
+		<service android:name="com.ubikod.capptain.android.service.CapptainService"
+			android:label="HorairesTERSNCFCapptainService" android:process=":Capptain">
+			<intent-filter>
+				<category android:name="android.intent.category.DEFAULT" />
+				<action android:name="com.ubikod.capptain.ICapptainService" />
+				<data android:scheme="capptain" />
+			</intent-filter>
+			<meta-data android:name="capptain:api:level" android:value="2" />
+			<meta-data android:name="capptain:api:id" android:value="b6a5b1113175bf391e442a8653876b84" />
+		</service>
+		<meta-data android:name="capptain:sessionTimeout"
+			android:value="20000" />
 	</application>
 	<!-- Compatibilité Android 1.5 Cupcake -->
 	<uses-sdk android:minSdkVersion="3" />
@@ -99,4 +112,5 @@
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Pour géolocalisation par le réseau -->
 	<uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- Pendant les mises à jour -->
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- Service de détection des mises à jour -->
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Capptain needs this one -->
 </manifest>

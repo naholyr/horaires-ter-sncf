@@ -3,8 +3,6 @@ package com.naholyr.android.horairessncf;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.acra.ErrorReporter;
-
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -18,6 +16,7 @@ import android.widget.Toast;
 
 import com.naholyr.android.ui.QuickActionWindow;
 import com.naholyr.android.ui.QuickActionWindow.IntentItem;
+import com.naholyr.android.ui.QuickActionWindow.Item;
 
 public class Common {
 
@@ -128,7 +127,7 @@ public class Common {
 			@Override
 			public void onError(ActivityNotFoundException e, IntentItem item) {
 				Toast.makeText(item.getContext(), "Erreur : Application Market introuvable", Toast.LENGTH_LONG).show();
-				ErrorReporter.getInstance().handleSilentException(e);
+				//ErrorReporter.getInstance().handleSilentException(e);
 			}
 		}, getQuickActionAds(activity, type));
 	}
@@ -172,15 +171,32 @@ public class Common {
 				// Complete intent items, adding station ID
 				extras.putLong(Gare._ID, id);
 				window.dispatchIntentExtras(extras, pluginIntent);
-				// Integration with Google Maps
+				// Retrieve Info
 				Cursor c = Gare.retrieveById(activity, id);
 				if (c != null && c.moveToFirst()) {
+					// Integration with Google Maps
 					Double latitude = c.getDouble(c.getColumnIndex(Gare.LATITUDE));
 					Double longitude = c.getDouble(c.getColumnIndex(Gare.LATITUDE));
 					if (latitude != null && longitude != null && latitude != 0 && longitude != 0) {
 						Intent gmapIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:" + latitude + "," + longitude));
 						window.addItemsForIntent(activity, gmapIntent, null);
 					}
+					// Share
+					final Intent shareIntent = new Intent(Intent.ACTION_SEND);
+					String nom = c.getString(c.getColumnIndex(Gare.NOM));
+					String text = nom + "\n" + c.getString(c.getColumnIndex(Gare.ADRESSE)) + "\n" + c.getString(c.getColumnIndex(Gare.REGION));
+					if (latitude != null && longitude != null && latitude != 0 && longitude != 0) {
+						text += "\n\nhttp://maps.google.com/?q=" + latitude + "," + longitude;
+					}
+					shareIntent.setType("text/plain");
+					shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+					shareIntent.putExtra(Intent.EXTRA_SUBJECT, nom);
+					window.addItem("Partager", activity.getResources().getDrawable(android.R.drawable.ic_menu_share), new QuickActionWindow.Item.Callback() {
+						@Override
+						public void onClick(QuickActionWindow window, Item item, View anchor) {
+							activity.startActivity(Intent.createChooser(shareIntent, "Partager"));
+						}
+					});
 				}
 				break;
 			}
@@ -196,6 +212,38 @@ public class Common {
 				// Complete intent items, adding station ID
 				extras.putLong(Depart._ID, id);
 				window.dispatchIntentExtras(extras, pluginIntent);
+				// Retrieve Info
+				Cursor c = Depart.retrieveById(activity, id);
+				if (c != null && c.moveToFirst()) {
+					String provenance = c.getString(c.getColumnIndex(Depart.ORIGINE));
+					String destination = c.getString(c.getColumnIndex(Depart.DESTINATION));
+					String depart = c.getString(c.getColumnIndex(Depart.HEURE_DEPART));
+					String quai = c.getString(c.getColumnIndex(Depart.QUAI));
+					String retard = c.getString(c.getColumnIndex(Depart.RETARD));
+					String motifRetard = c.getString(c.getColumnIndex(Depart.MOTIF_RETARD));
+					String typeTrain = c.getString(c.getColumnIndex(Depart.TYPE));
+					String numero = c.getString(c.getColumnIndex(Depart.NUMERO));
+					String nom = depart + " pour " + destination;
+					String text = typeTrain + " n°" + numero + " pour " + destination + ", en provenance de " + provenance + ", départ à " + depart
+							+ (quai != null ? " voie " + quai + " " : "") + "\n";
+					if (retard != null) {
+						text += "Retard " + retard;
+						if (motifRetard != null) {
+							text += " (" + motifRetard + ")";
+						}
+					}
+					// Share
+					final Intent shareIntent = new Intent(Intent.ACTION_SEND);
+					shareIntent.setType("text/plain");
+					shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+					shareIntent.putExtra(Intent.EXTRA_SUBJECT, nom);
+					window.addItem("Partager", activity.getResources().getDrawable(android.R.drawable.ic_menu_share), new QuickActionWindow.Item.Callback() {
+						@Override
+						public void onClick(QuickActionWindow window, Item item, View anchor) {
+							activity.startActivity(Intent.createChooser(shareIntent, "Partager"));
+						}
+					});
+				}
 				break;
 			}
 		}

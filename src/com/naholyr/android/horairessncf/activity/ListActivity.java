@@ -13,8 +13,9 @@ import android.widget.ListView;
 import com.naholyr.android.horairessncf.Common;
 import com.naholyr.android.horairessncf.R;
 import com.naholyr.android.ui.QuickActionWindow;
+import com.ubikod.capptain.android.sdk.activity.CapptainListActivity;
 
-abstract public class ListActivity extends android.app.ListActivity {
+abstract public class ListActivity extends CapptainListActivity {
 
 	private Cursor mCursor;
 
