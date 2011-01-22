@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content">
+
+  <RelativeLayout
+    android:id="@+id/capptain_notification_area"
+    android:layout_width="fill_parent"
+    android:layout_height="64dip"
+    android:layout_alignParentBottom="true"
+    android:background="#B000"
+    android:padding="4dip">
+
+    <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent">
+
+      <ImageView
+        android:id="@+id/capptain_notification_icon"
+        android:scaleType="fitXY"
+        android:layout_width="48px"
+        android:layout_height="48px"
+        android:layout_marginRight="3dip"
+        android:layout_gravity="center_vertical" />
+
+      <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
+
+        <TextView
+          android:id="@+id/capptain_notification_title"
+          android:layout_width="fill_parent"
+          android:singleLine="true"
+          android:ellipsize="end"
+          android:layout_height="wrap_content"
+          android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+          android:id="@+id/capptain_notification_message"
+          android:maxLines="2"
+          android:ellipsize="end"
+          android:textSize="13sp"
+          android:layout_width="fill_parent"
+          android:layout_height="fill_parent" />
+
+      </LinearLayout>
+
+      <!--
+        Remove the following image button if you don't want the
+        notification banner to have a "close" button (your users will be
+        forced to click on the banner (and thus to display the
+        announcement) to close the banner.
+      -->
+      <ImageButton
+        android:id="@+id/capptain_notification_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dip"
+        android:layout_gravity="center_vertical"
+        android:src="@android:drawable/btn_dialog"
+        android:background="#0000" />
+
+    </LinearLayout>
+
+  </RelativeLayout>
+
+</merge>

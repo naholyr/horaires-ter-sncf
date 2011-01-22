@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+
+  <TextView
+    android:id="@+id/title"
+    android:background="@drawable/capptain_announcement_title"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:autoLink="web|email|map"
+    android:padding="10sp"
+    android:textColor="#FFF"
+    android:textSize="22sp"
+    android:gravity="center" />
+
+  <WebView
+    android:id="@+id/body"
+    android:layout_width="fill_parent"
+    android:layout_height="0dip"
+    android:layout_weight="1" />
+
+  <LinearLayout
+    android:id="@+id/button_bar"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    style="@android:style/ButtonBar">
+
+    <Button
+      android:id="@+id/action"
+      android:layout_margin="5sp"
+      android:layout_weight="1"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content" />
+
+    <Button
+      android:id="@+id/exit"
+      android:layout_weight="1"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="5sp" />
+
+  </LinearLayout>
+
+</LinearLayout>
