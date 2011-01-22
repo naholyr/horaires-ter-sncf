@@ -102,6 +102,45 @@
 		</service>
 		<meta-data android:name="capptain:sessionTimeout"
 			android:value="20000" />
+		<!-- Capptain Reach -->
+		<activity
+			android:name="com.ubikod.capptain.android.sdk.reach.activity.CapptainTextAnnouncementActivity"
+			android:theme="@android:style/Theme.Light">
+			<intent-filter>
+				<action android:name="com.ubikod.capptain.intent.action.ANNOUNCEMENT" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="text/plain" />
+			</intent-filter>
+		</activity>
+		<activity
+			android:name="com.ubikod.capptain.android.sdk.reach.activity.CapptainWebAnnouncementActivity"
+			android:theme="@android:style/Theme.Light">
+			<intent-filter>
+				<action android:name="com.ubikod.capptain.intent.action.ANNOUNCEMENT" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="text/html" />
+			</intent-filter>
+		</activity>
+		<activity
+			android:name="com.ubikod.capptain.android.sdk.reach.activity.CapptainPollActivity"
+			android:theme="@android:style/Theme.Light">
+			<intent-filter>
+				<action android:name="com.ubikod.capptain.intent.action.POLL" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+		<receiver
+			android:name="com.ubikod.capptain.android.sdk.reach.CapptainReachMessageReceiver">
+			<intent-filter>
+				<action android:name="com.ubikod.capptain.intent.action.MESSAGE" />
+			</intent-filter>
+		</receiver>
+		<receiver android:name="com.ubikod.capptain.android.sdk.reach.CapptainReachBoot">
+			<intent-filter>
+				<action android:name="com.ubikod.capptain.intent.action.AGENT_CREATED" />
+			</intent-filter>
+		</receiver>
+		<meta-data android:name="capptain:reach:notification:icon" android:value="icon"/>
 	</application>
 	<!-- Compatibilité Android 1.5 Cupcake -->
 	<uses-sdk android:minSdkVersion="3" />
