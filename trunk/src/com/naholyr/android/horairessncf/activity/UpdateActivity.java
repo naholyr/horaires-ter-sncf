@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.net.InterfaceAddress;
 import java.net.URL;
 import java.net.URLEncoder;
 
@@ -54,6 +56,7 @@ public class UpdateActivity extends CapptainActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		showDialog(PROGRESS_DIALOG);
+		progressThread.start();
 	}
 
 	/**
@@ -75,6 +78,8 @@ public class UpdateActivity extends CapptainActivity {
 							if (progressThread.isAlive()) {
 								progressThread.setState(ProgressThread.STATE_DONE);
 								setResult(RESULT_CANCELED);
+								getCapptainAgent().sendJobEvent("cancelled", "update", null);
+								getCapptainAgent().endJob("update");
 								finish();
 							}
 						}
@@ -82,7 +87,6 @@ public class UpdateActivity extends CapptainActivity {
 				});
 				// Thread attached to progress dialog
 				progressThread = new ProgressThread(handler);
-				progressThread.start();
 				return progressDialog;
 			default:
 				return null;
@@ -101,6 +105,8 @@ public class UpdateActivity extends CapptainActivity {
 				dismissDialog(PROGRESS_DIALOG);
 				progressThread.setState(ProgressThread.STATE_DONE);
 				setResult(RESULT_OK);
+				getCapptainAgent().sendJobEvent("finished", "update", null);
+				getCapptainAgent().endJob("update");
 				finish();
 			} else if (msg.what == MSG_SET_MAX) {
 				progressDialog.setMax(msg.arg1);
@@ -192,6 +198,7 @@ public class UpdateActivity extends CapptainActivity {
 						mState = STATE_DONE;
 						dismissDialog(PROGRESS_DIALOG);
 						getCapptainAgent().sendJobEvent("no_update", "update", null);
+						getCapptainAgent().endJob("update");
 						finish();
 					}
 					// Ligne 2 : date de mise à jour
@@ -288,7 +295,6 @@ public class UpdateActivity extends CapptainActivity {
 				mState = STATE_DONE;
 				mHandler.sendEmptyMessage(MSG_FINISHED);
 			}
-			getCapptainAgent().endJob("update");
 		}
 
 		public void setState(int state) {

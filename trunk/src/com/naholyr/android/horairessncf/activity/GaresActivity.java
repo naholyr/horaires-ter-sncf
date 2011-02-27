@@ -330,9 +330,11 @@ public class GaresActivity extends ListActivity {
 			}
 			case R.id.menu_update: {
 				showUpdate();
+				return true;
 			}
 			case R.id.menu_paypal: {
 				showDialog(DIALOG_PAYPAL);
+				return true;
 			}
 			default:
 				return false;
