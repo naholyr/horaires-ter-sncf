@@ -35,8 +35,8 @@ abstract public class ListActivity extends CapptainListActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		requestWindowFeatures();
+		super.onCreate(savedInstanceState);
 		setContentView(getLayout());
 		findViewById(android.R.id.empty).setVisibility(View.GONE);
 		findViewById(R.id.loading).setVisibility(View.VISIBLE);
